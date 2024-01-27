@@ -1,0 +1,8 @@
+<li id="entry-{{ entry.id }}">
+
+    {{ entry.timestamp }} -
+    <b>{{ entry.distance }} km</b>
+    <form style="display: inline;" hx-delete="/entry/{{ entry.id }}" hx-target="#entry-{{ entry.id }}" hx-swap="delete">
+        <input type="submit" value="DEL">
+    </form>
+</li>

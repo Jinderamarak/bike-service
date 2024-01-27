@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<ul id="entries">
+    {% for entry in entries %}
+    {% include "entry.html" %}
+    {% endfor %}
+</ul>
+<form hx-post="/entry" hx-target="#entries" hx-swap="beforeend">
+    <input type="number" name="distance">
+    <input type="submit" value="Add">
+</form>
+
+{% endblock %}
+
+
+
