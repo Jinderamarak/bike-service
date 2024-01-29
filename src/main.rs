@@ -1,5 +1,6 @@
 mod config;
 mod error;
+mod events;
 mod models;
 mod templates;
 
@@ -95,13 +96,7 @@ async fn create_entry(
     .last_insert_rowid();
 
     let content = EntryTemplate { entry: model }.render()?;
-
-    let mut headers = HeaderMap::new();
-    headers.insert(
-        HeaderName::from_str("HX-Trigger").unwrap(),
-        "reload-total".parse().unwrap(),
-    );
-
+    let headers = events::add_reload_total(HeaderMap::new());
     Ok((StatusCode::CREATED, headers, Html(content)))
 }
 
@@ -127,13 +122,7 @@ async fn edit_entry(
     .await?;
 
     let content = EntryTemplate { entry: model }.render()?;
-
-    let mut headers = HeaderMap::new();
-    headers.insert(
-        HeaderName::from_str("HX-Trigger").unwrap(),
-        "reload-total".parse().unwrap(),
-    );
-
+    let headers = events::add_reload_total(HeaderMap::new());
     Ok((headers, Html(content)))
 }
 
@@ -158,12 +147,7 @@ async fn delete_entry(
         .execute(&pool)
         .await?;
 
-    let mut headers = HeaderMap::new();
-    headers.insert(
-        HeaderName::from_str("HX-Trigger").unwrap(),
-        "reload-total".parse().unwrap(),
-    );
-
+    let headers = events::add_reload_total(HeaderMap::new());
     Ok((headers, Html("".to_string())))
 }
 
