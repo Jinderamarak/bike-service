@@ -1,27 +1,33 @@
 mod config;
-mod templates;
+mod error;
 mod models;
+mod templates;
 
-use std::str::FromStr;
+use crate::config::Configuration;
+use crate::error::AppResult;
+use crate::models::mileage::{
+    MileageCreate, MileageModel, MileageModelsTotalExt, MileageRaw, MileageRawToModelsExt,
+};
+use crate::templates::{EntryTemplate, IndexTemplate, TotalTemplate};
 use askama::Template;
-use axum::{routing::{get, post}, http::StatusCode, Router, Form};
 use axum::extract::{Path, State};
 use axum::http::{HeaderMap, HeaderName};
 use axum::response::Html;
 use axum::routing::delete;
-use chrono::{Timelike};
+use axum::{
+    http::StatusCode,
+    routing::{get, post},
+    Form, Router,
+};
+use chrono::Utc;
 use clap::Parser;
 use dotenv::dotenv;
-use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
+use std::str::FromStr;
 use tokio::net;
-use crate::config::Configuration;
-use crate::models::mileage::{MileageCreate, MileageModel, MileageRaw};
-use crate::templates::{EntryTemplate, IndexTemplate, TotalTemplate};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-
     #[cfg(debug_assertions)]
     dotenv().ok();
 
@@ -41,45 +47,39 @@ async fn main() -> anyhow::Result<()> {
         .route("/total", get(entry_total))
         .with_state(pool);
 
-    let listener = net::TcpListener::bind(config.socket_address()).await?;
-    axum::serve(listener, app).await?;
+    let socket_addr = config.socket_address();
+    let listener = net::TcpListener::bind(socket_addr).await?;
+    println!("Listening on {}", socket_addr);
 
+    axum::serve(listener, app).await?;
     Ok(())
 }
 
-async fn root(
-    State(pool): State<SqlitePool>,
-) -> (StatusCode, Html<String>) {
-
+async fn root(State(pool): State<SqlitePool>) -> AppResult<Html<String>> {
     let models = sqlx::query_as!(MileageRaw, "SELECT * FROM mileage")
         .fetch_all(&pool)
-        .await
-        .unwrap()
-        .into_iter()
-        .map(|x| x.try_into().unwrap())
-        .collect::<Vec<MileageModel>>();
+        .await?
+        .to_models()?;
+    let total = models.iter().total_mileage();
 
-    let total = models.iter().fold(0.0, |acc, x| acc + x.distance);
     let content = IndexTemplate {
         entries: models,
-        total: TotalTemplate {
-            total
-        }
-    }.render().unwrap();
+        total: TotalTemplate { total },
+    }
+    .render()?;
 
-    (StatusCode::OK, Html(content))
+    Ok(Html(content))
 }
 
 async fn create_entry(
     State(pool): State<SqlitePool>,
     Form(payload): Form<MileageCreate>,
-) -> (StatusCode, HeaderMap, Html<String>)
-{
-    let date = chrono::Utc::now().naive_utc().date();
+) -> AppResult<(StatusCode, HeaderMap, Html<String>)> {
+    let date = Utc::now().naive_utc().date();
     let mut model = MileageModel {
         id: -1,
         date,
-        distance: payload.distance
+        distance: payload.distance,
     };
     let raw = MileageRaw::from(model.clone());
 
@@ -88,56 +88,46 @@ async fn create_entry(
         raw.date,
         raw.distance
     )
-        .execute(&pool)
-        .await
-        .unwrap()
-        .last_insert_rowid();
+    .execute(&pool)
+    .await?
+    .last_insert_rowid();
 
-    let content = EntryTemplate {
-        entry: model
-    }.render().unwrap();
+    let content = EntryTemplate { entry: model }.render()?;
 
     let mut headers = HeaderMap::new();
-    headers.insert(HeaderName::from_str("HX-Trigger").unwrap(), "reload-total".parse().unwrap());
+    headers.insert(
+        HeaderName::from_str("HX-Trigger").unwrap(),
+        "reload-total".parse().unwrap(),
+    );
 
-    (StatusCode::CREATED, headers, Html(content))
+    Ok((StatusCode::CREATED, headers, Html(content)))
 }
 
 async fn delete_entry(
     State(pool): State<SqlitePool>,
     Path(entry_id): Path<i64>,
-) -> (StatusCode, HeaderMap, Html<String>)
-{
-    let xdd = sqlx::query!(
-        "DELETE FROM mileage WHERE id = ?",
-        entry_id
-    )
+) -> AppResult<(HeaderMap, Html<String>)> {
+    let _ = sqlx::query!("DELETE FROM mileage WHERE id = ?", entry_id)
         .execute(&pool)
-        .await
-        .unwrap();
+        .await?;
 
     let mut headers = HeaderMap::new();
-    headers.insert(HeaderName::from_str("HX-Trigger").unwrap(), "reload-total".parse().unwrap());
+    headers.insert(
+        HeaderName::from_str("HX-Trigger").unwrap(),
+        "reload-total".parse().unwrap(),
+    );
 
-    (StatusCode::CREATED, headers, Html("".to_string()))
+    Ok((headers, Html("".to_string())))
 }
 
-async fn entry_total(
-    State(pool): State<SqlitePool>,
-) -> (StatusCode, Html<String>)
-{
-    let models = sqlx::query_as!(MileageRaw, "SELECT * FROM mileage")
+async fn entry_total(State(pool): State<SqlitePool>) -> AppResult<Html<String>> {
+    let total = sqlx::query_as!(MileageRaw, "SELECT * FROM mileage")
         .fetch_all(&pool)
-        .await
-        .unwrap()
-        .into_iter()
-        .map(|x| x.try_into().unwrap())
-        .collect::<Vec<MileageModel>>();
+        .await?
+        .to_models()?
+        .iter()
+        .total_mileage();
 
-    let total = models.iter().fold(0.0, |acc, x| acc + x.distance);
-    let content = TotalTemplate {
-        total
-    }.render().unwrap();
-
-    (StatusCode::OK, Html(content))
+    let content = TotalTemplate { total }.render().unwrap();
+    Ok(Html(content))
 }

@@ -1,4 +1,4 @@
-use chrono::{NaiveDate, ParseError};
+use chrono::NaiveDate;
 use serde::Deserialize;
 
 #[derive(Debug, Clone)]
@@ -16,7 +16,7 @@ pub struct MileageModel {
 }
 
 impl TryFrom<MileageRaw> for MileageModel {
-    type Error = ParseError;
+    type Error = anyhow::Error;
     fn try_from(raw: MileageRaw) -> Result<Self, Self::Error> {
         let date = NaiveDate::parse_from_str(&raw.date, "%Y-%m-%d")?;
         Ok(MileageModel {
@@ -34,6 +34,32 @@ impl From<MileageModel> for MileageRaw {
             date: model.date.format("%Y-%m-%d").to_string(),
             distance: model.distance,
         }
+    }
+}
+
+pub trait MileageRawToModelsExt {
+    fn to_models(self) -> Result<Vec<MileageModel>, anyhow::Error>;
+}
+
+impl<T> MileageRawToModelsExt for T
+where
+    T: IntoIterator<Item = MileageRaw>,
+{
+    fn to_models(self) -> Result<Vec<MileageModel>, anyhow::Error> {
+        self.into_iter().map(|x| x.try_into()).collect()
+    }
+}
+
+pub trait MileageModelsTotalExt {
+    fn total_mileage(self) -> f64;
+}
+
+impl<'a, T> MileageModelsTotalExt for T
+where
+    T: Iterator<Item = &'a MileageModel>,
+{
+    fn total_mileage(self) -> f64 {
+        self.map(|i| i.distance).sum()
     }
 }
 
