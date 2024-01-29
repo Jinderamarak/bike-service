@@ -11,16 +11,22 @@ use axum::response::Html;
 use axum::routing::delete;
 use chrono::{Timelike};
 use clap::Parser;
+use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
 use tokio::net;
 use crate::config::Configuration;
-use crate::models::{CreateMileage, MileageModel, NaiveDateTimeExt};
+use crate::models::mileage::{MileageCreate, MileageModel, MileageRaw};
 use crate::templates::{EntryTemplate, IndexTemplate, TotalTemplate};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+
+    #[cfg(debug_assertions)]
+    dotenv().ok();
+
     let config = Configuration::parse();
+    println!("{config:?}");
 
     let pool = SqlitePool::connect(&config.database_url).await?;
     sqlx::migrate!().run(&pool).await?;
@@ -45,10 +51,13 @@ async fn root(
     State(pool): State<SqlitePool>,
 ) -> (StatusCode, Html<String>) {
 
-    let models = sqlx::query_as::<_, MileageModel>("SELECT * FROM mileage")
+    let models = sqlx::query_as!(MileageRaw, "SELECT * FROM mileage")
         .fetch_all(&pool)
         .await
-        .unwrap();
+        .unwrap()
+        .into_iter()
+        .map(|x| x.try_into().unwrap())
+        .collect::<Vec<MileageModel>>();
 
     let total = models.iter().fold(0.0, |acc, x| acc + x.distance);
     let content = IndexTemplate {
@@ -63,27 +72,29 @@ async fn root(
 
 async fn create_entry(
     State(pool): State<SqlitePool>,
-    Form(payload): Form<CreateMileage>,
+    Form(payload): Form<MileageCreate>,
 ) -> (StatusCode, HeaderMap, Html<String>)
 {
-    let timestamp = chrono::Utc::now().naive_utc().with_nanosecond(0).unwrap();
-    let time_string = timestamp.for_sqlite();
+    let date = chrono::Utc::now().naive_utc().date();
+    let mut model = MileageModel {
+        id: -1,
+        date,
+        distance: payload.distance
+    };
+    let raw = MileageRaw::from(model.clone());
 
-    let id = sqlx::query!(
-        "INSERT INTO mileage (timestamp, distance) VALUES (?, ?)",
-        time_string, payload.distance
+    model.id = sqlx::query!(
+        "INSERT INTO mileage (date, distance) VALUES (?, ?)",
+        raw.date,
+        raw.distance
     )
         .execute(&pool)
         .await
         .unwrap()
         .last_insert_rowid();
 
-    let inserted = MileageModel {
-        id, timestamp, distance: payload.distance
-    };
-
     let content = EntryTemplate {
-        entry: inserted
+        entry: model
     }.render().unwrap();
 
     let mut headers = HeaderMap::new();
@@ -115,10 +126,13 @@ async fn entry_total(
     State(pool): State<SqlitePool>,
 ) -> (StatusCode, Html<String>)
 {
-    let models = sqlx::query_as::<_, MileageModel>("SELECT * FROM mileage")
+    let models = sqlx::query_as!(MileageRaw, "SELECT * FROM mileage")
         .fetch_all(&pool)
         .await
-        .unwrap();
+        .unwrap()
+        .into_iter()
+        .map(|x| x.try_into().unwrap())
+        .collect::<Vec<MileageModel>>();
 
     let total = models.iter().fold(0.0, |acc, x| acc + x.distance);
     let content = TotalTemplate {

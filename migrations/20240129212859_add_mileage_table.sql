@@ -1,6 +1,5 @@
--- Add migration script here
 CREATE TABLE mileage (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date TEXT NOT NULL,
     distance DOUBLE NOT NULL
 );

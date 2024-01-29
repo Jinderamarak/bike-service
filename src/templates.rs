@@ -1,5 +1,5 @@
 use askama::Template;
-use crate::models::MileageModel;
+use crate::models::mileage::MileageModel;
 
 #[derive(Template)]
 #[template(path = "index.html")]
