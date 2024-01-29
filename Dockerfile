@@ -20,4 +20,7 @@ WORKDIR /app
 COPY --from=builder /build/target/release/bike-service .
 COPY --from=builder /build/migrations ./migrations
 
+RUN mkdir /data
+ENV DATABASE_URL="sqlite:/data/data.db?mode=rwc"
+
 CMD ["./bike-service"]
