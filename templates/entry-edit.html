@@ -1,0 +1,7 @@
+<li id="entry-{{ entry.id }}">
+    <form style="display: inline;" hx-put="/entry/{{ entry.id }}" hx-target="#entry-{{ entry.id }}" hx-swap="outerHTML">
+        <input type="text" name="date" value="{{ entry.date }}">
+        <input type="text" name="distance" value="{{ entry.distance }}">
+        <input type="submit" value="SAVE">
+    </form>
+</li>

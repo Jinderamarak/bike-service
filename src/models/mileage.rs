@@ -65,5 +65,12 @@ where
 
 #[derive(Debug, Deserialize)]
 pub struct MileageCreate {
+    pub date: NaiveDate,
+    pub distance: f64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct MileageEdit {
+    pub date: NaiveDate,
     pub distance: f64,
 }

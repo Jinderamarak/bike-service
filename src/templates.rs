@@ -1,5 +1,5 @@
-use askama::Template;
 use crate::models::mileage::MileageModel;
+use askama::Template;
 
 #[derive(Template)]
 #[template(path = "index.html")]
@@ -11,6 +11,12 @@ pub struct IndexTemplate {
 #[derive(Template)]
 #[template(path = "entry.html")]
 pub struct EntryTemplate {
+    pub entry: MileageModel,
+}
+
+#[derive(Template)]
+#[template(path = "entry-edit.html")]
+pub struct EntryEditTemplate {
     pub entry: MileageModel,
 }
 

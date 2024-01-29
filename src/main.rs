@@ -6,14 +6,15 @@ mod templates;
 use crate::config::Configuration;
 use crate::error::AppResult;
 use crate::models::mileage::{
-    MileageCreate, MileageModel, MileageModelsTotalExt, MileageRaw, MileageRawToModelsExt,
+    MileageCreate, MileageEdit, MileageModel, MileageModelsTotalExt, MileageRaw,
+    MileageRawToModelsExt,
 };
-use crate::templates::{EntryTemplate, IndexTemplate, TotalTemplate};
+use crate::templates::{EntryEditTemplate, EntryTemplate, IndexTemplate, TotalTemplate};
 use askama::Template;
 use axum::extract::{Path, State};
 use axum::http::{HeaderMap, HeaderName};
 use axum::response::Html;
-use axum::routing::delete;
+use axum::routing::{delete, put};
 use axum::{
     http::StatusCode,
     routing::{get, post},
@@ -43,6 +44,8 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/", get(root))
         .route("/entry", post(create_entry))
+        .route("/entry/:entry_id/edit", get(start_edit_entry))
+        .route("/entry/:entry_id", put(edit_entry))
         .route("/entry/:entry_id", delete(delete_entry))
         .route("/total", get(entry_total))
         .with_state(pool);
@@ -75,10 +78,9 @@ async fn create_entry(
     State(pool): State<SqlitePool>,
     Form(payload): Form<MileageCreate>,
 ) -> AppResult<(StatusCode, HeaderMap, Html<String>)> {
-    let date = Utc::now().naive_utc().date();
     let mut model = MileageModel {
         id: -1,
-        date,
+        date: payload.date,
         distance: payload.distance,
     };
     let raw = MileageRaw::from(model.clone());
@@ -101,6 +103,51 @@ async fn create_entry(
     );
 
     Ok((StatusCode::CREATED, headers, Html(content)))
+}
+
+async fn edit_entry(
+    State(pool): State<SqlitePool>,
+    Path(entry_id): Path<i64>,
+    Form(payload): Form<MileageEdit>,
+) -> AppResult<(HeaderMap, Html<String>)> {
+    let model = MileageModel {
+        id: entry_id,
+        date: payload.date,
+        distance: payload.distance,
+    };
+    let raw = MileageRaw::from(model.clone());
+
+    let _ = sqlx::query!(
+        "UPDATE mileage SET date = ?, distance = ? WHERE id = ?",
+        raw.date,
+        raw.distance,
+        raw.id
+    )
+    .execute(&pool)
+    .await?;
+
+    let content = EntryTemplate { entry: model }.render()?;
+
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        HeaderName::from_str("HX-Trigger").unwrap(),
+        "reload-total".parse().unwrap(),
+    );
+
+    Ok((headers, Html(content)))
+}
+
+async fn start_edit_entry(
+    State(pool): State<SqlitePool>,
+    Path(entry_id): Path<i64>,
+) -> AppResult<Html<String>> {
+    let raw = sqlx::query_as!(MileageRaw, "SELECT * FROM mileage WHERE id = ?", entry_id)
+        .fetch_one(&pool)
+        .await?;
+    let model = MileageModel::try_from(raw)?;
+
+    let content = EntryEditTemplate { entry: model }.render()?;
+    Ok(Html(content))
 }
 
 async fn delete_entry(
