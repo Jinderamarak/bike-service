@@ -4,6 +4,7 @@ use crate::templates::{IndexTemplate, TotalTemplate};
 use askama::Template;
 use axum::extract::State;
 use axum::response::Html;
+use chrono::Utc;
 use sqlx::SqlitePool;
 
 pub mod mileage;
@@ -16,6 +17,7 @@ pub async fn get_root(State(pool): State<SqlitePool>) -> AppResult<Html<String>>
     let total = models.iter().total_mileage();
 
     let content = IndexTemplate {
+        today: Utc::now().date_naive(),
         entries: models,
         total: TotalTemplate { total },
     }

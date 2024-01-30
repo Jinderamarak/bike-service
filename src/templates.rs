@@ -1,9 +1,11 @@
 use crate::models::mileage::MileageModel;
 use askama::Template;
+use chrono::NaiveDate;
 
 #[derive(Template)]
 #[template(path = "index.html")]
 pub struct IndexTemplate {
+    pub today: NaiveDate,
     pub entries: Vec<MileageModel>,
     pub total: TotalTemplate,
 }

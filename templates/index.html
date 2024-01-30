@@ -7,8 +7,8 @@
     {% include "entry.html" %}
     {% endfor %}
 </ul>
-<form hx-post="/entry" hx-target="#entries" hx-swap="beforeend">
-    <input type="date" name="date">
+<form hx-post="/mileage" hx-target="#entries" hx-swap="beforeend">
+    <input type="date" name="date" value="{{ today }}">
     <input type="number" step="0.001" name="distance">
     <input type="submit" value="Add">
 </form>
