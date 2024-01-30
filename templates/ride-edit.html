@@ -1,7 +1,7 @@
 <li id="ride-{{ ride.id }}">
     <form style="display: inline;" hx-put="/ride/{{ ride.id }}" hx-target="#ride-{{ ride.id }}" hx-swap="outerHTML">
-        <input type="text" name="date" value="{{ ride.date }}">
-        <input type="text" name="distance" value="{{ ride.distance }}">
+        <input type="date" name="date" value="{{ ride.date }}">
+        <input type="number" step="0.001" name="distance" value="{{ ride.distance }}">
         <input type="submit" value="SAVE">
     </form>
 </li>

@@ -1,12 +1,13 @@
 use crate::models::rides::RideModel;
 use askama::Template;
 use chrono::NaiveDate;
+use std::collections::HashMap;
 
 #[derive(Template)]
 #[template(path = "index.html")]
 pub struct IndexTemplate {
     pub today: NaiveDate,
-    pub rides: Vec<RideModel>,
+    pub rides: Vec<(String, Vec<RideModel>)>,
     pub total: TotalTemplate,
 }
 

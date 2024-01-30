@@ -3,8 +3,15 @@
 {% block content %}
 
 <ul id="rides">
-    {% for ride in rides %}
-    {% include "ride.html" %}
+    {% for (date, rides) in rides %}
+    <li>
+        <h2>{{ date }}</h2>
+        <ul id="rides-{{ date }}">
+            {% for ride in rides %}
+            {% include "ride.html" %}
+            {% endfor %}
+        </ul>
+    </li>
     {% endfor %}
 </ul>
 <form hx-post="/ride" hx-target="#rides" hx-swap="beforeend">
