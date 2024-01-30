@@ -1,8 +1,7 @@
 use crate::error::AppResult;
 use crate::events;
-use crate::models::mileage::{
-    MileageCreate, MileageEdit, MileageModel, MileageModelsTotalExt, MileageRaw,
-    MileageRawToModelsExt,
+use crate::models::rides::{
+    RawRidesToModelsExt, RideCreate, RideEdit, RideModel, RideModelsTotalExt, RideRaw,
 };
 use crate::templates::{EntryEditTemplate, EntryTemplate, TotalTemplate};
 use askama::Template;
@@ -15,26 +14,26 @@ use sqlx::SqlitePool;
 
 pub fn mileage_router() -> Router<SqlitePool> {
     Router::new()
-        .route("/", post(post_mileage))
-        .route("/:id/edit", get(get_mileage_edit))
-        .route("/:id", put(put_mileage))
-        .route("/:id", delete(delete_mileage))
-        .route("/total", get(get_mileage_total))
+        .route("/", post(create_ride))
+        .route("/:id/edit", get(update_ride_start))
+        .route("/:id", put(update_ride))
+        .route("/:id", delete(delete_ride))
+        .route("/total", get(ride_total_distance))
 }
 
-async fn post_mileage(
+async fn create_ride(
     State(pool): State<SqlitePool>,
-    Form(payload): Form<MileageCreate>,
+    Form(payload): Form<RideCreate>,
 ) -> AppResult<(StatusCode, HeaderMap, Html<String>)> {
-    let mut model = MileageModel {
+    let mut model = RideModel {
         id: -1,
         date: payload.date,
         distance: payload.distance,
     };
-    let raw = MileageRaw::from(model.clone());
+    let raw = RideRaw::from(model.clone());
 
     model.id = sqlx::query!(
-        "INSERT INTO mileage (date, distance) VALUES (?, ?)",
+        "INSERT INTO rides (date, distance) VALUES (?, ?)",
         raw.date,
         raw.distance
     )
@@ -47,20 +46,20 @@ async fn post_mileage(
     Ok((StatusCode::CREATED, headers, Html(content)))
 }
 
-async fn put_mileage(
+async fn update_ride(
     State(pool): State<SqlitePool>,
     Path(id): Path<i64>,
-    Form(payload): Form<MileageEdit>,
+    Form(payload): Form<RideEdit>,
 ) -> AppResult<(HeaderMap, Html<String>)> {
-    let model = MileageModel {
+    let model = RideModel {
         id,
         date: payload.date,
         distance: payload.distance,
     };
-    let raw = MileageRaw::from(model.clone());
+    let raw = RideRaw::from(model.clone());
 
     let _ = sqlx::query!(
-        "UPDATE mileage SET date = ?, distance = ? WHERE id = ?",
+        "UPDATE rides SET date = ?, distance = ? WHERE id = ?",
         raw.date,
         raw.distance,
         raw.id
@@ -73,24 +72,24 @@ async fn put_mileage(
     Ok((headers, Html(content)))
 }
 
-async fn get_mileage_edit(
+async fn update_ride_start(
     State(pool): State<SqlitePool>,
     Path(id): Path<i64>,
 ) -> AppResult<Html<String>> {
-    let raw = sqlx::query_as!(MileageRaw, "SELECT * FROM mileage WHERE id = ?", id)
+    let raw = sqlx::query_as!(RideRaw, "SELECT * FROM rides WHERE id = ?", id)
         .fetch_one(&pool)
         .await?;
-    let model = MileageModel::try_from(raw)?;
+    let model = RideModel::try_from(raw)?;
 
     let content = EntryEditTemplate { entry: model }.render()?;
     Ok(Html(content))
 }
 
-async fn delete_mileage(
+async fn delete_ride(
     State(pool): State<SqlitePool>,
     Path(id): Path<i64>,
 ) -> AppResult<(HeaderMap, Html<String>)> {
-    let _ = sqlx::query!("DELETE FROM mileage WHERE id = ?", id)
+    let _ = sqlx::query!("DELETE FROM rides WHERE id = ?", id)
         .execute(&pool)
         .await?;
 
@@ -98,13 +97,13 @@ async fn delete_mileage(
     Ok((headers, Html("".to_string())))
 }
 
-async fn get_mileage_total(State(pool): State<SqlitePool>) -> AppResult<Html<String>> {
-    let total = sqlx::query_as!(MileageRaw, "SELECT * FROM mileage")
+async fn ride_total_distance(State(pool): State<SqlitePool>) -> AppResult<Html<String>> {
+    let total = sqlx::query_as!(RideRaw, "SELECT * FROM rides")
         .fetch_all(&pool)
         .await?
         .to_models()?
         .iter()
-        .total_mileage();
+        .total_distance();
 
     let content = TotalTemplate { total }.render().unwrap();
     Ok(Html(content))

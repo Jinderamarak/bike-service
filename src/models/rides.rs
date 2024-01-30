@@ -2,24 +2,24 @@ use chrono::NaiveDate;
 use serde::Deserialize;
 
 #[derive(Debug, Clone)]
-pub struct MileageRaw {
+pub struct RideRaw {
     pub id: i64,
     pub date: String,
     pub distance: f64,
 }
 
 #[derive(Debug, Clone)]
-pub struct MileageModel {
+pub struct RideModel {
     pub id: i64,
     pub date: NaiveDate,
     pub distance: f64,
 }
 
-impl TryFrom<MileageRaw> for MileageModel {
+impl TryFrom<RideRaw> for RideModel {
     type Error = anyhow::Error;
-    fn try_from(raw: MileageRaw) -> Result<Self, Self::Error> {
+    fn try_from(raw: RideRaw) -> Result<Self, Self::Error> {
         let date = NaiveDate::parse_from_str(&raw.date, "%Y-%m-%d")?;
-        Ok(MileageModel {
+        Ok(RideModel {
             id: raw.id,
             date,
             distance: raw.distance,
@@ -27,9 +27,9 @@ impl TryFrom<MileageRaw> for MileageModel {
     }
 }
 
-impl From<MileageModel> for MileageRaw {
-    fn from(model: MileageModel) -> Self {
-        MileageRaw {
+impl From<RideModel> for RideRaw {
+    fn from(model: RideModel) -> Self {
+        RideRaw {
             id: model.id,
             date: model.date.format("%Y-%m-%d").to_string(),
             distance: model.distance,
@@ -37,40 +37,40 @@ impl From<MileageModel> for MileageRaw {
     }
 }
 
-pub trait MileageRawToModelsExt {
-    fn to_models(self) -> Result<Vec<MileageModel>, anyhow::Error>;
+pub trait RawRidesToModelsExt {
+    fn to_models(self) -> Result<Vec<RideModel>, anyhow::Error>;
 }
 
-impl<T> MileageRawToModelsExt for T
+impl<T> RawRidesToModelsExt for T
 where
-    T: IntoIterator<Item = MileageRaw>,
+    T: IntoIterator<Item = RideRaw>,
 {
-    fn to_models(self) -> Result<Vec<MileageModel>, anyhow::Error> {
+    fn to_models(self) -> Result<Vec<RideModel>, anyhow::Error> {
         self.into_iter().map(|x| x.try_into()).collect()
     }
 }
 
-pub trait MileageModelsTotalExt {
-    fn total_mileage(self) -> f64;
+pub trait RideModelsTotalExt {
+    fn total_distance(self) -> f64;
 }
 
-impl<'a, T> MileageModelsTotalExt for T
+impl<'a, T> RideModelsTotalExt for T
 where
-    T: Iterator<Item = &'a MileageModel>,
+    T: Iterator<Item = &'a RideModel>,
 {
-    fn total_mileage(self) -> f64 {
+    fn total_distance(self) -> f64 {
         self.map(|i| i.distance).sum()
     }
 }
 
 #[derive(Debug, Deserialize)]
-pub struct MileageCreate {
+pub struct RideCreate {
     pub date: NaiveDate,
     pub distance: f64,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct MileageEdit {
+pub struct RideEdit {
     pub date: NaiveDate,
     pub distance: f64,
 }

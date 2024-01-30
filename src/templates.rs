@@ -1,4 +1,4 @@
-use crate::models::mileage::MileageModel;
+use crate::models::rides::RideModel;
 use askama::Template;
 use chrono::NaiveDate;
 
@@ -6,20 +6,20 @@ use chrono::NaiveDate;
 #[template(path = "index.html")]
 pub struct IndexTemplate {
     pub today: NaiveDate,
-    pub entries: Vec<MileageModel>,
+    pub entries: Vec<RideModel>,
     pub total: TotalTemplate,
 }
 
 #[derive(Template)]
 #[template(path = "entry.html")]
 pub struct EntryTemplate {
-    pub entry: MileageModel,
+    pub entry: RideModel,
 }
 
 #[derive(Template)]
 #[template(path = "entry-edit.html")]
 pub struct EntryEditTemplate {
-    pub entry: MileageModel,
+    pub entry: RideModel,
 }
 
 #[derive(Template)]

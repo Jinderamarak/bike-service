@@ -2,10 +2,10 @@
 
     {{ entry.date }} -
     <b>{{ entry.distance }} km</b>
-    <form style="display: inline;" hx-get="/mileage/{{ entry.id }}/edit" hx-target="#entry-{{ entry.id }}" hx-swap="outerHTML">
+    <form style="display: inline;" hx-get="/ride/{{ entry.id }}/edit" hx-target="#entry-{{ entry.id }}" hx-swap="outerHTML">
         <input type="submit" value="EDI">
     </form>
-    <form style="display: inline;" hx-delete="/mileage/{{ entry.id }}" hx-target="#entry-{{ entry.id }}" hx-swap="delete">
+    <form style="display: inline;" hx-delete="/ride/{{ entry.id }}" hx-target="#entry-{{ entry.id }}" hx-swap="delete">
         <input type="submit" value="DEL">
     </form>
 </li>

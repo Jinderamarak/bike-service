@@ -1,5 +1,5 @@
 use crate::error::AppResult;
-use crate::models::mileage::{MileageModelsTotalExt, MileageRaw, MileageRawToModelsExt};
+use crate::models::rides::{RawRidesToModelsExt, RideModelsTotalExt, RideRaw};
 use crate::templates::{IndexTemplate, TotalTemplate};
 use askama::Template;
 use axum::extract::State;
@@ -14,11 +14,11 @@ pub fn root_router() -> Router<SqlitePool> {
 }
 
 async fn get_root(State(pool): State<SqlitePool>) -> AppResult<Html<String>> {
-    let models = sqlx::query_as!(MileageRaw, "SELECT * FROM mileage ORDER BY date ASC")
+    let models = sqlx::query_as!(RideRaw, "SELECT * FROM rides ORDER BY date ASC")
         .fetch_all(&pool)
         .await?
         .to_models()?;
-    let total = models.iter().total_mileage();
+    let total = models.iter().total_distance();
 
     let content = IndexTemplate {
         today: Utc::now().date_naive(),

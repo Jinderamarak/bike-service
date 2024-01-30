@@ -1,1 +1,1 @@
-pub mod mileage;
+pub mod rides;
