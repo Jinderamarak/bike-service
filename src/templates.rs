@@ -1,7 +1,6 @@
 use crate::models::rides::RideModel;
 use askama::Template;
 use chrono::NaiveDate;
-use std::collections::HashMap;
 
 #[derive(Template)]
 #[template(path = "index.html")]

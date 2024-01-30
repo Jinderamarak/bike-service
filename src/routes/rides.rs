@@ -1,5 +1,5 @@
 use crate::error::AppResult;
-use crate::events;
+use crate::headers::HtmxHeaderMap;
 use crate::models::rides::{
     RawRidesToModelsExt, RideCreate, RideEdit, RideModel, RideModelsTotalExt, RideRaw,
 };
@@ -42,7 +42,7 @@ async fn create_ride(
     .last_insert_rowid();
 
     let content = RideTemplate { ride: model }.render()?;
-    let headers = events::add_reload_total(HeaderMap::new());
+    let headers = HeaderMap::new().with_trigger("reload-total");
     Ok((StatusCode::CREATED, headers, Html(content)))
 }
 
@@ -68,7 +68,7 @@ async fn update_ride(
     .await?;
 
     let content = RideTemplate { ride: model }.render()?;
-    let headers = events::add_reload_total(HeaderMap::new());
+    let headers = HeaderMap::new().with_trigger("reload-total");
     Ok((headers, Html(content)))
 }
 
@@ -93,7 +93,7 @@ async fn delete_ride(
         .execute(&pool)
         .await?;
 
-    let headers = events::add_reload_total(HeaderMap::new());
+    let headers = HeaderMap::new().with_trigger("reload-total");
     Ok((headers, Html("".to_string())))
 }
 

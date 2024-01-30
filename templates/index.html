@@ -13,8 +13,12 @@
         </ul>
     </li>
     {% endfor %}
+    <li>
+        <h2>New</h2>
+        <ul id="rides-new"></ul>
+    </li>
 </ul>
-<form hx-post="/ride" hx-target="#rides" hx-swap="beforeend">
+<form hx-post="/ride" hx-target="#rides-new" hx-swap="beforeend">
     <input type="date" name="date" value="{{ today }}">
     <input type="number" step="0.001" name="distance">
     <input type="submit" value="Add">

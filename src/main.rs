@@ -1,6 +1,6 @@
 mod config;
 mod error;
-mod events;
+mod headers;
 mod models;
 mod routes;
 mod templates;
