@@ -9,10 +9,20 @@ use askama::Template;
 use axum::extract::{Path, State};
 use axum::http::{HeaderMap, StatusCode};
 use axum::response::Html;
-use axum::Form;
+use axum::routing::{delete, get, post, put};
+use axum::{Form, Router};
 use sqlx::SqlitePool;
 
-pub async fn post_mileage(
+pub fn mileage_router() -> Router<SqlitePool> {
+    Router::new()
+        .route("/", post(post_mileage))
+        .route("/:id/edit", get(get_mileage_edit))
+        .route("/:id", put(put_mileage))
+        .route("/:id", delete(delete_mileage))
+        .route("/total", get(get_mileage_total))
+}
+
+async fn post_mileage(
     State(pool): State<SqlitePool>,
     Form(payload): Form<MileageCreate>,
 ) -> AppResult<(StatusCode, HeaderMap, Html<String>)> {
@@ -37,7 +47,7 @@ pub async fn post_mileage(
     Ok((StatusCode::CREATED, headers, Html(content)))
 }
 
-pub async fn put_mileage(
+async fn put_mileage(
     State(pool): State<SqlitePool>,
     Path(id): Path<i64>,
     Form(payload): Form<MileageEdit>,
@@ -63,7 +73,7 @@ pub async fn put_mileage(
     Ok((headers, Html(content)))
 }
 
-pub async fn get_mileage_edit(
+async fn get_mileage_edit(
     State(pool): State<SqlitePool>,
     Path(id): Path<i64>,
 ) -> AppResult<Html<String>> {
@@ -76,7 +86,7 @@ pub async fn get_mileage_edit(
     Ok(Html(content))
 }
 
-pub async fn delete_mileage(
+async fn delete_mileage(
     State(pool): State<SqlitePool>,
     Path(id): Path<i64>,
 ) -> AppResult<(HeaderMap, Html<String>)> {
@@ -88,7 +98,7 @@ pub async fn delete_mileage(
     Ok((headers, Html("".to_string())))
 }
 
-pub async fn get_mileage_total(State(pool): State<SqlitePool>) -> AppResult<Html<String>> {
+async fn get_mileage_total(State(pool): State<SqlitePool>) -> AppResult<Html<String>> {
     let total = sqlx::query_as!(MileageRaw, "SELECT * FROM mileage")
         .fetch_all(&pool)
         .await?

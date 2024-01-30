@@ -1,27 +1,11 @@
-use crate::error::AppResult;
-use crate::models::mileage::{MileageModelsTotalExt, MileageRaw, MileageRawToModelsExt};
-use crate::templates::{IndexTemplate, TotalTemplate};
-use askama::Template;
-use axum::extract::State;
-use axum::response::Html;
-use chrono::Utc;
+use axum::Router;
 use sqlx::SqlitePool;
 
-pub mod mileage;
+mod mileage;
+mod root;
 
-pub async fn get_root(State(pool): State<SqlitePool>) -> AppResult<Html<String>> {
-    let models = sqlx::query_as!(MileageRaw, "SELECT * FROM mileage ORDER BY date ASC")
-        .fetch_all(&pool)
-        .await?
-        .to_models()?;
-    let total = models.iter().total_mileage();
-
-    let content = IndexTemplate {
-        today: Utc::now().date_naive(),
-        entries: models,
-        total: TotalTemplate { total },
-    }
-    .render()?;
-
-    Ok(Html(content))
+pub fn main_router() -> Router<SqlitePool> {
+    Router::new()
+        .nest("/", root::root_router())
+        .nest("/mileage", mileage::mileage_router())
 }
