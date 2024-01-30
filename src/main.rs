@@ -16,9 +16,11 @@ use axum::{
     Router,
 };
 use clap::Parser;
-use dotenv::dotenv;
 use sqlx::SqlitePool;
 use tokio::net;
+
+#[cfg(debug_assertions)]
+use dotenv::dotenv;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
