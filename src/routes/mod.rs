@@ -10,7 +10,7 @@ use sqlx::SqlitePool;
 pub mod mileage;
 
 pub async fn get_root(State(pool): State<SqlitePool>) -> AppResult<Html<String>> {
-    let models = sqlx::query_as!(MileageRaw, "SELECT * FROM mileage")
+    let models = sqlx::query_as!(MileageRaw, "SELECT * FROM mileage ORDER BY date ASC")
         .fetch_all(&pool)
         .await?
         .to_models()?;
