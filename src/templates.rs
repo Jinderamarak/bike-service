@@ -6,20 +6,20 @@ use chrono::NaiveDate;
 #[template(path = "index.html")]
 pub struct IndexTemplate {
     pub today: NaiveDate,
-    pub entries: Vec<RideModel>,
+    pub rides: Vec<RideModel>,
     pub total: TotalTemplate,
 }
 
 #[derive(Template)]
-#[template(path = "entry.html")]
-pub struct EntryTemplate {
-    pub entry: RideModel,
+#[template(path = "ride.html")]
+pub struct RideTemplate {
+    pub ride: RideModel,
 }
 
 #[derive(Template)]
-#[template(path = "entry-edit.html")]
-pub struct EntryEditTemplate {
-    pub entry: RideModel,
+#[template(path = "ride-edit.html")]
+pub struct RideEditTemplate {
+    pub ride: RideModel,
 }
 
 #[derive(Template)]

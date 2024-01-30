@@ -22,7 +22,7 @@ async fn get_root(State(pool): State<SqlitePool>) -> AppResult<Html<String>> {
 
     let content = IndexTemplate {
         today: Utc::now().date_naive(),
-        entries: models,
+        rides: models,
         total: TotalTemplate { total },
     }
     .render()?;

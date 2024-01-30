@@ -3,7 +3,7 @@ use crate::events;
 use crate::models::rides::{
     RawRidesToModelsExt, RideCreate, RideEdit, RideModel, RideModelsTotalExt, RideRaw,
 };
-use crate::templates::{EntryEditTemplate, EntryTemplate, TotalTemplate};
+use crate::templates::{RideEditTemplate, RideTemplate, TotalTemplate};
 use askama::Template;
 use axum::extract::{Path, State};
 use axum::http::{HeaderMap, StatusCode};
@@ -41,7 +41,7 @@ async fn create_ride(
     .await?
     .last_insert_rowid();
 
-    let content = EntryTemplate { entry: model }.render()?;
+    let content = RideTemplate { ride: model }.render()?;
     let headers = events::add_reload_total(HeaderMap::new());
     Ok((StatusCode::CREATED, headers, Html(content)))
 }
@@ -67,7 +67,7 @@ async fn update_ride(
     .execute(&pool)
     .await?;
 
-    let content = EntryTemplate { entry: model }.render()?;
+    let content = RideTemplate { ride: model }.render()?;
     let headers = events::add_reload_total(HeaderMap::new());
     Ok((headers, Html(content)))
 }
@@ -81,7 +81,7 @@ async fn update_ride_start(
         .await?;
     let model = RideModel::try_from(raw)?;
 
-    let content = EntryEditTemplate { entry: model }.render()?;
+    let content = RideEditTemplate { ride: model }.render()?;
     Ok(Html(content))
 }
 
