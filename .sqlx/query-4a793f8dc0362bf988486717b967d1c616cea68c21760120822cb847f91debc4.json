@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT * FROM rides ORDER BY date ASC",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Int64"
+      },
+      {
+        "name": "date",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "distance",
+        "ordinal": 2,
+        "type_info": "Float"
+      },
+      {
+        "name": "description",
+        "ordinal": 3,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "4a793f8dc0362bf988486717b967d1c616cea68c21760120822cb847f91debc4"
+}
