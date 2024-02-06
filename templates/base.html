@@ -4,19 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Bike Service</title>
-    <style>
-      .main {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-family: 'Courier New', monospace;
-      }
-    </style>
     <script src="https://unpkg.com/htmx.org@2.0.0-alpha1/dist/htmx.min.js"></script>
+    <style>
+        html {
+          font-family: sans-serif;
+        }
+    </style>
 </head>
 <body>
-<div class="main">
-    {% block content %}{% endblock %}
-</div>
+    {% block content %}
+    {% endblock %}
 </body>
 </html>

@@ -1,11 +1,19 @@
 <li id="ride-{{ ride.id }}">
-
-    {{ ride.date }} -
-    <b>{{ ride.distance }} km</b>
-    <form style="display: inline;" hx-get="/ride/{{ ride.id }}/edit" hx-target="#ride-{{ ride.id }}" hx-swap="outerHTML">
-        <input type="submit" value="EDI">
-    </form>
-    <form style="display: inline;" hx-delete="/ride/{{ ride.id }}" hx-target="#ride-{{ ride.id }}" hx-swap="delete">
-        <input type="submit" value="DEL">
-    </form>
+    <div>
+        {{ ride.date }} -
+        <b>{{ ride.distance }} km</b>
+        <form style="display: inline;" hx-get="/ride/{{ ride.id }}/edit" hx-target="#ride-{{ ride.id }}" hx-swap="outerHTML">
+            <input type="submit" value="EDI">
+        </form>
+        <form style="display: inline;" hx-delete="/ride/{{ ride.id }}" hx-target="#ride-{{ ride.id }}" hx-swap="delete">
+            <input type="submit" value="DEL">
+        </form>
+    </div>
+    <div>
+    {% match ride.description %}
+        {% when Some with (description) %}
+            {{ description }}
+        {% when _ %}
+    {% endmatch %}
+    </div>
 </li>

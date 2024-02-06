@@ -4,6 +4,7 @@ use crate::models::rides::{
     RawRidesToModelsExt, RideCreate, RideEdit, RideModel, RideModelsTotalExt, RideRaw,
 };
 use crate::templates::{RideEditTemplate, RideTemplate, TotalTemplate};
+use crate::utils::some_text_or_none;
 use askama::Template;
 use axum::extract::{Path, State};
 use axum::http::{HeaderMap, StatusCode};
@@ -29,13 +30,15 @@ async fn create_ride(
         id: -1,
         date: payload.date,
         distance: payload.distance,
+        description: some_text_or_none(payload.description),
     };
     let raw = RideRaw::from(model.clone());
 
     model.id = sqlx::query!(
-        "INSERT INTO rides (date, distance) VALUES (?, ?)",
+        "INSERT INTO rides (date, distance, description) VALUES (?, ?, ?)",
         raw.date,
-        raw.distance
+        raw.distance,
+        raw.description
     )
     .execute(&pool)
     .await?
@@ -55,13 +58,15 @@ async fn update_ride(
         id,
         date: payload.date,
         distance: payload.distance,
+        description: some_text_or_none(payload.description),
     };
     let raw = RideRaw::from(model.clone());
 
     let _ = sqlx::query!(
-        "UPDATE rides SET date = ?, distance = ? WHERE id = ?",
+        "UPDATE rides SET date = ?, distance = ?, description = ? WHERE id = ?",
         raw.date,
         raw.distance,
+        raw.description,
         raw.id
     )
     .execute(&pool)

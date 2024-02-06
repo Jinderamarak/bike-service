@@ -6,6 +6,7 @@ pub struct RideRaw {
     pub id: i64,
     pub date: String,
     pub distance: f64,
+    pub description: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -13,6 +14,7 @@ pub struct RideModel {
     pub id: i64,
     pub date: NaiveDate,
     pub distance: f64,
+    pub description: Option<String>,
 }
 
 impl TryFrom<RideRaw> for RideModel {
@@ -23,6 +25,7 @@ impl TryFrom<RideRaw> for RideModel {
             id: raw.id,
             date,
             distance: raw.distance,
+            description: raw.description,
         })
     }
 }
@@ -33,6 +36,7 @@ impl From<RideModel> for RideRaw {
             id: model.id,
             date: model.date.format("%Y-%m-%d").to_string(),
             distance: model.distance,
+            description: model.description,
         }
     }
 }
@@ -67,10 +71,12 @@ where
 pub struct RideCreate {
     pub date: NaiveDate,
     pub distance: f64,
+    pub description: String,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct RideEdit {
     pub date: NaiveDate,
     pub distance: f64,
+    pub description: String,
 }

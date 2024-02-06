@@ -4,6 +4,7 @@ mod headers;
 mod models;
 mod routes;
 mod templates;
+mod utils;
 
 use crate::config::Configuration;
 use crate::routes::main_router;
