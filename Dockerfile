@@ -1,4 +1,4 @@
-FROM rust:latest as builder
+FROM rust:1.75.0 as builder
 RUN cargo install sqlx-cli --no-default-features --features sqlite
 
 WORKDIR /build
@@ -14,7 +14,7 @@ RUN sqlx migrate run
 
 RUN cargo build --release
 
-FROM rust:latest as runtime
+FROM rust:1.75.0 as runtime
 
 WORKDIR /app
 COPY --from=builder /build/target/release/bike-service .
