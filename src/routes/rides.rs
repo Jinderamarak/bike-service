@@ -2,7 +2,7 @@ use crate::error::AppResult;
 use crate::headers::HtmxHeaderMap;
 use crate::models::extensions::rides::{RawRidesToModelsExt, RideModelsTotalExt};
 use crate::models::rides::{RideCreate, RideEdit, RideModel, RideRaw};
-use crate::templates::{RideEditTemplate, RideTemplate, RideTotalTemplate};
+use crate::templates::{RideEditTemplate, RideGroupTemplate, RideTemplate, RideTotalTemplate};
 use crate::utils::some_text_or_none;
 use askama::Template;
 use axum::extract::{Path, State};
@@ -25,7 +25,7 @@ async fn create_ride(
     State(pool): State<SqlitePool>,
     Form(payload): Form<RideCreate>,
 ) -> AppResult<(StatusCode, HeaderMap, Html<String>)> {
-    let mut model = RideModel {
+    let model = RideModel {
         id: -1,
         date: payload.date,
         distance: payload.distance,
@@ -33,18 +33,32 @@ async fn create_ride(
     };
     let raw = RideRaw::from(model.clone());
 
-    model.id = sqlx::query!(
+    let _ = sqlx::query!(
         "INSERT INTO rides (date, distance, description) VALUES (?, ?, ?)",
         raw.date,
         raw.distance,
         raw.description
     )
     .execute(&pool)
-    .await?
-    .last_insert_rowid();
+    .await?;
 
-    let content = RideTemplate { ride: model }.render()?;
-    let headers = HeaderMap::new().with_trigger("reload-total");
+    let date = model.date.format("%Y-%m").to_string();
+    let starts_with = format!("{date}%");
+    let rides = sqlx::query_as!(
+        RideRaw,
+        "SELECT * FROM rides WHERE date LIKE ? ORDER BY date ASC",
+        starts_with
+    )
+    .fetch_all(&pool)
+    .await?
+    .to_models()?;
+
+    let retarget = format!("#rides-{date}");
+    let total = rides.iter().total_distance();
+    let content = RideGroupTemplate { date, rides, total }.render()?;
+    let headers = HeaderMap::new()
+        .with_trigger("reload-total")
+        .with_retarget(&retarget);
     Ok((StatusCode::CREATED, headers, Html(content)))
 }
 

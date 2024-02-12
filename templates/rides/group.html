@@ -1,9 +1,9 @@
-<li>
+<li id="rides-{{ date }}">
     <h2>
         {{ date }}
         <small> - {{ total }} km</small>
     </h2>
-    <ul id="rides-{{ date }}">
+    <ul>
         {% for ride in rides %}
         {% include "rides/ride.html" %}
         {% endfor %}
