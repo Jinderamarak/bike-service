@@ -1,8 +1,7 @@
 use crate::error::AppResult;
 use crate::headers::HtmxHeaderMap;
-use crate::models::rides::{
-    RawRidesToModelsExt, RideCreate, RideEdit, RideModel, RideModelsTotalExt, RideRaw,
-};
+use crate::models::extensions::rides::{RawRidesToModelsExt, RideModelsTotalExt};
+use crate::models::rides::{RideCreate, RideEdit, RideModel, RideRaw};
 use crate::templates::{RideEditTemplate, RideTemplate, TotalTemplate};
 use crate::utils::some_text_or_none;
 use askama::Template;

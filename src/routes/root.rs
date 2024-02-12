@@ -1,5 +1,6 @@
 use crate::error::AppResult;
-use crate::models::rides::{RawRidesToModelsExt, RideModelsTotalExt, RideRaw};
+use crate::models::extensions::rides::{RawRidesToModelsExt, RideModelsTotalExt};
+use crate::models::rides::RideRaw;
 use crate::templates::{IndexTemplate, TotalTemplate};
 use askama::Template;
 use axum::extract::State;
