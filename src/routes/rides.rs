@@ -1,18 +1,18 @@
 use crate::error::AppResult;
 use crate::headers::HtmxHeaderMap;
-use crate::models::extensions::rides::{RawRidesToModelsExt, RideModelsTotalExt};
-use crate::models::rides::{RideCreate, RideEdit, RideModel, RideRaw};
+use crate::models::extensions::rides::RideModelsTotalExt;
+use crate::models::rides::{RideCreate, RideUpdate};
+use crate::repositories::rides::RideRepository;
+use crate::state::AppState;
 use crate::templates::{RideEditTemplate, RideGroupTemplate, RideTemplate, RideTotalTemplate};
-use crate::utils::some_text_or_none;
 use askama::Template;
 use axum::extract::{Path, State};
 use axum::http::{HeaderMap, StatusCode};
 use axum::response::Html;
 use axum::routing::{delete, get, post, put};
 use axum::{Form, Router};
-use sqlx::SqlitePool;
 
-pub fn mileage_router() -> Router<SqlitePool> {
+pub fn mileage_router() -> Router<AppState> {
     Router::new()
         .route("/", post(create_ride))
         .route("/:id/edit", get(update_ride_start))
@@ -22,36 +22,12 @@ pub fn mileage_router() -> Router<SqlitePool> {
 }
 
 async fn create_ride(
-    State(pool): State<SqlitePool>,
+    State(repo): State<RideRepository>,
     Form(payload): Form<RideCreate>,
 ) -> AppResult<(StatusCode, HeaderMap, Html<String>)> {
-    let model = RideModel {
-        id: -1,
-        date: payload.date,
-        distance: payload.distance,
-        description: some_text_or_none(payload.description),
-    };
-    let raw = RideRaw::from(model.clone());
-
-    let _ = sqlx::query!(
-        "INSERT INTO rides (date, distance, description) VALUES (?, ?, ?)",
-        raw.date,
-        raw.distance,
-        raw.description
-    )
-    .execute(&pool)
-    .await?;
-
+    let model = repo.create(&payload).await?;
     let date = model.date.format("%Y-%m").to_string();
-    let starts_with = format!("{date}%");
-    let rides = sqlx::query_as!(
-        RideRaw,
-        "SELECT * FROM rides WHERE date LIKE ? ORDER BY date ASC",
-        starts_with
-    )
-    .fetch_all(&pool)
-    .await?
-    .to_models()?;
+    let rides = repo.get_group(&date).await?;
 
     let retarget = format!("#rides-{date}");
     let total = rides.iter().total_distance();
@@ -63,27 +39,11 @@ async fn create_ride(
 }
 
 async fn update_ride(
-    State(pool): State<SqlitePool>,
+    State(repo): State<RideRepository>,
     Path(id): Path<i64>,
-    Form(payload): Form<RideEdit>,
+    Form(payload): Form<RideUpdate>,
 ) -> AppResult<(HeaderMap, Html<String>)> {
-    let model = RideModel {
-        id,
-        date: payload.date,
-        distance: payload.distance,
-        description: some_text_or_none(payload.description),
-    };
-    let raw = RideRaw::from(model.clone());
-
-    let _ = sqlx::query!(
-        "UPDATE rides SET date = ?, distance = ?, description = ? WHERE id = ?",
-        raw.date,
-        raw.distance,
-        raw.description,
-        raw.id
-    )
-    .execute(&pool)
-    .await?;
+    let model = repo.update_one(id, &payload).await?;
 
     let content = RideTemplate { ride: model }.render()?;
     let headers = HeaderMap::new().with_trigger("reload-total");
@@ -91,37 +51,28 @@ async fn update_ride(
 }
 
 async fn update_ride_start(
-    State(pool): State<SqlitePool>,
+    State(repo): State<RideRepository>,
     Path(id): Path<i64>,
 ) -> AppResult<Html<String>> {
-    let raw = sqlx::query_as!(RideRaw, "SELECT * FROM rides WHERE id = ?", id)
-        .fetch_one(&pool)
-        .await?;
-    let model = RideModel::try_from(raw)?;
+    let model = repo.get_one(id).await?;
 
     let content = RideEditTemplate { ride: model }.render()?;
     Ok(Html(content))
 }
 
 async fn delete_ride(
-    State(pool): State<SqlitePool>,
+    State(repo): State<RideRepository>,
     Path(id): Path<i64>,
 ) -> AppResult<(HeaderMap, Html<String>)> {
-    let _ = sqlx::query!("DELETE FROM rides WHERE id = ?", id)
-        .execute(&pool)
-        .await?;
+    let _ = repo.delete_one(id).await?;
 
     let headers = HeaderMap::new().with_trigger("reload-total");
     Ok((headers, Html("".to_string())))
 }
 
-async fn ride_total_distance(State(pool): State<SqlitePool>) -> AppResult<Html<String>> {
-    let total = sqlx::query_as!(RideRaw, "SELECT * FROM rides")
-        .fetch_all(&pool)
-        .await?
-        .to_models()?
-        .iter()
-        .total_distance();
+async fn ride_total_distance(State(repo): State<RideRepository>) -> AppResult<Html<String>> {
+    let models = repo.get_all().await?;
+    let total = models.iter().total_distance();
 
     let content = RideTotalTemplate { total }.render().unwrap();
     Ok(Html(content))

@@ -1,11 +1,12 @@
+use crate::state::AppState;
+use axum::routing::get;
 use axum::Router;
-use sqlx::SqlitePool;
 
 mod rides;
 mod root;
 
-pub fn main_router() -> Router<SqlitePool> {
+pub fn main_router() -> Router<AppState> {
     Router::new()
-        .nest("/", root::root_router())
+        .route("/", get(root::get_root))
         .nest("/ride", rides::mileage_router())
 }

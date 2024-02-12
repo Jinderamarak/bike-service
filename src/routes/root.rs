@@ -1,25 +1,15 @@
 use crate::error::AppResult;
-use crate::models::extensions::rides::{RawRidesToModelsExt, RideModelsTotalExt};
-use crate::models::rides::RideRaw;
+use crate::models::extensions::rides::RideModelsTotalExt;
+use crate::repositories::rides::RideRepository;
 use crate::templates::{IndexTemplate, RideGroupTemplate, RideTotalTemplate};
 use askama::Template;
 use axum::extract::State;
 use axum::response::Html;
-use axum::routing::get;
-use axum::Router;
 use chrono::Utc;
 use itertools::Itertools;
-use sqlx::SqlitePool;
 
-pub fn root_router() -> Router<SqlitePool> {
-    Router::new().route("/", get(get_root))
-}
-
-async fn get_root(State(pool): State<SqlitePool>) -> AppResult<Html<String>> {
-    let models = sqlx::query_as!(RideRaw, "SELECT * FROM rides ORDER BY date ASC")
-        .fetch_all(&pool)
-        .await?
-        .to_models()?;
+pub async fn get_root(State(repo): State<RideRepository>) -> AppResult<Html<String>> {
+    let models = repo.get_all().await?;
     let total = models.iter().total_distance();
 
     let grouped = models

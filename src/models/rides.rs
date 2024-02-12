@@ -49,7 +49,7 @@ pub struct RideCreate {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct RideEdit {
+pub struct RideUpdate {
     pub date: NaiveDate,
     pub distance: f64,
     pub description: String,

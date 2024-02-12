@@ -2,7 +2,9 @@ mod config;
 mod error;
 mod headers;
 mod models;
+mod repositories;
 mod routes;
+mod state;
 mod templates;
 mod utils;
 
@@ -12,6 +14,7 @@ use clap::Parser;
 use sqlx::SqlitePool;
 use tokio::net;
 
+use crate::state::AppState;
 #[cfg(debug_assertions)]
 use dotenv::dotenv;
 
@@ -29,7 +32,8 @@ async fn main() -> anyhow::Result<()> {
     // initialize tracing
     // tracing_subscriber::fmt::init();
 
-    let app = main_router().with_state(pool);
+    let state = AppState::new(pool);
+    let app = main_router().with_state(state);
 
     let socket_addr = config.socket_address();
     let listener = net::TcpListener::bind(socket_addr).await?;
