@@ -11,19 +11,19 @@ pub struct IndexTemplate {
 }
 
 #[derive(Template)]
-#[template(path = "ride.html")]
+#[template(path = "rides/ride.html")]
 pub struct RideTemplate {
     pub ride: RideModel,
 }
 
 #[derive(Template)]
-#[template(path = "ride-edit.html")]
+#[template(path = "rides/edit.html")]
 pub struct RideEditTemplate {
     pub ride: RideModel,
 }
 
 #[derive(Template)]
-#[template(path = "total.html")]
+#[template(path = "rides/total.html")]
 pub struct TotalTemplate {
     pub total: f64,
 }

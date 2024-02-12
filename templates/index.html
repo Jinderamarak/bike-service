@@ -8,7 +8,7 @@
         <h2>{{ date }}</h2>
         <ul id="rides-{{ date }}">
             {% for ride in rides %}
-            {% include "ride.html" %}
+            {% include "rides/ride.html" %}
             {% endfor %}
         </ul>
     </li>
@@ -30,7 +30,7 @@
 </form>
 
 {% let total = total.total %}
-{% include "total.html" %}
+{% include "rides/total.html" %}
 
 {% endblock %}
 
