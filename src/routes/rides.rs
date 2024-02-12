@@ -33,8 +33,8 @@ async fn create_ride(
     let total = rides.iter().total_distance();
     let content = RideGroupTemplate { date, rides, total }.render()?;
     let headers = HeaderMap::new()
-        .with_trigger("reload-total")
-        .with_retarget(&retarget);
+        .with_trigger("reload-total")?
+        .with_retarget(&retarget)?;
     Ok((StatusCode::CREATED, headers, Html(content)))
 }
 
@@ -46,7 +46,7 @@ async fn update_ride(
     let model = repo.update_one(id, &payload).await?;
 
     let content = RideTemplate { ride: model }.render()?;
-    let headers = HeaderMap::new().with_trigger("reload-total");
+    let headers = HeaderMap::new().with_trigger("reload-total")?;
     Ok((headers, Html(content)))
 }
 
@@ -66,7 +66,7 @@ async fn delete_ride(
 ) -> AppResult<(HeaderMap, Html<String>)> {
     let _ = repo.delete_one(id).await?;
 
-    let headers = HeaderMap::new().with_trigger("reload-total");
+    let headers = HeaderMap::new().with_trigger("reload-total")?;
     Ok((headers, Html("".to_string())))
 }
 
