@@ -3,15 +3,9 @@
 {% block content %}
 
 <ul id="rides">
-    {% for (date, rides) in rides %}
-    <li>
-        <h2>{{ date }}</h2>
-        <ul id="rides-{{ date }}">
-            {% for ride in rides %}
-            {% include "rides/ride.html" %}
-            {% endfor %}
-        </ul>
-    </li>
+    {% for group in groups %}
+    {% let RideGroupTemplate { date, rides, total }  = group %}
+    {% include "rides/group.html" %}
     {% endfor %}
     <li>
         <h2>New</h2>

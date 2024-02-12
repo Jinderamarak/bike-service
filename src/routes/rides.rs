@@ -2,7 +2,7 @@ use crate::error::AppResult;
 use crate::headers::HtmxHeaderMap;
 use crate::models::extensions::rides::{RawRidesToModelsExt, RideModelsTotalExt};
 use crate::models::rides::{RideCreate, RideEdit, RideModel, RideRaw};
-use crate::templates::{RideEditTemplate, RideTemplate, TotalTemplate};
+use crate::templates::{RideEditTemplate, RideTemplate, RideTotalTemplate};
 use crate::utils::some_text_or_none;
 use askama::Template;
 use axum::extract::{Path, State};
@@ -109,6 +109,6 @@ async fn ride_total_distance(State(pool): State<SqlitePool>) -> AppResult<Html<S
         .iter()
         .total_distance();
 
-    let content = TotalTemplate { total }.render().unwrap();
+    let content = RideTotalTemplate { total }.render().unwrap();
     Ok(Html(content))
 }

@@ -6,8 +6,16 @@ use chrono::NaiveDate;
 #[template(path = "index.html")]
 pub struct IndexTemplate {
     pub today: NaiveDate,
-    pub rides: Vec<(String, Vec<RideModel>)>,
-    pub total: TotalTemplate,
+    pub groups: Vec<RideGroupTemplate>,
+    pub total: RideTotalTemplate,
+}
+
+#[derive(Template)]
+#[template(path = "rides/group.html")]
+pub struct RideGroupTemplate {
+    pub date: String,
+    pub rides: Vec<RideModel>,
+    pub total: f64,
 }
 
 #[derive(Template)]
@@ -24,6 +32,6 @@ pub struct RideEditTemplate {
 
 #[derive(Template)]
 #[template(path = "rides/total.html")]
-pub struct TotalTemplate {
+pub struct RideTotalTemplate {
     pub total: f64,
 }
