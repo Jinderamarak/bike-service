@@ -1,13 +1,40 @@
-<li id="ride-{{ ride.id }}">
-    <form style="display: inline;" hx-put="/ride/{{ ride.id }}" hx-target="#ride-{{ ride.id }}" hx-swap="outerHTML">
-        <input name="date" type="date" value="{{ ride.date }}">
-        <input name="distance" type="number" step="0.001" value="{{ ride.distance }}">
-        {% match ride.description %}
-            {% when Some with (description) %}
-                <input name="description" type="text" value="{{ description }}">
-            {% when None %}
-                <input name="description" type="text" placeholder="No description">
-        {% endmatch %}
-        <input type="submit" value="SAVE">
-    </form>
-</li>
+<dialog id="ride-dialog-{{ ride.id }}" open
+        class="bg-translucent fixed w-screen h-screen inset-0 place-content-center" onclose="this.innerHTML = ''">
+    <div class="flex flex-col bg-white rounded-lg border w-96 p-2 gap-2" style="max-width: 100vw">
+        <h2 class="text-lg p-2">Edit Ride from {{ ride.date }}</h2>
+        <form hx-put="/ride/{{ ride.id }}" hx-target="#ride-{{ ride.id }}" hx-swap="outerHTML"
+              class="flex flex-col gap-2">
+            <label class="w-full flex flex-row p-2">
+                <span class="grow">Date</span>
+                <input name="date" type="date" value="{{ ride.date }}">
+            </label>
+            <label class="w-full flex flex-row p-2 gap-4">
+                <span>Distance</span>
+                <input name="distance" type="number" step="0.001" placeholder="[km]" value="{{ ride.distance }}"
+                       class="grow text-right">
+            </label>
+            <label class="w-full flex flex-col py-2 gap-2">
+                <span class="sr-only">Description</span>
+                <textarea name="description" placeholder="Description [optional]"
+                          class="min-h-8 border rounded-lg p-2">
+                    {%- match ride.description -%}
+                    {%- when Some with (description) -%}
+                    {{- description -}}
+                    {%- when _ -%}
+                    {%- endmatch -%}
+                </textarea>
+            </label>
+            <input type="submit" value="Save"
+                   class="rounded-lg bg-neutral-900 text-white hover:bg-neutral-600 font-bold py-2 cursor-pointer transition-colors">
+        </form>
+        <form method="dialog" class="flex flex-col">
+            <input type="submit" formmethod="dialog" value="Close"
+                   class="rounded-lg font-bold py-2 cursor-pointer border hover:bg-neutral-200 transition-colors">
+        </form>
+        <form hx-delete="/ride/{{ ride.id }}" hx-target="#ride-{{ ride.id }}" hx-swap="delete"
+              class="flex flex-col mt-4">
+            <input type="submit" value="Remove"
+                   class="rounded-lg bg-red-700 text-white hover:bg-red-900 font-bold py-2 cursor-pointer transition-colors">
+        </form>
+    </div>
+</dialog>

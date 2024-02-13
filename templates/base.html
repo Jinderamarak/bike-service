@@ -2,17 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Bike Service</title>
     <script src="https://unpkg.com/htmx.org@2.0.0-alpha1/dist/htmx.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        html {
-          font-family: sans-serif;
-        }
+      dialog[open] {
+        display: grid;
+      }
+
+      .bg-translucent {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
     </style>
 </head>
-<body>
+<body class="flex flex-col w-full min-h-screen">
+<header class="flex items-center h-16 px-4 border-b shrink-0">
+    {% block header %}
+    {% endblock %}
+</header>
+<main class="flex flex-col w-full">
     {% block content %}
     {% endblock %}
+</main>
 </body>
 </html>

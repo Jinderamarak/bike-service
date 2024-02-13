@@ -1,16 +1,17 @@
-<li>
-    <h2>
-        {{ date }}
-
-        <small>
-            -
-            <span hx-get="/ride/group/{{ date }}/total" hx-swap="innerHTML" hx-trigger="reload-total-{{ date }} from:body">
+<li class="rounded-lg border pb-2">
+    <h3 class="flex flex-row text-lg p-4">
+        <span class="grow font-bold">
+            {{ date }}
+        </span>
+        <span class="flex flex-row gap-2">
+            <b hx-get="/ride/group/{{ date }}/total" hx-swap="innerHTML"
+               hx-trigger="reload-total-{{ date }} from:body">
                 {% include "rides/total.html" %}
-            </span>
+            </b>
             km
-        </small>
-    </h2>
-    <ul id="rides-{{ date }}">
+        </span>
+    </h3>
+    <ul id="rides-{{ date }}" class="flex flex-col">
         {% for ride in rides %}
         {% include "rides/ride.html" %}
         {% endfor %}
