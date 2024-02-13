@@ -12,7 +12,7 @@ COPY ./Cargo.lock ./Cargo.lock
 
 RUN cargo build --release
 
-FROM rust:latest-slim as runtime
+FROM rust:slim as runtime
 
 WORKDIR /app
 COPY --from=builder /build/target/release/bike-service .
