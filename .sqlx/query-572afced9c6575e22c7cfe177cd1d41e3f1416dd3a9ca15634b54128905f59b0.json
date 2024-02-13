@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "SELECT * FROM rides ORDER BY date ASC",
+  "query": "SELECT * FROM rides ORDER BY date DESC",
   "describe": {
     "columns": [
       {
@@ -34,5 +34,5 @@
       true
     ]
   },
-  "hash": "4a793f8dc0362bf988486717b967d1c616cea68c21760120822cb847f91debc4"
+  "hash": "572afced9c6575e22c7cfe177cd1d41e3f1416dd3a9ca15634b54128905f59b0"
 }

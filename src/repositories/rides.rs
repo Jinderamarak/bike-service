@@ -14,7 +14,7 @@ impl RideRepository {
     }
 
     pub async fn get_all(&self) -> AppResult<Vec<RideModel>> {
-        let models = sqlx::query_as!(RideRaw, "SELECT * FROM rides ORDER BY date ASC")
+        let models = sqlx::query_as!(RideRaw, "SELECT * FROM rides ORDER BY date DESC")
             .fetch_all(&self.0)
             .await?
             .to_models()?;
@@ -25,7 +25,7 @@ impl RideRepository {
         let starts_with = format!("{date}%");
         let models = sqlx::query_as!(
             RideRaw,
-            "SELECT * FROM rides WHERE date LIKE ? ORDER BY date ASC",
+            "SELECT * FROM rides WHERE date LIKE ? ORDER BY date DESC",
             starts_with
         )
         .fetch_all(&self.0)

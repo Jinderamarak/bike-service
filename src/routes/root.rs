@@ -17,6 +17,7 @@ pub async fn get_root(State(repo): State<RideRepository>) -> AppResult<Html<Stri
         .group_by(|ride| ride.get_group_name())
         .into_iter()
         .sorted_by_key(|(key, _)| key.clone())
+        .rev()
         .map(|(key, group)| (key, group.collect::<Vec<_>>()))
         .map(|(date, rides)| {
             let total = rides.iter().total_distance();
