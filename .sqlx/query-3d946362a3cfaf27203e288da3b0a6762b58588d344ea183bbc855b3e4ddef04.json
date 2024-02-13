@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "SELECT * FROM rides",
+  "query": "SELECT * FROM rides WHERE date LIKE ? ORDER BY date ASC",
   "describe": {
     "columns": [
       {
@@ -25,7 +25,7 @@
       }
     ],
     "parameters": {
-      "Right": 0
+      "Right": 1
     },
     "nullable": [
       false,
@@ -34,5 +34,5 @@
       true
     ]
   },
-  "hash": "d447ab6f82c301389731f740229ff90eae5768319b669b8610cf11a6a904871f"
+  "hash": "3d946362a3cfaf27203e288da3b0a6762b58588d344ea183bbc855b3e4ddef04"
 }
