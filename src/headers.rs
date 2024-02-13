@@ -6,6 +6,7 @@ use std::str::FromStr;
 pub trait HtmxHeaderMap: Sized {
     fn with_refresh(self) -> Self;
     fn with_retarget(self, target: &str) -> AppResult<Self>;
+    fn with_reswap(self, swap: &str) -> AppResult<Self>;
     fn with_trigger(self, event: &str) -> AppResult<Self>;
 }
 
@@ -26,6 +27,15 @@ impl HtmxHeaderMap for HeaderMap {
             HeaderName::from_str("HX-Retarget")
                 .expect("Expected \"HX-Retarget\" to be valid header name"),
             target.parse().map_err(|e| anyhow::Error::from(e))?,
+        );
+        Ok(self)
+    }
+
+    fn with_reswap(mut self, swap: &str) -> AppResult<Self> {
+        self.insert(
+            HeaderName::from_str("HX-Reswap")
+                .expect("Expected \"HX-Reswap\" to be valid header name"),
+            swap.parse().map_err(|e| anyhow::Error::from(e))?,
         );
         Ok(self)
     }

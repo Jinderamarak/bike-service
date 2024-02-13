@@ -33,6 +33,18 @@ impl RideRepository {
         Ok(models)
     }
 
+    pub async fn get_group_size(&self, date: &str) -> AppResult<i32> {
+        let starts_with = format!("{date}%");
+        let count = sqlx::query!(
+            "SELECT COUNT(*) as count FROM rides WHERE date LIKE ?",
+            starts_with
+        )
+        .fetch_one(&self.0)
+        .await?
+        .count;
+        Ok(count)
+    }
+
     pub async fn get_one(&self, id: i64) -> AppResult<RideModel> {
         let model = sqlx::query_as!(RideRaw, "SELECT * FROM rides WHERE id = ?", id)
             .fetch_one(&self.0)

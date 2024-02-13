@@ -28,15 +28,29 @@ async fn create_ride(
 ) -> AppResult<(StatusCode, HeaderMap, Html<String>)> {
     let model = repo.create(&payload).await?;
     let date = model.get_group_name();
-    let rides = repo.get_group(&date).await?;
+    let group_size = repo.get_group_size(&date).await?;
 
-    let retarget = format!("#rides-{date}");
-    let total = rides.iter().total_distance();
-    let content = RideGroupTemplate { date, rides, total }.render()?;
-    let headers = HeaderMap::new()
-        .with_trigger("reload-total")?
-        .with_retarget(&retarget)?;
-    Ok((StatusCode::CREATED, headers, Html(content)))
+    if group_size == 1 {
+        let retarget = "#rides".to_string();
+        let total = model.distance;
+        let content = RideGroupTemplate {
+            date,
+            rides: vec![model],
+            total,
+        }
+        .render()?;
+        let headers = HeaderMap::new()
+            .with_trigger("reload-total")?
+            .with_retarget(&retarget)?;
+        Ok((StatusCode::CREATED, headers, Html(content)))
+    } else {
+        let retarget = format!("#rides-{date}");
+        let content = RideTemplate { ride: model }.render()?;
+        let headers = HeaderMap::new()
+            .with_trigger("reload-total")?
+            .with_retarget(&retarget)?;
+        Ok((StatusCode::CREATED, headers, Html(content)))
+    }
 }
 
 async fn update_ride(
@@ -44,14 +58,19 @@ async fn update_ride(
     Path(id): Path<i64>,
     Form(payload): Form<RideUpdate>,
 ) -> AppResult<(HeaderMap, Html<String>)> {
-    let model = repo.update_one(id, &payload).await?;
-    let date = model.get_group_name();
+    let old_model = repo.get_one(id).await?;
+    let new_model = repo.update_one(id, &payload).await?;
 
-    let trigger_group = format!("reload-total-{date}");
-    let content = RideTemplate { ride: model }.render()?;
+    let old_date = old_model.get_group_name();
+    let new_date = new_model.get_group_name();
+
+    let trigger_old = format!("reload-total-{old_date}");
+    let trigger_new = format!("reload-total-{new_date}");
+    let content = RideTemplate { ride: new_model }.render()?;
     let headers = HeaderMap::new()
         .with_trigger("reload-total")?
-        .with_trigger(&trigger_group)?;
+        .with_trigger(&trigger_old)?
+        .with_trigger(&trigger_new)?;
     Ok((headers, Html(content)))
 }
 

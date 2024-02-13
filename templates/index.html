@@ -7,12 +7,8 @@
     {% let RideGroupTemplate { date, rides, total }  = group %}
     {% include "rides/group.html" %}
     {% endfor %}
-    <li>
-        <h2>New</h2>
-        <ul id="rides-new"></ul>
-    </li>
 </ul>
-<form hx-post="/ride" hx-target="#rides-new" hx-swap="outerHTML">
+<form hx-post="/ride" hx-swap="beforeend">
     <div>
         <input name="date" type="date" value="{{ today }}">
         <input name="distance" type="number" step="0.001" placeholder="Distance [km]">
@@ -22,7 +18,6 @@
         <input type="submit" value="Add">
     </div>
 </form>
-
 
 <p>
     <b>
