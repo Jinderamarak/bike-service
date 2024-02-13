@@ -31,7 +31,7 @@ impl AppError {
     #[cfg(not(debug_assertions))]
     fn message(&self) -> String {
         match self {
-            AppError::NotFound(e) => format("Not Found: {}", e),
+            AppError::NotFound(e) => format!("Not Found: {}", e),
             _ => "Internal Server Error".to_string(),
         }
     }
