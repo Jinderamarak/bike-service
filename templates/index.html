@@ -23,8 +23,16 @@
     </div>
 </form>
 
-{% let total = total.total %}
-{% include "rides/total.html" %}
+
+<p>
+    <b>
+        Total distance:
+        <span hx-get="/ride/total" hx-swap="innerHTML" hx-trigger="reload-total from:body">
+            {% include "rides/total.html" %}
+        </span>
+        km
+    </b>
+</p>
 
 {% endblock %}
 

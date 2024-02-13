@@ -1,7 +1,7 @@
 use crate::error::AppResult;
-use crate::models::extensions::rides::RideModelsTotalExt;
+use crate::models::extensions::rides::{RideModelExt, RideModelsTotalExt};
 use crate::repositories::rides::RideRepository;
-use crate::templates::{IndexTemplate, RideGroupTemplate, RideTotalTemplate};
+use crate::templates::{IndexTemplate, RideGroupTemplate};
 use askama::Template;
 use axum::extract::State;
 use axum::response::Html;
@@ -12,9 +12,9 @@ pub async fn get_root(State(repo): State<RideRepository>) -> AppResult<Html<Stri
     let models = repo.get_all().await?;
     let total = models.iter().total_distance();
 
-    let grouped = models
+    let groups = models
         .into_iter()
-        .group_by(|ride| ride.date.format("%Y-%m").to_string())
+        .group_by(|ride| ride.get_group_name())
         .into_iter()
         .sorted_by_key(|(key, _)| key.clone())
         .map(|(key, group)| (key, group.collect::<Vec<_>>()))
@@ -26,8 +26,8 @@ pub async fn get_root(State(repo): State<RideRepository>) -> AppResult<Html<Stri
 
     let content = IndexTemplate {
         today: Utc::now().date_naive(),
-        groups: grouped,
-        total: RideTotalTemplate { total },
+        groups,
+        total,
     }
     .render()?;
 

@@ -25,3 +25,13 @@ where
         self.map(|i| i.distance).sum()
     }
 }
+
+pub trait RideModelExt {
+    fn get_group_name(&self) -> String;
+}
+
+impl RideModelExt for RideModel {
+    fn get_group_name(&self) -> String {
+        self.date.format("%Y-%m").to_string()
+    }
+}

@@ -7,7 +7,7 @@ use chrono::NaiveDate;
 pub struct IndexTemplate {
     pub today: NaiveDate,
     pub groups: Vec<RideGroupTemplate>,
-    pub total: RideTotalTemplate,
+    pub total: f64,
 }
 
 #[derive(Template)]

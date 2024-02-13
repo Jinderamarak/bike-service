@@ -1,7 +1,14 @@
 <li id="rides-{{ date }}">
     <h2>
         {{ date }}
-        <small> - {{ total }} km</small>
+
+        <small>
+            -
+            <span hx-get="/ride/group/{{ date }}/total" hx-swap="innerHTML" hx-trigger="reload-total-{{ date }} from:body">
+                {% include "rides/total.html" %}
+            </span>
+            km
+        </small>
     </h2>
     <ul>
         {% for ride in rides %}
