@@ -45,9 +45,11 @@ async fn create_ride(
         Ok((StatusCode::CREATED, headers, Html(content)))
     } else {
         let retarget = format!("#rides-{date}");
+        let trigger = format!("reload-total-{date}");
         let content = RideTemplate { ride: model }.render()?;
         let headers = HeaderMap::new()
             .with_trigger("reload-total")?
+            .with_trigger(&trigger)?
             .with_retarget(&retarget)?;
         Ok((StatusCode::CREATED, headers, Html(content)))
     }
