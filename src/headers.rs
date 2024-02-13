@@ -1,7 +1,9 @@
-use crate::error::{AppError, AppResult};
+use std::str::FromStr;
+
 use axum::http::header::InvalidHeaderValue;
 use axum::http::{HeaderMap, HeaderName};
-use std::str::FromStr;
+
+use crate::error::{AppError, AppResult};
 
 pub trait HtmxHeaderMap: Sized {
     fn with_refresh(self) -> Self;

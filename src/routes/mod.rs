@@ -1,6 +1,7 @@
-use crate::state::AppState;
 use axum::routing::get;
 use axum::Router;
+
+use crate::state::AppState;
 
 mod rides;
 mod root;

@@ -1,3 +1,10 @@
+use askama::Template;
+use axum::extract::{Path, State};
+use axum::http::{HeaderMap, StatusCode};
+use axum::response::Html;
+use axum::routing::{delete, get, post, put};
+use axum::{Form, Router};
+
 use crate::error::AppResult;
 use crate::headers::HtmxHeaderMap;
 use crate::models::extensions::rides::{RideModelExt, RideModelsTotalExt};
@@ -5,12 +12,6 @@ use crate::models::rides::{RideCreate, RideUpdate};
 use crate::repositories::rides::RideRepository;
 use crate::state::AppState;
 use crate::templates::{RideEditTemplate, RideGroupTemplate, RideTemplate, RideTotalTemplate};
-use askama::Template;
-use axum::extract::{Path, State};
-use axum::http::{HeaderMap, StatusCode};
-use axum::response::Html;
-use axum::routing::{delete, get, post, put};
-use axum::{Form, Router};
 
 pub fn mileage_router() -> Router<AppState> {
     Router::new()

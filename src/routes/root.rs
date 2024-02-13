@@ -1,12 +1,13 @@
-use crate::error::AppResult;
-use crate::models::extensions::rides::{RideModelExt, RideModelsTotalExt};
-use crate::repositories::rides::RideRepository;
-use crate::templates::{IndexTemplate, RideGroupTemplate};
 use askama::Template;
 use axum::extract::State;
 use axum::response::Html;
 use chrono::Utc;
 use itertools::Itertools;
+
+use crate::error::AppResult;
+use crate::models::extensions::rides::{RideModelExt, RideModelsTotalExt};
+use crate::repositories::rides::RideRepository;
+use crate::templates::{IndexTemplate, RideGroupTemplate};
 
 pub async fn get_root(State(repo): State<RideRepository>) -> AppResult<Html<String>> {
     let models = repo.get_all().await?;

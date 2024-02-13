@@ -1,5 +1,6 @@
-use clap::Parser;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+
+use clap::Parser;
 
 const IPV4_ALL: IpAddr = IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0));
 

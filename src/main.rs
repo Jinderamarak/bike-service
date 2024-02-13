@@ -1,3 +1,13 @@
+use clap::Parser;
+#[cfg(debug_assertions)]
+use dotenv::dotenv;
+use sqlx::SqlitePool;
+use tokio::net;
+
+use crate::config::Configuration;
+use crate::routes::main_router;
+use crate::state::AppState;
+
 mod config;
 mod error;
 mod headers;
@@ -7,16 +17,6 @@ mod routes;
 mod state;
 mod templates;
 mod utils;
-
-use crate::config::Configuration;
-use crate::routes::main_router;
-use clap::Parser;
-use sqlx::SqlitePool;
-use tokio::net;
-
-use crate::state::AppState;
-#[cfg(debug_assertions)]
-use dotenv::dotenv;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

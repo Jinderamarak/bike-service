@@ -1,6 +1,7 @@
-use crate::repositories::rides::RideRepository;
 use axum::extract::FromRef;
 use sqlx::SqlitePool;
+
+use crate::repositories::rides::RideRepository;
 
 #[derive(Clone)]
 pub struct AppState {
