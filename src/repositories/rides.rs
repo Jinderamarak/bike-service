@@ -1,8 +1,9 @@
+use sqlx::SqlitePool;
+
 use crate::error::{AppError, AppResult};
 use crate::models::extensions::rides::RawRidesToModelsExt;
 use crate::models::rides::{RideCreate, RideModel, RideRaw, RideUpdate};
 use crate::utils::some_text_or_none;
-use sqlx::SqlitePool;
 
 #[derive(Clone)]
 pub struct RideRepository(SqlitePool);
@@ -59,7 +60,7 @@ impl RideRepository {
             id: -1,
             date: new.date,
             distance: new.distance,
-            description: some_text_or_none(new.description.clone()),
+            description: some_text_or_none(new.description.trim().to_string()),
         };
         let raw = RideRaw::from(model.clone());
 
@@ -82,7 +83,7 @@ impl RideRepository {
             id,
             date: update.date,
             distance: update.distance,
-            description: some_text_or_none(update.description.clone()),
+            description: some_text_or_none(update.description.trim().to_string()),
         };
         let raw = RideRaw::from(model.clone());
 
