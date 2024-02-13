@@ -1,4 +1,5 @@
-use crate::error::AppResult;
+use crate::error::{AppError, AppResult};
+use axum::http::header::InvalidHeaderValue;
 use axum::http::{HeaderMap, HeaderName};
 use std::str::FromStr;
 
@@ -30,11 +31,22 @@ impl HtmxHeaderMap for HeaderMap {
     }
 
     fn with_trigger(mut self, event: &str) -> AppResult<Self> {
-        self.insert(
-            HeaderName::from_str("HX-Trigger")
-                .expect("Expected \"HX-Trigger\" to be valid header name"),
-            event.parse().map_err(|e| anyhow::Error::from(e))?,
-        );
+        let name = HeaderName::from_str("HX-Trigger")
+            .expect("Expected \"HX-Trigger\" to be valid header name");
+
+        if let Some(events) = self.get(&name) {
+            let events = events.to_str().map_err(|e| anyhow::Error::from(e))?;
+            let events = format!("{events}, {event}");
+            self.insert(name, events.parse()?);
+        } else {
+            self.insert(name, event.parse()?);
+        }
         Ok(self)
+    }
+}
+
+impl From<InvalidHeaderValue> for AppError {
+    fn from(value: InvalidHeaderValue) -> Self {
+        anyhow::Error::from(value).into()
     }
 }
