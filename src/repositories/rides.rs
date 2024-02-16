@@ -1,3 +1,4 @@
+use chrono::Utc;
 use sqlx::SqlitePool;
 
 use crate::error::{AppError, AppResult};
@@ -14,10 +15,13 @@ impl RideRepository {
     }
 
     pub async fn get_all(&self) -> AppResult<Vec<RideModel>> {
-        let models = sqlx::query_as!(RideRaw, "SELECT * FROM rides ORDER BY date DESC")
-            .fetch_all(&self.0)
-            .await?
-            .to_models()?;
+        let models = sqlx::query_as!(
+            RideRaw,
+            "SELECT * FROM rides WHERE deleted_at IS NULL ORDER BY date DESC"
+        )
+        .fetch_all(&self.0)
+        .await?
+        .to_models()?;
         Ok(models)
     }
 
@@ -25,7 +29,7 @@ impl RideRepository {
         let starts_with = format!("{date}%");
         let models = sqlx::query_as!(
             RideRaw,
-            "SELECT * FROM rides WHERE date LIKE ? ORDER BY date DESC",
+            "SELECT * FROM rides WHERE deleted_at IS NULL AND date LIKE ? ORDER BY date DESC",
             starts_with
         )
         .fetch_all(&self.0)
@@ -37,7 +41,7 @@ impl RideRepository {
     pub async fn get_group_size(&self, date: &str) -> AppResult<i32> {
         let starts_with = format!("{date}%");
         let count = sqlx::query!(
-            "SELECT COUNT(*) as count FROM rides WHERE date LIKE ?",
+            "SELECT COUNT(*) as count FROM rides WHERE deleted_at IS NULL AND date LIKE ?",
             starts_with
         )
         .fetch_one(&self.0)
@@ -47,10 +51,14 @@ impl RideRepository {
     }
 
     pub async fn get_one(&self, id: i64) -> AppResult<RideModel> {
-        let model = sqlx::query_as!(RideRaw, "SELECT * FROM rides WHERE id = ?", id)
-            .fetch_one(&self.0)
-            .await?
-            .try_into()?;
+        let model = sqlx::query_as!(
+            RideRaw,
+            "SELECT * FROM rides WHERE deleted_at IS NULL AND id = ?",
+            id
+        )
+        .fetch_one(&self.0)
+        .await?
+        .try_into()?;
 
         Ok(model)
     }
@@ -61,6 +69,7 @@ impl RideRepository {
             date: new.date,
             distance: new.distance,
             description: some_text_or_none(new.description.trim().to_string()),
+            deleted_at: None,
         };
         let raw = RideRaw::from(model.clone());
 
@@ -84,19 +93,20 @@ impl RideRepository {
             date: update.date,
             distance: update.distance,
             description: some_text_or_none(update.description.trim().to_string()),
+            deleted_at: None,
         };
         let raw = RideRaw::from(model.clone());
 
         let affected = sqlx::query!(
-            "UPDATE rides SET date = ?, distance = ?, description = ? WHERE id = ?",
+            "UPDATE rides SET date = ?, distance = ?, description = ? WHERE deleted_at IS NULL AND id = ?",
             raw.date,
             raw.distance,
             raw.description,
             raw.id
         )
-        .execute(&self.0)
-        .await?
-        .rows_affected();
+            .execute(&self.0)
+            .await?
+            .rows_affected();
 
         if affected == 0 {
             return Err(AppError::NotFound(format!("Ride with id {} not found", id)));
@@ -114,10 +124,15 @@ impl RideRepository {
     }
 
     pub async fn delete_one(&self, id: i64) -> AppResult<()> {
-        let affected = sqlx::query!("DELETE FROM rides WHERE id = ?", id)
-            .execute(&self.0)
-            .await?
-            .rows_affected();
+        let now = Utc::now().naive_utc().to_string();
+        let affected = sqlx::query!(
+            "UPDATE rides SET deleted_at = ? WHERE deleted_at IS NULL AND id = ?",
+            now,
+            id
+        )
+        .execute(&self.0)
+        .await?
+        .rows_affected();
 
         if affected == 0 {
             return Err(AppError::NotFound(format!("Ride with id {} not found", id)));

@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "SELECT COUNT(*) as count FROM rides WHERE date LIKE ?",
+  "query": "SELECT COUNT(*) as count FROM rides WHERE deleted_at IS NULL AND date LIKE ?",
   "describe": {
     "columns": [
       {
@@ -16,5 +16,5 @@
       false
     ]
   },
-  "hash": "0daebe8d55174fcb6bf31f4c23c942260d0f7ddb371303d5dbe3e7fd6dfc469e"
+  "hash": "2a237bf5d9cf82c29d111cfc9fb0f2895b16c207182c75fbb36f190b78a4d6b1"
 }

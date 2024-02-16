@@ -1,4 +1,6 @@
-use chrono::NaiveDate;
+use std::str::FromStr;
+
+use chrono::{NaiveDate, NaiveDateTime};
 use serde::Deserialize;
 
 #[derive(Debug, Clone)]
@@ -7,6 +9,7 @@ pub struct RideRaw {
     pub date: String,
     pub distance: f64,
     pub description: Option<String>,
+    pub deleted_at: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -15,17 +18,23 @@ pub struct RideModel {
     pub date: NaiveDate,
     pub distance: f64,
     pub description: Option<String>,
+    pub deleted_at: Option<NaiveDateTime>,
 }
 
 impl TryFrom<RideRaw> for RideModel {
     type Error = anyhow::Error;
     fn try_from(raw: RideRaw) -> Result<Self, Self::Error> {
         let date = NaiveDate::parse_from_str(&raw.date, "%Y-%m-%d")?;
+        let deleted_at = match raw.deleted_at {
+            Some(s) => Some(NaiveDateTime::from_str(&s)?),
+            None => None,
+        };
         Ok(RideModel {
             id: raw.id,
             date,
             distance: raw.distance,
             description: raw.description,
+            deleted_at,
         })
     }
 }
@@ -37,6 +46,7 @@ impl From<RideModel> for RideRaw {
             date: model.date.format("%Y-%m-%d").to_string(),
             distance: model.distance,
             description: model.description,
+            deleted_at: model.deleted_at.map(|dt| dt.to_string()),
         }
     }
 }

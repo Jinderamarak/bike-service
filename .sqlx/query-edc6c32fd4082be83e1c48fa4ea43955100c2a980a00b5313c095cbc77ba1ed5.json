@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "SELECT * FROM rides WHERE id = ?",
+  "query": "SELECT * FROM rides WHERE deleted_at IS NULL ORDER BY date DESC",
   "describe": {
     "columns": [
       {
@@ -22,17 +22,23 @@
         "name": "description",
         "ordinal": 3,
         "type_info": "Text"
+      },
+      {
+        "name": "deleted_at",
+        "ordinal": 4,
+        "type_info": "Text"
       }
     ],
     "parameters": {
-      "Right": 1
+      "Right": 0
     },
     "nullable": [
       false,
       false,
       false,
+      true,
       true
     ]
   },
-  "hash": "26f7c0c2ba3deea0ce5a1730b697647a656a40ca9ed159dd32645b5fdb122c63"
+  "hash": "edc6c32fd4082be83e1c48fa4ea43955100c2a980a00b5313c095cbc77ba1ed5"
 }
