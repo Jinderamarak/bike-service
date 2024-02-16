@@ -1,1 +1,2 @@
-ALTER TABLE rides ADD COLUMN description TEXT;
+ALTER TABLE rides
+    ADD COLUMN description TEXT;
