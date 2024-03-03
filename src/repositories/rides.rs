@@ -3,7 +3,7 @@ use sqlx::SqlitePool;
 
 use crate::error::{AppError, AppResult};
 use crate::models::extensions::rides::RawRidesToModelsExt;
-use crate::models::rides::{RideCreate, RideModel, RideRaw, RideUpdate};
+use crate::models::rides::{RideCreate, RideModel, RideRaw, RideUpdate, DELETED_AT_FORMAT};
 use crate::utils::some_text_or_none;
 
 #[derive(Clone)]
@@ -124,10 +124,46 @@ impl RideRepository {
     }
 
     pub async fn delete_one(&self, id: i64) -> AppResult<()> {
-        let now = Utc::now().naive_utc().to_string();
+        let now = Utc::now().naive_utc().format(DELETED_AT_FORMAT).to_string();
         let affected = sqlx::query!(
             "UPDATE rides SET deleted_at = ? WHERE deleted_at IS NULL AND id = ?",
             now,
+            id
+        )
+        .execute(&self.0)
+        .await?
+        .rows_affected();
+
+        if affected == 0 {
+            return Err(AppError::NotFound(format!("Ride with id {} not found", id)));
+        }
+
+        if affected > 1 {
+            //  Corrupted data, should never happen
+            return Err(AppError::Other(anyhow::anyhow!(
+                "More than one ride with id {}",
+                id
+            )));
+        }
+
+        Ok(())
+    }
+
+    pub async fn get_all_deleted(&self) -> AppResult<Vec<RideModel>> {
+        let models = sqlx::query_as!(
+            RideRaw,
+            "SELECT * FROM rides WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC"
+        )
+        .fetch_all(&self.0)
+        .await?
+        .to_models()?;
+        Ok(models)
+    }
+
+    pub async fn restore_deleted(&self, id: i64) -> AppResult<()> {
+        let affected = sqlx::query!(
+            "UPDATE rides SET deleted_at = ? WHERE deleted_at IS NOT NULL AND id = ?",
+            None::<String>,
             id
         )
         .execute(&self.0)

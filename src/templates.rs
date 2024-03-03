@@ -37,6 +37,12 @@ pub struct RideTotalTemplate {
     pub total: f64,
 }
 
+#[derive(Template)]
+#[template(path = "rides/deleted.html")]
+pub struct RidesDeletedTemplate {
+    pub rides: Vec<RideModel>,
+}
+
 mod filters {
     use std::fmt::Display;
 

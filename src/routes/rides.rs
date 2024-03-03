@@ -11,7 +11,9 @@ use crate::models::extensions::rides::{RideModelExt, RideModelsTotalExt};
 use crate::models::rides::{RideCreate, RideUpdate};
 use crate::repositories::rides::RideRepository;
 use crate::state::AppState;
-use crate::templates::{RideEditTemplate, RideGroupTemplate, RideTemplate, RideTotalTemplate};
+use crate::templates::{
+    RideEditTemplate, RideGroupTemplate, RideTemplate, RideTotalTemplate, RidesDeletedTemplate,
+};
 
 pub fn mileage_router() -> Router<AppState> {
     Router::new()
@@ -21,6 +23,8 @@ pub fn mileage_router() -> Router<AppState> {
         .route("/:id", delete(delete_ride))
         .route("/total", get(rides_total))
         .route("/group/:date/total", get(rides_group_total))
+        .route("/deleted", get(list_deleted))
+        .route("/:id/restore", put(restore_ride))
 }
 
 async fn create_ride(
@@ -92,7 +96,7 @@ async fn delete_ride(
     Path(id): Path<i64>,
 ) -> AppResult<(HeaderMap, Html<String>)> {
     let model = repo.get_one(id).await?;
-    let _ = repo.delete_one(id).await?;
+    repo.delete_one(id).await?;
     let date = model.get_group_name();
 
     let trigger_group = format!("reload-total-{date}");
@@ -119,4 +123,18 @@ async fn rides_group_total(
 
     let content = RideTotalTemplate { total }.render()?;
     Ok(Html(content))
+}
+
+async fn list_deleted(State(repo): State<RideRepository>) -> AppResult<Html<String>> {
+    let models = repo.get_all_deleted().await?;
+    let content = RidesDeletedTemplate { rides: models }.render()?;
+    Ok(Html(content))
+}
+
+async fn restore_ride(
+    State(repo): State<RideRepository>,
+    Path(id): Path<i64>,
+) -> AppResult<Html<String>> {
+    repo.restore_deleted(id).await?;
+    Ok(Html("".to_string()))
 }

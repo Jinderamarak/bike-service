@@ -1,7 +1,8 @@
-use std::str::FromStr;
-
 use chrono::{NaiveDate, NaiveDateTime};
 use serde::Deserialize;
+
+pub const DATE_FORMAT: &str = "%Y-%m-%d";
+pub const DELETED_AT_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
 
 #[derive(Debug, Clone)]
 pub struct RideRaw {
@@ -24,9 +25,9 @@ pub struct RideModel {
 impl TryFrom<RideRaw> for RideModel {
     type Error = anyhow::Error;
     fn try_from(raw: RideRaw) -> Result<Self, Self::Error> {
-        let date = NaiveDate::parse_from_str(&raw.date, "%Y-%m-%d")?;
+        let date = NaiveDate::parse_from_str(&raw.date, DATE_FORMAT)?;
         let deleted_at = match raw.deleted_at {
-            Some(s) => Some(NaiveDateTime::from_str(&s)?),
+            Some(s) => Some(NaiveDateTime::parse_from_str(&s, DELETED_AT_FORMAT)?),
             None => None,
         };
         Ok(RideModel {
@@ -46,7 +47,9 @@ impl From<RideModel> for RideRaw {
             date: model.date.format("%Y-%m-%d").to_string(),
             distance: model.distance,
             description: model.description,
-            deleted_at: model.deleted_at.map(|dt| dt.to_string()),
+            deleted_at: model
+                .deleted_at
+                .map(|dt| dt.format(DELETED_AT_FORMAT).to_string()),
         }
     }
 }
