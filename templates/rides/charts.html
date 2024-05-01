@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block header %}
+{% include "navigation.html" %}
+{% endblock %}
+{% block content %}
+
+<div class="rounded-lg border p-4 flex flex-col gap-2 mt-2">
+    <canvas id="ride-chart"></canvas>
+</div>
+
+<script>
+    const ctx = document.getElementById('ride-chart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

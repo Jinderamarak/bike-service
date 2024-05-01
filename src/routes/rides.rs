@@ -12,7 +12,8 @@ use crate::models::rides::{RideCreate, RideUpdate};
 use crate::repositories::rides::RideRepository;
 use crate::state::AppState;
 use crate::templates::{
-    RideEditTemplate, RideGroupTemplate, RideTemplate, RideTotalTemplate, RidesDeletedTemplate,
+    RideEditTemplate, RideGroupTemplate, RideTemplate, RideTotalTemplate, RidesChartsTemplate,
+    RidesDeletedTemplate,
 };
 
 pub fn mileage_router() -> Router<AppState> {
@@ -25,6 +26,7 @@ pub fn mileage_router() -> Router<AppState> {
         .route("/group/:date/total", get(rides_group_total))
         .route("/deleted", get(list_deleted))
         .route("/:id/restore", put(restore_ride))
+        .route("/charts", get(rides_charts))
 }
 
 async fn create_ride(
@@ -137,4 +139,9 @@ async fn restore_ride(
 ) -> AppResult<Html<String>> {
     repo.restore_deleted(id).await?;
     Ok(Html("".to_string()))
+}
+
+async fn rides_charts() -> AppResult<Html<String>> {
+    let content = RidesChartsTemplate.render()?;
+    Ok(Html(content))
 }
