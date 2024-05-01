@@ -4,6 +4,7 @@ use axum::http::{HeaderMap, StatusCode};
 use axum::response::Html;
 use axum::routing::{delete, get, post, put};
 use axum::{Form, Router};
+use chrono::{Datelike, Utc};
 
 use crate::error::AppResult;
 use crate::headers::HtmxHeaderMap;
@@ -26,7 +27,8 @@ pub fn mileage_router() -> Router<AppState> {
         .route("/group/:date/total", get(rides_group_total))
         .route("/deleted", get(list_deleted))
         .route("/:id/restore", put(restore_ride))
-        .route("/charts", get(rides_charts))
+        .route("/charts", get(rides_charts_current))
+        .route("/charts/:year", get(rides_charts_yearly))
 }
 
 async fn create_ride(
@@ -141,7 +143,37 @@ async fn restore_ride(
     Ok(Html("".to_string()))
 }
 
-async fn rides_charts() -> AppResult<Html<String>> {
-    let content = RidesChartsTemplate.render()?;
+async fn rides_charts_current(State(repo): State<RideRepository>) -> AppResult<Html<String>> {
+    let today = Utc::now().date_naive();
+    rides_charts_yearly(State(repo), Path(today.year())).await
+}
+
+async fn rides_charts_yearly(
+    State(repo): State<RideRepository>,
+    Path(year): Path<i32>,
+) -> AppResult<Html<String>> {
+    let mut rides = vec![];
+    let mut distances = vec![];
+
+    for i in 1..=12 {
+        let date = format!("{year}-{i:02}");
+        let models = repo.get_group(&date).await?;
+
+        let rides_count = models.len();
+        rides.push(rides_count);
+
+        if rides_count > 0 {
+            distances.push(models.iter().total_distance());
+        } else {
+            distances.push(f64::NAN);
+        }
+    }
+
+    let content = RidesChartsTemplate {
+        year,
+        rides,
+        distances,
+    }
+    .render()?;
     Ok(Html(content))
 }

@@ -45,7 +45,11 @@ pub struct RidesDeletedTemplate {
 
 #[derive(Template)]
 #[template(path = "rides/charts.html")]
-pub struct RidesChartsTemplate;
+pub struct RidesChartsTemplate {
+    pub year: i32,
+    pub rides: Vec<usize>,
+    pub distances: Vec<f64>,
+}
 
 mod filters {
     use std::fmt::Display;
