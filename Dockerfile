@@ -1,3 +1,4 @@
+#   Building Part
 FROM rust:latest as builder
 WORKDIR /build
 
@@ -12,9 +13,10 @@ COPY ./Cargo.lock ./Cargo.lock
 
 RUN cargo build --release
 
+#   Runtime Part
 FROM rust:slim as runtime
-
 WORKDIR /app
+
 COPY --from=builder /build/target/release/bike-service .
 COPY --from=builder /build/migrations ./migrations
 
