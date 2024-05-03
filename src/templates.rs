@@ -51,6 +51,12 @@ pub struct RidesChartsTemplate {
     pub distances: Vec<f64>,
 }
 
+#[derive(Template)]
+#[template(path = "data.html")]
+pub struct DataTemplate {
+    pub rides: i32,
+}
+
 mod filters {
     use std::fmt::Display;
 

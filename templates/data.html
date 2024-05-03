@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block header %}
+{% include "navigation.html" %}
+{% endblock %}
+{% block content %}
+
+<div class="flex flex-row gap-2 m-2 flex-wrap">
+    <div class="flex flex-col grow">
+        <h2 class="text-lg font-bold m-2">Export</h2>
+        <form class="rounded-lg border p-4 flex flex-col gap-4 grow" action="/data/export" method="get" target="_blank">
+            <p class="flex flex-row gap-2">
+                <span class="grow font-semibold">Rides:</span>
+                <span>{{ rides }}</span>
+            </p>
+            <button
+                class="rounded-lg bg-neutral-900 text-white hover:bg-neutral-600 font-bold py-2 cursor-pointer transition-colors">Export</button>
+        </form>
+    </div>
+    <div class="flex flex-col grow">
+        <h2 class="text-lg font-bold m-2">Import</h2>
+        <form class="rounded-lg border p-4 flex flex-col gap-4 grow" hx-post="/data/import"
+            enctype="multipart/form-data">
+            <p class="flex flex-row gap-2">
+                <label class="grow font-semibold" for="rides-file">Rides File</label>
+                <input type="file" name="rides-file" id="rides-file" accept=".csv">
+            </p>
+            <button
+                class="rounded-lg bg-neutral-900 text-white hover:bg-neutral-600 font-bold py-2 cursor-pointer transition-colors">Import</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

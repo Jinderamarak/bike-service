@@ -1,5 +1,5 @@
 use chrono::{NaiveDate, NaiveDateTime};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 pub const DATE_FORMAT: &str = "%Y-%m-%d";
 pub const DELETED_AT_FORMAT: &str = "%Y-%m-%d %H:%M:%S";
@@ -13,7 +13,7 @@ pub struct RideRaw {
     pub deleted_at: Option<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RideModel {
     pub id: i64,
     pub date: NaiveDate,

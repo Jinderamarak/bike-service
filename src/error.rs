@@ -1,5 +1,9 @@
+use std::string;
+
+use axum::extract::multipart::MultipartError;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
+use csv::Writer;
 
 pub type AppResult<T> = Result<T, AppError>;
 
@@ -58,5 +62,29 @@ impl From<askama::Error> for AppError {
 impl From<anyhow::Error> for AppError {
     fn from(e: anyhow::Error) -> Self {
         AppError::Other(e)
+    }
+}
+
+impl From<csv::Error> for AppError {
+    fn from(e: csv::Error) -> Self {
+        AppError::Other(e.into())
+    }
+}
+
+impl From<csv::IntoInnerError<Writer<Vec<u8>>>> for AppError {
+    fn from(e: csv::IntoInnerError<Writer<Vec<u8>>>) -> Self {
+        AppError::Other(e.into())
+    }
+}
+
+impl From<string::FromUtf8Error> for AppError {
+    fn from(e: string::FromUtf8Error) -> Self {
+        AppError::Other(e.into())
+    }
+}
+
+impl From<MultipartError> for AppError {
+    fn from(e: MultipartError) -> Self {
+        AppError::Other(e.into())
     }
 }
