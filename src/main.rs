@@ -15,10 +15,19 @@ mod routes;
 mod templates;
 mod utility;
 
+pub const APP_NAME: Option<&str> = option_env!("CARGO_PKG_NAME");
+pub const APP_VERSION: Option<&str> = option_env!("CARGO_PKG_VERSION");
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     #[cfg(debug_assertions)]
     dotenv().ok();
+
+    println!(
+        "{} {}",
+        APP_NAME.unwrap_or("unknown name"),
+        APP_VERSION.unwrap_or("unknown version")
+    );
 
     let config = Configuration::parse();
     println!("{config:?}");

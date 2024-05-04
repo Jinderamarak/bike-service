@@ -12,8 +12,8 @@ use crate::{
     models::rides::{RideCreate, RideModel},
     repositories::rides::RideRepository,
     templates::data::DataTemplate,
-    utility::error::AppResult,
-    utility::state::AppState,
+    utility::{error::AppResult, state::AppState},
+    APP_VERSION,
 };
 
 pub fn data_router() -> Router<AppState> {
@@ -25,7 +25,11 @@ pub fn data_router() -> Router<AppState> {
 
 async fn data_root(State(ride_repo): State<RideRepository>) -> AppResult<Html<String>> {
     let rides = ride_repo.get_all().await?.len() as i32;
-    let content = DataTemplate { rides }.render()?;
+    let content = DataTemplate {
+        rides,
+        app_version: String::from(APP_VERSION.unwrap_or("unknown")),
+    }
+    .render()?;
     Ok(Html(content))
 }
 
