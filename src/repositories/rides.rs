@@ -63,13 +63,14 @@ impl RideRepository {
         Ok(model)
     }
 
-    pub async fn create(&self, new: &RideCreate) -> AppResult<RideModel> {
+    pub async fn create(&self, bike_id: i64, new: &RideCreate) -> AppResult<RideModel> {
         let mut model = RideModel {
             id: -1,
             date: new.date,
             distance: new.distance,
             description: some_text_or_none(new.description.trim().to_string()),
             deleted_at: None,
+            bike_id,
         };
         let raw = RideRaw::from(model.clone());
 
@@ -94,6 +95,7 @@ impl RideRepository {
             distance: update.distance,
             description: some_text_or_none(update.description.trim().to_string()),
             deleted_at: None,
+            bike_id: -1,
         };
         let raw = RideRaw::from(model.clone());
 

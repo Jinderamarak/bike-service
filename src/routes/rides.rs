@@ -4,6 +4,7 @@ use axum::http::{HeaderMap, StatusCode};
 use axum::response::Html;
 use axum::routing::{delete, get, post, put};
 use axum::{Form, Router};
+use axum_extra::extract::CookieJar;
 
 use crate::models::extensions::rides::{RideModelExt, RideModelsTotalExt};
 use crate::models::rides::{RideCreate, RideUpdate};
@@ -11,7 +12,8 @@ use crate::repositories::rides::RideRepository;
 use crate::templates::rides::{
     RideEditTemplate, RideGroupTemplate, RideTemplate, RideTotalTemplate, RidesDeletedTemplate,
 };
-use crate::utility::error::AppResult;
+use crate::utility::cookies::CookieJarExt;
+use crate::utility::error::{AppError, AppResult};
 use crate::utility::headers::HtmxHeaderMap;
 use crate::utility::state::AppState;
 
@@ -29,9 +31,14 @@ pub fn rides_router() -> Router<AppState> {
 
 async fn create_ride(
     State(repo): State<RideRepository>,
+    jar: CookieJar,
     Form(payload): Form<RideCreate>,
 ) -> AppResult<(StatusCode, HeaderMap, Html<String>)> {
-    let model = repo.create(&payload).await?;
+    let bike_id = jar
+        .get_bike_id()?
+        .ok_or(AppError::BadRequest(String::from("Missing bike id")))?;
+
+    let model = repo.create(bike_id, &payload).await?;
     let date = model.get_group_name();
     let group_size = repo.get_group_size(&date).await?;
 

@@ -27,6 +27,11 @@
         "name": "deleted_at",
         "ordinal": 4,
         "type_info": "Text"
+      },
+      {
+        "name": "bike_id",
+        "ordinal": 5,
+        "type_info": "Int64"
       }
     ],
     "parameters": {
@@ -37,7 +42,8 @@
       false,
       false,
       true,
-      true
+      true,
+      false
     ]
   },
   "hash": "80ce03a1ff0975d5a607925b4ffeb2cd2d561c135f20f3c06c234161afa19c5f"

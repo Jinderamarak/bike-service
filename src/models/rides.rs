@@ -11,6 +11,7 @@ pub struct RideRaw {
     pub distance: f64,
     pub description: Option<String>,
     pub deleted_at: Option<String>,
+    pub bike_id: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -20,6 +21,7 @@ pub struct RideModel {
     pub distance: f64,
     pub description: Option<String>,
     pub deleted_at: Option<NaiveDateTime>,
+    pub bike_id: i64,
 }
 
 impl TryFrom<RideRaw> for RideModel {
@@ -36,6 +38,7 @@ impl TryFrom<RideRaw> for RideModel {
             distance: raw.distance,
             description: raw.description,
             deleted_at,
+            bike_id: raw.bike_id,
         })
     }
 }
@@ -50,6 +53,7 @@ impl From<RideModel> for RideRaw {
             deleted_at: model
                 .deleted_at
                 .map(|dt| dt.format(DELETED_AT_FORMAT).to_string()),
+            bike_id: model.bike_id,
         }
     }
 }

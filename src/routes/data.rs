@@ -12,7 +12,10 @@ use crate::{
     models::rides::{RideCreate, RideModel},
     repositories::rides::RideRepository,
     templates::data::DataTemplate,
-    utility::{error::AppResult, state::AppState},
+    utility::{
+        error::{AppError, AppResult},
+        state::AppState,
+    },
     APP_VERSION,
 };
 
@@ -68,16 +71,19 @@ async fn import_data(
         for result in reader.deserialize() {
             let ride: RideModel = result?;
             ride_repo
-                .create(&RideCreate {
-                    date: ride.date,
-                    distance: ride.distance,
-                    description: ride.description.unwrap_or_default(),
-                })
+                .create(
+                    ride.bike_id,
+                    &RideCreate {
+                        date: ride.date,
+                        distance: ride.distance,
+                        description: ride.description.unwrap_or_default(),
+                    },
+                )
                 .await?;
         }
 
         return Ok(String::from("Data imported"));
     }
 
-    Ok(String::from("No file provided"))
+    Err(AppError::BadRequest(String::from("No file provided")))
 }

@@ -9,6 +9,7 @@ pub type AppResult<T> = Result<T, AppError>;
 
 pub enum AppError {
     NotFound(String),
+    BadRequest(String),
     Database(sqlx::Error),
     Templating(askama::Error),
     Other(anyhow::Error),
@@ -18,6 +19,7 @@ impl AppError {
     fn status_code(&self) -> StatusCode {
         match self {
             AppError::NotFound(_) => StatusCode::NOT_FOUND,
+            AppError::BadRequest(_) => StatusCode::BAD_REQUEST,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
@@ -26,6 +28,7 @@ impl AppError {
     fn message(&self) -> String {
         match self {
             AppError::NotFound(e) => format!("Not Found: {}", e),
+            AppError::BadRequest(e) => format!("Bad Request: {}", e),
             AppError::Database(e) => format!("Database Error: {}", e),
             AppError::Templating(e) => format!("Templating Error: {}", e),
             AppError::Other(e) => format!("Internal Server Error: {}", e),
@@ -36,6 +39,7 @@ impl AppError {
     fn message(&self) -> String {
         match self {
             AppError::NotFound(e) => format!("Not Found: {}", e),
+            AppError::BadRequest(e) => format!("Bad Request: {}", e),
             _ => "Internal Server Error".to_string(),
         }
     }
