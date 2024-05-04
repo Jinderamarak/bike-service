@@ -71,7 +71,9 @@ async fn import_data(
                 })
                 .await?;
         }
+
+        return Ok(String::from("Data imported"));
     }
 
-    Ok(String::from("imported"))
+    Ok(String::from("No file provided"))
 }
