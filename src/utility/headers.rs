@@ -28,7 +28,7 @@ impl HtmxHeaderMap for HeaderMap {
         self.insert(
             HeaderName::from_str("HX-Retarget")
                 .expect("Expected \"HX-Retarget\" to be valid header name"),
-            target.parse().map_err(|e| anyhow::Error::from(e))?,
+            target.parse().map_err(anyhow::Error::from)?,
         );
         Ok(self)
     }
@@ -37,7 +37,7 @@ impl HtmxHeaderMap for HeaderMap {
         self.insert(
             HeaderName::from_str("HX-Reswap")
                 .expect("Expected \"HX-Reswap\" to be valid header name"),
-            swap.parse().map_err(|e| anyhow::Error::from(e))?,
+            swap.parse().map_err(anyhow::Error::from)?,
         );
         Ok(self)
     }
@@ -47,7 +47,7 @@ impl HtmxHeaderMap for HeaderMap {
             .expect("Expected \"HX-Trigger\" to be valid header name");
 
         if let Some(events) = self.get(&name) {
-            let events = events.to_str().map_err(|e| anyhow::Error::from(e))?;
+            let events = events.to_str().map_err(anyhow::Error::from)?;
             let events = format!("{events}, {event}");
             self.insert(name, events.parse()?);
         } else {

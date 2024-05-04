@@ -24,7 +24,7 @@ pub fn data_router() -> Router<AppState> {
 }
 
 async fn data_root(State(ride_repo): State<RideRepository>) -> AppResult<Html<String>> {
-    let rides = ride_repo.get_all().await?.iter().count() as i32;
+    let rides = ride_repo.get_all().await?.len() as i32;
     let content = DataTemplate { rides }.render()?;
     Ok(Html(content))
 }
@@ -67,7 +67,7 @@ async fn import_data(
                 .create(&RideCreate {
                     date: ride.date,
                     distance: ride.distance,
-                    description: ride.description.unwrap_or(String::new()),
+                    description: ride.description.unwrap_or_default(),
                 })
                 .await?;
         }
