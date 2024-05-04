@@ -17,7 +17,7 @@ use crate::utility::error::AppResult;
 use crate::utility::headers::HtmxHeaderMap;
 use crate::utility::state::AppState;
 
-pub fn mileage_router() -> Router<AppState> {
+pub fn rides_router() -> Router<AppState> {
     Router::new()
         .route("/", post(create_ride))
         .route("/:id/edit", get(update_ride_start))
