@@ -11,7 +11,7 @@ use csv::Writer;
 use crate::{
     models::rides::{RideCreate, RideModel},
     repositories::rides::RideRepository,
-    templates::rides::DataTemplate,
+    templates::data::DataTemplate,
     utility::error::AppResult,
     utility::state::AppState,
 };

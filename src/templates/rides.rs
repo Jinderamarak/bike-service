@@ -2,6 +2,7 @@ use askama::Template;
 use chrono::NaiveDate;
 
 use crate::models::rides::RideModel;
+use crate::templates::filters;
 
 #[derive(Template)]
 #[template(path = "index.html")]
@@ -49,20 +50,4 @@ pub struct RidesChartsTemplate {
     pub year: i32,
     pub rides: Vec<usize>,
     pub distances: Vec<f64>,
-}
-
-#[derive(Template)]
-#[template(path = "data.html")]
-pub struct DataTemplate {
-    pub rides: i32,
-}
-
-mod filters {
-    use std::fmt::Display;
-
-    pub fn removesuffix<T: Display>(s: T, suffix: &str) -> ::askama::Result<String> {
-        let s = s.to_string();
-        let trimmed = s.trim_end_matches(suffix).to_string();
-        Ok(trimmed)
-    }
 }
