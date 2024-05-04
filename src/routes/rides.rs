@@ -19,7 +19,7 @@ use crate::utility::state::AppState;
 
 pub fn rides_router() -> Router<AppState> {
     Router::new()
-        .route("/", post(create_ride))
+        .route("/bike/:id/ride", post(create_ride))
         .route("/:id/edit", get(update_ride_start))
         .route("/:id", put(update_ride))
         .route("/:id", delete(delete_ride))
@@ -40,7 +40,7 @@ async fn create_ride(
 
     let model = repo.create(bike_id, &payload).await?;
     let date = model.get_group_name();
-    let group_size = repo.get_group_size(&date).await?;
+    let group_size = repo.get_group_size_for_bike(bike_id, &date).await?;
 
     if group_size == 1 {
         let retarget = "#rides".to_string();

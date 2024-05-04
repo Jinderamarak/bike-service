@@ -25,11 +25,24 @@ impl RideRepository {
         Ok(models)
     }
 
-    pub async fn get_group(&self, date: &str) -> AppResult<Vec<RideModel>> {
+    pub async fn get_all_for_bike(&self, bike_id: i64) -> AppResult<Vec<RideModel>> {
+        let models = sqlx::query_as!(
+            RideRaw,
+            "SELECT * FROM rides WHERE deleted_at IS NULL AND bike_id = ? ORDER BY date DESC",
+            bike_id
+        )
+        .fetch_all(&self.0)
+        .await?
+        .to_models()?;
+        Ok(models)
+    }
+
+    pub async fn get_group_for_bike(&self, bike_id: i64, date: &str) -> AppResult<Vec<RideModel>> {
         let starts_with = format!("{date}%");
         let models = sqlx::query_as!(
             RideRaw,
-            "SELECT * FROM rides WHERE deleted_at IS NULL AND date LIKE ? ORDER BY date DESC",
+            "SELECT * FROM rides WHERE deleted_at IS NULL AND bike_id = ? AND date LIKE ? ORDER BY date DESC",
+            bike_id,
             starts_with
         )
         .fetch_all(&self.0)
@@ -38,10 +51,11 @@ impl RideRepository {
         Ok(models)
     }
 
-    pub async fn get_group_size(&self, date: &str) -> AppResult<i32> {
+    pub async fn get_group_size_for_bike(&self, bike_id: i64, date: &str) -> AppResult<i32> {
         let starts_with = format!("{date}%");
         let count = sqlx::query!(
-            "SELECT COUNT(*) as count FROM rides WHERE deleted_at IS NULL AND date LIKE ?",
+            "SELECT COUNT(*) as count FROM rides WHERE deleted_at IS NULL AND bike_id = ? AND date LIKE ?",
+            bike_id,
             starts_with
         )
         .fetch_one(&self.0)
