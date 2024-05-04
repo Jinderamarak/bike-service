@@ -9,11 +9,11 @@ use axum::{
 use csv::Writer;
 
 use crate::{
-    error::AppResult,
     models::rides::{RideCreate, RideModel},
     repositories::rides::RideRepository,
-    state::AppState,
-    templates::DataTemplate,
+    templates::rides::DataTemplate,
+    utility::error::AppResult,
+    utility::state::AppState,
 };
 
 pub fn data_router() -> Router<AppState> {

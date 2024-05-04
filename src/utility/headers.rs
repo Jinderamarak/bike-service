@@ -3,7 +3,7 @@ use std::str::FromStr;
 use axum::http::header::InvalidHeaderValue;
 use axum::http::{HeaderMap, HeaderName};
 
-use crate::error::{AppError, AppResult};
+use crate::utility::error::{AppError, AppResult};
 
 pub trait HtmxHeaderMap: Sized {
     fn with_refresh(self) -> Self;

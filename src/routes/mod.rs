@@ -1,7 +1,7 @@
 use axum::routing::get;
 use axum::Router;
 
-use crate::state::AppState;
+use crate::utility::state::AppState;
 
 mod data;
 mod rides;

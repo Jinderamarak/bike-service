@@ -6,16 +6,16 @@ use axum::routing::{delete, get, post, put};
 use axum::{Form, Router};
 use chrono::{Datelike, Utc};
 
-use crate::error::AppResult;
-use crate::headers::HtmxHeaderMap;
 use crate::models::extensions::rides::{RideModelExt, RideModelsTotalExt};
 use crate::models::rides::{RideCreate, RideUpdate};
 use crate::repositories::rides::RideRepository;
-use crate::state::AppState;
-use crate::templates::{
+use crate::templates::rides::{
     RideEditTemplate, RideGroupTemplate, RideTemplate, RideTotalTemplate, RidesChartsTemplate,
     RidesDeletedTemplate,
 };
+use crate::utility::error::AppResult;
+use crate::utility::headers::HtmxHeaderMap;
+use crate::utility::state::AppState;
 
 pub fn mileage_router() -> Router<AppState> {
     Router::new()

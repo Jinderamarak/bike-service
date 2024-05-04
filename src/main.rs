@@ -6,17 +6,14 @@ use tokio::net;
 
 use crate::config::Configuration;
 use crate::routes::main_router;
-use crate::state::AppState;
+use crate::utility::state::AppState;
 
 mod config;
-mod error;
-mod headers;
 mod models;
 mod repositories;
 mod routes;
-mod state;
 mod templates;
-mod utils;
+mod utility;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

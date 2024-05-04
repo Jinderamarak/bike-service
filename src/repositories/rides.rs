@@ -1,10 +1,10 @@
 use chrono::Utc;
 use sqlx::SqlitePool;
 
-use crate::error::{AppError, AppResult};
 use crate::models::extensions::rides::RawRidesToModelsExt;
 use crate::models::rides::{RideCreate, RideModel, RideRaw, RideUpdate, DELETED_AT_FORMAT};
-use crate::utils::some_text_or_none;
+use crate::utility::error::{AppError, AppResult};
+use crate::utility::utils::some_text_or_none;
 
 #[derive(Clone)]
 pub struct RideRepository(SqlitePool);
