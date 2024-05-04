@@ -43,11 +43,3 @@ pub struct RideTotalTemplate {
 pub struct RidesDeletedTemplate {
     pub rides: Vec<RideModel>,
 }
-
-#[derive(Template)]
-#[template(path = "rides/charts.html")]
-pub struct RidesChartsTemplate {
-    pub year: i32,
-    pub rides: Vec<usize>,
-    pub distances: Vec<f64>,
-}
