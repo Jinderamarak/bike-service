@@ -1,3 +1,4 @@
+use axum::Router;
 use clap::Parser;
 #[cfg(debug_assertions)]
 use dotenv::dotenv;
@@ -5,14 +6,11 @@ use sqlx::SqlitePool;
 use tokio::net;
 
 use crate::config::Configuration;
-use crate::routes::main_router;
+use crate::services::{bikes, rides};
 use crate::utility::state::AppState;
 
 mod config;
-mod models;
-mod repositories;
-mod routes;
-mod templates;
+mod services;
 mod utility;
 
 pub const APP_NAME: Option<&str> = option_env!("CARGO_PKG_NAME");
@@ -39,7 +37,10 @@ async fn main() -> anyhow::Result<()> {
     // tracing_subscriber::fmt::init();
 
     let state = AppState::new(pool);
-    let app = main_router().with_state(state);
+    let app = Router::new()
+        .nest("/bikes", bikes::routes::router())
+        .nest("/rides", rides::routes::router())
+        .with_state(state);
 
     let socket_addr = config.socket_address();
     let listener = net::TcpListener::bind(socket_addr).await?;

@@ -3,7 +3,8 @@ CREATE TABLE bikes
 (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     name        TEXT NOT NULL,
-    description TEXT NULL
+    description TEXT NULL,
+    deleted_at  TEXT NULL
 );
 
 -- Add nullable bike_id column to rides table
