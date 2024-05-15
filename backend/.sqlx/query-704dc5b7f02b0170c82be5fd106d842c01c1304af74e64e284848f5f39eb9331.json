@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "SELECT * FROM rides WHERE deleted_at IS NULL AND id = ?",
+  "query": "SELECT * FROM bikes WHERE deleted_at IS NULL",
   "describe": {
     "columns": [
       {
@@ -9,42 +9,30 @@
         "type_info": "Int64"
       },
       {
-        "name": "date",
+        "name": "name",
         "ordinal": 1,
         "type_info": "Text"
       },
       {
-        "name": "distance",
-        "ordinal": 2,
-        "type_info": "Float"
-      },
-      {
         "name": "description",
-        "ordinal": 3,
+        "ordinal": 2,
         "type_info": "Text"
       },
       {
         "name": "deleted_at",
-        "ordinal": 4,
+        "ordinal": 3,
         "type_info": "Text"
-      },
-      {
-        "name": "bike_id",
-        "ordinal": 5,
-        "type_info": "Int64"
       }
     ],
     "parameters": {
-      "Right": 1
+      "Right": 0
     },
     "nullable": [
       false,
       false,
-      false,
       true,
-      true,
-      false
+      true
     ]
   },
-  "hash": "cfda4feb6be2a0d415e5e9347e809e9f479e05451262eb91e240d81b864574ce"
+  "hash": "704dc5b7f02b0170c82be5fd106d842c01c1304af74e64e284848f5f39eb9331"
 }

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE rides SET date = ?, distance = ?, description = ? WHERE id = ? AND deleted_at IS NULL",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "7944faa39c7766d61b5fc1e83af7365d0e17f97e3c3e5ea1b5b116bc980245a6"
+}
