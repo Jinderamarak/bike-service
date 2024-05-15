@@ -6,7 +6,7 @@ use sqlx::SqlitePool;
 use tokio::net;
 
 use crate::config::Configuration;
-use crate::services::{bikes, rides};
+use crate::services::{bikes, data, rides};
 use crate::utility::state::AppState;
 
 mod config;
@@ -38,8 +38,9 @@ async fn main() -> anyhow::Result<()> {
 
     let state = AppState::new(pool);
     let app = Router::new()
-        .nest("/bikes", bikes::routes::router())
-        .nest("/rides", rides::routes::router())
+        .nest("/", bikes::routes::router())
+        .nest("/", rides::routes::router())
+        .nest("/", data::routes::router())
         .with_state(state);
 
     let socket_addr = config.socket_address();
