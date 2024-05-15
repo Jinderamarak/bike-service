@@ -1,7 +1,2 @@
-/.idea
-/.vscode
-
-**/target
-
-**/*.db*
-**/.env
+.idea
+.vscode

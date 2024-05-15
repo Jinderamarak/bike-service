@@ -1,26 +1,31 @@
-#   Building Part
-FROM rust:latest as builder
+#   Server Building Part
+FROM rust:latest as builder-backend
 WORKDIR /build
 
-COPY ./migrations ./migrations
-COPY ./.sqlx ./.sqlx
+COPY ./backend/ ./
+RUN cargo build --locked --release
 
-COPY ./src ./src
-COPY ./templates ./templates
+#   Frontend Building Part
+FROM node:latest as builder-frontend
+WORKDIR /build
 
-COPY ./Cargo.toml ./Cargo.toml
-COPY ./Cargo.lock ./Cargo.lock
+COPY ./frontend/package.json ./package.json
+COPY ./frontend/package-lock.json ./package-lock.json
+RUN npm ci
 
-RUN cargo build --release
+COPY ./frontend/ ./
+RUN npm run build
 
 #   Runtime Part
 FROM rust:slim as runtime
 WORKDIR /app
 
-COPY --from=builder /build/target/release/bike-service .
-COPY --from=builder /build/migrations ./migrations
+COPY --from=builder-backend /build/target/release/bike-service .
+COPY --from=builder-backend /build/migrations ./migrations
+COPY --from=builder-frontend /build/dist ./static
 
 RUN mkdir /data
 ENV DATABASE_URL="sqlite:/data/data.db?mode=rwc"
+ENV BIKE_STATIC_DIR="./static"
 
 CMD ["./bike-service"]
