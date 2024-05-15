@@ -11,7 +11,6 @@ pub enum AppError {
     NotFound(String),
     BadRequest(String),
     Database(sqlx::Error),
-    Templating(askama::Error),
     Other(anyhow::Error),
 }
 
@@ -30,7 +29,6 @@ impl AppError {
             AppError::NotFound(e) => format!("Not Found: {}", e),
             AppError::BadRequest(e) => format!("Bad Request: {}", e),
             AppError::Database(e) => format!("Database Error: {}", e),
-            AppError::Templating(e) => format!("Templating Error: {}", e),
             AppError::Other(e) => format!("Internal Server Error: {}", e),
         }
     }
@@ -54,12 +52,6 @@ impl IntoResponse for AppError {
 impl From<sqlx::Error> for AppError {
     fn from(e: sqlx::Error) -> Self {
         AppError::Database(e)
-    }
-}
-
-impl From<askama::Error> for AppError {
-    fn from(e: askama::Error) -> Self {
-        AppError::Templating(e)
     }
 }
 
