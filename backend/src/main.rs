@@ -4,9 +4,10 @@ use clap::Parser;
 use dotenv::dotenv;
 use sqlx::SqlitePool;
 use tokio::net;
+use tower_http::services::ServeDir;
 
 use crate::config::Configuration;
-use crate::services::{bikes, data, rides};
+use crate::services::api_router;
 use crate::utility::state::AppState;
 
 mod config;
@@ -36,11 +37,11 @@ async fn main() -> anyhow::Result<()> {
     // initialize tracing
     // tracing_subscriber::fmt::init();
 
+    let serve_dir = ServeDir::new(&config.static_dir);
     let state = AppState::new(pool);
     let app = Router::new()
-        .nest("/", bikes::routes::router())
-        .nest("/", rides::routes::router())
-        .nest("/", data::routes::router())
+        .nest("/api", api_router())
+        .fallback_service(serve_dir)
         .with_state(state);
 
     let socket_addr = config.socket_address();

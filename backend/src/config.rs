@@ -25,6 +25,14 @@ pub struct Configuration {
         help = "SQLite database url"
     )]
     pub database_url: String,
+    #[arg(
+        short,
+        long,
+        env = "BIKE_STATIC_DIR",
+        default_value = "./static",
+        help = "Directory to serve static files from"
+    )]
+    pub static_dir: String,
 }
 
 impl Configuration {
