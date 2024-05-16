@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT DISTINCT strftime('%Y', date) as year FROM rides WHERE bike_id = ? AND deleted_at IS NULL ORDER BY year DESC",
+  "describe": {
+    "columns": [
+      {
+        "name": "year",
+        "ordinal": 0,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "496643c2ed421c51426106a34eeae6e2728f1494ac8c5bc95bbc24c52746b9c0"
+}
