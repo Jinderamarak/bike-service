@@ -2,12 +2,13 @@ use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::routing::{delete, get, post, put};
 use axum::{Json, Router};
+use chrono::Datelike;
 
 use crate::services::bikes::repository::BikeRepository;
 use crate::utility::error::AppResult;
 use crate::utility::state::AppState;
 
-use super::models::{RideModel, RidePartial, RideTotal};
+use super::models::{RideModel, RideMonth, RidePartial, RideTotal};
 use super::repository::RideRepository;
 
 pub fn router() -> Router<AppState> {
@@ -15,6 +16,7 @@ pub fn router() -> Router<AppState> {
         .route("/bikes/:id/rides", get(get_all_rides))
         .route("/bikes/:id/rides", post(create_ride))
         .route("/bikes/:id/rides/total", get(get_total))
+        .route("/bikes/:id/rides/monthly/:year", get(get_monthly_rides))
         .route("/rides/:id", get(get_ride))
         .route("/rides/:id", put(update_ride))
         .route("/rides/:id", delete(delete_ride))
@@ -74,4 +76,30 @@ async fn delete_ride(
 ) -> AppResult<Json<()>> {
     repo.delete(ride_id).await?;
     Ok(Json(()))
+}
+
+async fn get_monthly_rides(
+    State(repo): State<RideRepository>,
+    Path((bike_id, year)): Path<(i64, i32)>,
+) -> AppResult<Json<Vec<RideMonth>>> {
+    let mut result = Vec::with_capacity(12);
+    for month in 1..=12 {
+        let month = RideMonth {
+            year,
+            month,
+            total_distance: 0.0,
+            rides: Vec::new(),
+        };
+        result.push(month);
+    }
+
+    let filter = format!("{year}-");
+    let models = repo.get_all_for_bike_with_date(bike_id, &filter).await?;
+    for model in models {
+        let month = model.date.month() as usize;
+        result[month - 1].total_distance += model.distance;
+        result[month - 1].rides.push(model);
+    }
+
+    Ok(Json(result))
 }

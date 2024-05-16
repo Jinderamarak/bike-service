@@ -73,3 +73,12 @@ pub struct RidePartial {
 pub struct RideTotal {
     pub total_distance: f64,
 }
+
+#[derive(Debug, Serialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct RideMonth {
+    pub year: i32,
+    pub month: i32,
+    pub total_distance: f64,
+    pub rides: Vec<RideModel>,
+}
