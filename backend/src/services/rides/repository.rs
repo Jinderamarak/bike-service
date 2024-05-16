@@ -172,4 +172,21 @@ impl RideRepository {
             None => Ok(0.0),
         }
     }
+
+    pub async fn active_years(&self, bike_id: i64) -> AppResult<Vec<i32>> {
+        let years = sqlx::query!(
+            "SELECT DISTINCT strftime('%Y', date) as year FROM rides WHERE bike_id = ? AND deleted_at IS NULL ORDER BY year DESC",
+            bike_id
+        )
+        .fetch_all(&self.0)
+        .await?;
+
+        let years: Result<Vec<i32>, _> = years
+            .into_iter()
+            .map(|r| r.year)
+            .filter_map(|y| y)
+            .map(|y| y.parse::<i32>())
+            .collect();
+        Ok(years.map_err(anyhow::Error::from)?)
+    }
 }

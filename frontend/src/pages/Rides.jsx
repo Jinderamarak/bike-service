@@ -21,6 +21,7 @@ export default function Rides() {
   const [selectedBike, _] = useRecoilState(selectedBikeAtom);
 
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [years, setYears] = useState([new Date().getFullYear()]);
 
   const [totalDistance, setTotalDistance] = useState(null);
   const [rideGroups, setRideGroups] = useState(null);
@@ -85,6 +86,10 @@ export default function Rides() {
           group.rides.push(ride);
           group.totalDistance += ride.distance;
           setRideGroups([...rideGroups]);
+        }
+
+        if (year !== selectedYear) {
+          setSelectedYear(year);
         }
       })
       .finally(() => {
@@ -172,6 +177,26 @@ export default function Rides() {
     });
   }
 
+  function selectYear(year) {
+    setSelectedYear(year);
+    setRideGroups(null);
+  }
+
+  useEffect(() => {
+    if (selectedBike === null) return;
+    setRideGroups(null);
+
+    let controller = new AbortController();
+    fetch(`/api/bikes/${selectedBike}/rides/monthly/${selectedYear}`, {
+      signal: controller.signal,
+    })
+      .then((response) => response.json())
+      .then((data) => setRideGroups(data))
+      .catch((err) => console.warn(err));
+
+    return () => controller.abort();
+  }, [selectedBike, selectedYear]);
+
   useEffect(() => {
     if (selectedBike === null) return;
     setTotalDistance(null);
@@ -185,11 +210,11 @@ export default function Rides() {
       .then((data) => setTotalDistance(data.totalDistance))
       .catch((err) => console.warn(err));
 
-    fetch(`/api/bikes/${selectedBike}/rides/monthly/${selectedYear}`, {
+    fetch(`/api/bikes/${selectedBike}/rides/years`, {
       signal: controller.signal,
     })
       .then((response) => response.json())
-      .then((data) => setRideGroups(data))
+      .then((data) => setYears(data))
       .catch((err) => console.warn(err));
 
     return () => controller.abort();
@@ -309,6 +334,25 @@ export default function Rides() {
                 </Stack>
               </Paper>
             ))}
+          <Button.Group
+            style={{
+              display: "flex",
+              flexFlow: "row wrap",
+              justifyContent: "center",
+            }}
+          >
+            {(years.length === 0 ? [new Date().getFullYear()] : years).map(
+              (year) => (
+                <Button
+                  key={year}
+                  variant={year === selectedYear ? "filled" : "default"}
+                  onClick={() => selectYear(year)}
+                >
+                  {year}
+                </Button>
+              )
+            )}
+          </Button.Group>
         </Stack>
       </Flex>
       <Drawer

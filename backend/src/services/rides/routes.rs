@@ -16,6 +16,7 @@ pub fn router() -> Router<AppState> {
         .route("/bikes/:id/rides", get(get_all_rides))
         .route("/bikes/:id/rides", post(create_ride))
         .route("/bikes/:id/rides/total", get(get_total))
+        .route("/bikes/:id/rides/years", get(get_active_years))
         .route("/bikes/:id/rides/monthly/:year", get(get_monthly_rides))
         .route("/rides/:id", get(get_ride))
         .route("/rides/:id", put(update_ride))
@@ -76,6 +77,14 @@ async fn delete_ride(
 ) -> AppResult<Json<()>> {
     repo.delete(ride_id).await?;
     Ok(Json(()))
+}
+
+async fn get_active_years(
+    State(repo): State<RideRepository>,
+    Path(bike_id): Path<i64>,
+) -> AppResult<Json<Vec<i32>>> {
+    let years = repo.active_years(bike_id).await?;
+    Ok(Json(years))
 }
 
 async fn get_monthly_rides(
