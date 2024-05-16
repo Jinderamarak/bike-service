@@ -83,10 +83,10 @@ async fn get_monthly_rides(
     Path((bike_id, year)): Path<(i64, i32)>,
 ) -> AppResult<Json<Vec<RideMonth>>> {
     let mut result = Vec::with_capacity(12);
-    for month in 1..=12 {
+    for month in 0..12 {
         let month = RideMonth {
             year,
-            month,
+            month: 12 - month,
             total_distance: 0.0,
             rides: Vec::new(),
         };
@@ -97,8 +97,8 @@ async fn get_monthly_rides(
     let models = repo.get_all_for_bike_with_date(bike_id, &filter).await?;
     for model in models {
         let month = model.date.month() as usize;
-        result[month - 1].total_distance += model.distance;
-        result[month - 1].rides.push(model);
+        result[12 - month].total_distance += model.distance;
+        result[12 - month].rides.push(model);
     }
 
     Ok(Json(result))
