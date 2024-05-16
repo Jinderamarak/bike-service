@@ -72,7 +72,7 @@ export default function Bikes() {
 
   function deleteBike(bikeId) {
     setLoadingDelete(bikeId);
-    fetch(`/api/bike/${bikeId}`, {
+    fetch(`/api/bikes/${bikeId}`, {
       method: "DELETE",
     })
       .then(() => setBikes((current) => current.filter((r) => r.id !== bikeId)))
@@ -87,7 +87,7 @@ export default function Bikes() {
       description: description || null,
     };
 
-    fetch(`/api/bike/${editing}`, {
+    fetch(`/api/bikes/${editing}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

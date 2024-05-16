@@ -12,12 +12,12 @@ use super::repository::RideRepository;
 
 pub fn router() -> Router<AppState> {
     Router::new()
-        .route("/bike/:id/rides", get(get_all_rides))
-        .route("/bike/:id/rides", post(create_ride))
-        .route("/bike/:id/rides/total", get(get_total))
-        .route("/ride/:id", get(get_ride))
-        .route("/ride/:id", put(update_ride))
-        .route("/ride/:id", delete(delete_ride))
+        .route("/bikes/:id/rides", get(get_all_rides))
+        .route("/bikes/:id/rides", post(create_ride))
+        .route("/bikes/:id/rides/total", get(get_total))
+        .route("/rides/:id", get(get_ride))
+        .route("/rides/:id", put(update_ride))
+        .route("/rides/:id", delete(delete_ride))
 }
 
 async fn get_all_rides(

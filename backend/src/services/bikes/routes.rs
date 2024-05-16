@@ -13,9 +13,9 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/bikes", get(get_all_bikes))
         .route("/bikes", post(create_bike))
-        .route("/bike/:id", get(get_bike))
-        .route("/bike/:id", put(update_bike))
-        .route("/bike/:id", delete(delete_bike))
+        .route("/bikes/:id", get(get_bike))
+        .route("/bikes/:id", put(update_bike))
+        .route("/bikes/:id", delete(delete_bike))
 }
 
 async fn get_all_bikes(State(repo): State<BikeRepository>) -> AppResult<Json<Vec<BikeModel>>> {
