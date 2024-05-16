@@ -1,7 +1,7 @@
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::routing::{delete, get, post, put};
-use axum::{Form, Json, Router};
+use axum::{Json, Router};
 
 use crate::services::bikes::repository::BikeRepository;
 use crate::utility::error::AppResult;
@@ -33,7 +33,7 @@ async fn create_ride(
     State(bikes): State<BikeRepository>,
     State(repo): State<RideRepository>,
     Path(bike_id): Path<i64>,
-    Form(payload): Form<RidePartial>,
+    Json(payload): Json<RidePartial>,
 ) -> AppResult<(StatusCode, Json<RideModel>)> {
     bikes.check_exists(bike_id).await?;
     let model = repo.create(bike_id, &payload).await?;
@@ -52,7 +52,7 @@ async fn get_ride(
 async fn update_ride(
     State(repo): State<RideRepository>,
     Path(ride_id): Path<i64>,
-    Form(payload): Form<RidePartial>,
+    Json(payload): Json<RidePartial>,
 ) -> AppResult<Json<RideModel>> {
     let model = repo.update(ride_id, &payload).await?;
     Ok(Json(model))
