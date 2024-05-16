@@ -78,7 +78,10 @@ export default function Bikes() {
       method: "DELETE",
     })
       .then(() => setBikes((current) => current.filter((r) => r.id !== bikeId)))
-      .finally(() => setLoadingDelete(false));
+      .finally(() => {
+        setLoadingDelete(false);
+        setEditing(null);
+      });
   }
 
   function updateBike() {
@@ -108,10 +111,10 @@ export default function Bikes() {
 
   function editBike(bikeId) {
     setEditing(bikeId);
-    const editedBike = (bikes ?? []).find((r) => r.id === bikeId);
+    const editedBike = bikes.find((r) => r.id === bikeId);
     editForm.setValues({
-      name: editedBike?.name ?? "",
-      description: editedBike?.description ?? "",
+      name: editedBike.name,
+      description: editedBike.description,
     });
   }
 
@@ -218,9 +221,10 @@ export default function Bikes() {
             />
             <Group justify="space-between">
               <Button
-                loading={loadingEdit || loadingDelete}
                 variant="filled"
                 type="submit"
+                loading={loadingEdit}
+                disabled={loadingDelete}
               >
                 Save
               </Button>
@@ -228,7 +232,8 @@ export default function Bikes() {
                 variant="filled"
                 color="red"
                 onClick={() => deleteBike(editing)}
-                loading={loadingEdit || loadingDelete}
+                loading={loadingDelete}
+                disabled={loadingEdit}
               >
                 Delete
               </Button>
