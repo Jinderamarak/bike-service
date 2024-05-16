@@ -17,6 +17,7 @@ pub struct RideRaw {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct RideModel {
     pub id: i64,
     pub date: NaiveDate,
@@ -60,6 +61,7 @@ impl From<RideModel> for RideRaw {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct RidePartial {
     pub date: NaiveDate,
     pub distance: f64,
@@ -67,6 +69,7 @@ pub struct RidePartial {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct RideTotal {
     pub total_distance: f64,
 }

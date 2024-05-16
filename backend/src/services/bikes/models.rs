@@ -15,6 +15,7 @@ pub struct BikeRaw {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct BikeModel {
     pub id: i64,
     pub name: String,
@@ -50,6 +51,7 @@ impl From<BikeModel> for BikeRaw {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct BikePartial {
     pub name: String,
     pub description: Option<String>,
