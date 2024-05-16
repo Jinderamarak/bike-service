@@ -1,6 +1,7 @@
 import { Stack } from "@mantine/core";
 import Navigation from "./parts/Navigation";
 import Rides from "./pages/Rides";
+import Bikes from "./pages/Bikes";
 import Stats from "./pages/Stats";
 import Data from "./pages/Data";
 import { Routes, Route } from "react-router-dom";
@@ -22,6 +23,7 @@ function App() {
       <Navigation />
       <Routes>
         <Route index element={<Rides />} />
+        <Route path="/bikes" element={<Bikes />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/data" element={<Data />} />
       </Routes>

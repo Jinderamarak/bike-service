@@ -10,18 +10,15 @@ import {
   InputBase,
   Input,
   useCombobox,
+  Skeleton,
 } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { selectedBikeAtom } from "../atoms";
 
-const BikeList = [
-  { id: 1, name: "Jindra's Top Fuel 5" },
-  { id: 2, name: "Franta's Cannondale Scalpel" },
-];
-
 export default function Navigation() {
+  const [bikes, setBikes] = useState(null);
   const [selectedBike, setSelectedBike] = useRecoilState(selectedBikeAtom);
   const bikeCombobox = useCombobox();
 
@@ -33,6 +30,15 @@ export default function Navigation() {
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  function selectBike(bikeId) {
+    bikeCombobox.closeDropdown();
+    if (bikeId < 0) {
+      navigate("/bikes");
+      return;
+    }
+    setSelectedBike(bikeId);
+  }
 
   function goToRides() {
     setIsOpened(false);
@@ -48,6 +54,26 @@ export default function Navigation() {
     setIsOpened(false);
     navigate("/data");
   }
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/bikes", { signal: controller.signal })
+      .then((response) => response.json())
+      .then((data) => setBikes(data))
+      .catch((err) => console.warn(err));
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    if (bikes === null) return;
+    if (selectedBike !== null && selectedBike >= 0) {
+      let bike = bikes.find((b) => b.id === selectedBike);
+      if (bike === undefined) {
+        setSelectedBike(null);
+      }
+    }
+  }, [bikes, selectedBike, setSelectedBike]);
 
   const isRides = location.pathname === "/";
   const isStats = location.pathname === "/stats";
@@ -81,24 +107,18 @@ export default function Navigation() {
             </Button>
           </Flex>
         </Collapse>
-        <Combobox
-          store={bikeCombobox}
-          onOptionSubmit={(val) => {
-            setSelectedBike(val);
-            bikeCombobox.closeDropdown();
-          }}
-        >
-          <Combobox.Target>
-            <InputBase
-              component="button"
-              type="button"
-              pointer
-              rightSection={<Combobox.Chevron />}
-              rightSectionPointerEvents="none"
-              onClick={() => bikeCombobox.toggleDropdown()}
-              style={{ overflow: "hidden" }}
-            >
-              {
+        <Skeleton visible={bikes === null}>
+          <Combobox store={bikeCombobox} onOptionSubmit={selectBike}>
+            <Combobox.Target>
+              <InputBase
+                component="button"
+                type="button"
+                pointer
+                rightSection={<Combobox.Chevron />}
+                rightSectionPointerEvents="none"
+                onClick={() => bikeCombobox.toggleDropdown()}
+                style={{ overflow: "hidden" }}
+              >
                 <Text
                   style={{
                     textOverflow: "ellipsis",
@@ -106,23 +126,26 @@ export default function Navigation() {
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {BikeList.find((b) => b.id === selectedBike)?.name || (
+                  {(bikes ?? []).find((b) => b.id === selectedBike)?.name || (
                     <Input.Placeholder>Select Bike</Input.Placeholder>
                   )}
                 </Text>
-              }
-            </InputBase>
-          </Combobox.Target>
-          <Combobox.Dropdown>
-            <Combobox.Options>
-              {BikeList.map((bike) => (
-                <Combobox.Option key={bike.id} value={bike.id}>
-                  {bike.name}
+              </InputBase>
+            </Combobox.Target>
+            <Combobox.Dropdown>
+              <Combobox.Options>
+                {(bikes ?? []).map((bike) => (
+                  <Combobox.Option key={bike.id} value={bike.id}>
+                    {bike.name}
+                  </Combobox.Option>
+                ))}
+                <Combobox.Option key={-1} value={-1}>
+                  + Manage Bikes
                 </Combobox.Option>
-              ))}
-            </Combobox.Options>
-          </Combobox.Dropdown>
-        </Combobox>
+              </Combobox.Options>
+            </Combobox.Dropdown>
+          </Combobox>
+        </Skeleton>
       </Flex>
     </Paper>
   );
