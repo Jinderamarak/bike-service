@@ -65,3 +65,8 @@ pub struct RidePartial {
     pub distance: f64,
     pub description: Option<String>,
 }
+
+#[derive(Debug, Serialize)]
+pub struct RideTotal {
+    pub total_distance: f64,
+}

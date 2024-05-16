@@ -138,4 +138,19 @@ impl RideRepository {
 
         Ok(())
     }
+
+    pub async fn total_distance_for_bike(&self, ride_id: i64) -> AppResult<f64> {
+        let total = sqlx::query!(
+            "SELECT SUM(distance) as total FROM rides WHERE bike_id = ? AND deleted_at IS NULL",
+            ride_id
+        )
+        .fetch_one(&self.0)
+        .await?
+        .total;
+
+        match total {
+            Some(total) => Ok(total),
+            None => Ok(0.0),
+        }
+    }
 }

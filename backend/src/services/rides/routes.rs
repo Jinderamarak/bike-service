@@ -7,13 +7,14 @@ use crate::services::bikes::repository::BikeRepository;
 use crate::utility::error::AppResult;
 use crate::utility::state::AppState;
 
-use super::models::{RideModel, RidePartial};
+use super::models::{RideModel, RidePartial, RideTotal};
 use super::repository::RideRepository;
 
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/bike/:id/rides", get(get_all_rides))
         .route("/bike/:id/rides", post(create_ride))
+        .route("/bike/:id/rides/total", get(get_total))
         .route("/ride/:id", get(get_ride))
         .route("/ride/:id", put(update_ride))
         .route("/ride/:id", delete(delete_ride))
@@ -38,6 +39,15 @@ async fn create_ride(
     bikes.check_exists(bike_id).await?;
     let model = repo.create(bike_id, &payload).await?;
     Ok((StatusCode::CREATED, Json(model)))
+}
+
+async fn get_total(
+    State(repo): State<RideRepository>,
+    Path(bike_id): Path<i64>,
+) -> AppResult<Json<RideTotal>> {
+    let total_distance = repo.total_distance_for_bike(bike_id).await?;
+    let total = RideTotal { total_distance };
+    Ok(Json(total))
 }
 
 async fn get_ride(
