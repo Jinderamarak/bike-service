@@ -10,9 +10,11 @@ import {
   Drawer,
   TextInput,
   Skeleton,
+  ActionIcon,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useState, useEffect } from "react";
+import { IconPencil } from "@tabler/icons-react";
 
 const nameValidator = (value) =>
   value.length > 0 ? null : "Name should not be empty";
@@ -20,7 +22,7 @@ const nameValidator = (value) =>
 export default function Bikes() {
   const [bikes, setBikes] = useState(null);
 
-  const [loadingDelete, setLoadingDelete] = useState(null);
+  const [loadingDelete, setLoadingDelete] = useState(false);
 
   const [editing, setEditing] = useState(null);
   const [loadingEdit, setLoadingEdit] = useState(false);
@@ -71,12 +73,12 @@ export default function Bikes() {
   }
 
   function deleteBike(bikeId) {
-    setLoadingDelete(bikeId);
+    setLoadingDelete(true);
     fetch(`/api/bikes/${bikeId}`, {
       method: "DELETE",
     })
       .then(() => setBikes((current) => current.filter((r) => r.id !== bikeId)))
-      .finally(() => setLoadingDelete(null));
+      .finally(() => setLoadingDelete(false));
   }
 
   function updateBike() {
@@ -168,27 +170,21 @@ export default function Bikes() {
               <Paper key={bike.id} shadow="xl" py="xs" px="md">
                 <Stack gap="xs">
                   <Stack>
-                    <Text fw="bold" size="lg">
-                      {bike.name}
-                    </Text>
-                    {bike.description && <Text>{bike.description}</Text>}
                     <Group justify="space-between">
-                      <Button
+                      <Text fw="bold" size="lg">
+                        {bike.name}
+                      </Text>
+                      <ActionIcon
                         variant="filled"
                         onClick={() => editBike(bike.id)}
-                        disabled={loadingDelete === bike.id}
                       >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="filled"
-                        color="red"
-                        onClick={() => deleteBike(bike.id)}
-                        loading={loadingDelete === bike.id}
-                      >
-                        Delete
-                      </Button>
+                        <IconPencil
+                          style={{ width: "70%", height: "70%" }}
+                          stroke={1.5}
+                        />
+                      </ActionIcon>
                     </Group>
+                    {bike.description && <Text>{bike.description}</Text>}
                   </Stack>
                 </Stack>
               </Paper>
@@ -211,18 +207,32 @@ export default function Bikes() {
               label="Name"
               key={editForm.key("name")}
               {...editForm.getInputProps("name")}
-              disabled={loadingEdit}
+              disabled={loadingEdit || loadingDelete}
             />
             <Textarea
               label="Description"
               placeholder="(optional)"
               key={editForm.key("description")}
               {...editForm.getInputProps("description")}
-              disabled={loadingEdit}
+              disabled={loadingEdit || loadingDelete}
             />
-            <Button loading={loadingEdit} variant="filled" type="submit">
-              Save
-            </Button>
+            <Group justify="space-between">
+              <Button
+                loading={loadingEdit || loadingDelete}
+                variant="filled"
+                type="submit"
+              >
+                Save
+              </Button>
+              <Button
+                variant="filled"
+                color="red"
+                onClick={() => deleteBike(editing)}
+                loading={loadingEdit || loadingDelete}
+              >
+                Delete
+              </Button>
+            </Group>
           </Stack>
         </form>
       </Drawer>
