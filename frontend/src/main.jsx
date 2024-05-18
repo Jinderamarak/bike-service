@@ -7,6 +7,7 @@ import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import { RecoilRoot } from "recoil";
 import { DatesProvider } from "@mantine/dates";
+import "@mantine/charts/styles.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

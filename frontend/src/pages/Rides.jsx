@@ -325,25 +325,21 @@ export default function Rides() {
                 </Stack>
               </Paper>
             ))}
-          <Button.Group
-            style={{
-              display: "flex",
-              flexFlow: "row wrap",
-              justifyContent: "center",
-            }}
-          >
-            {(years.length === 0 ? [new Date().getFullYear()] : years).map(
-              (year) => (
-                <Button
-                  key={year}
-                  variant={year === selectedYear ? "filled" : "default"}
-                  onClick={() => selectYear(year)}
-                >
-                  {year}
-                </Button>
-              )
-            )}
-          </Button.Group>
+          <Group justify="center">
+            <Button.Group>
+              {(years.length === 0 ? [new Date().getFullYear()] : years).map(
+                (year) => (
+                  <Button
+                    key={year}
+                    variant={year === selectedYear ? "filled" : "default"}
+                    onClick={() => setSelectedYear(year)}
+                  >
+                    {year}
+                  </Button>
+                )
+              )}
+            </Button.Group>
+          </Group>
         </Stack>
       </Flex>
       <Drawer
