@@ -68,12 +68,6 @@ pub struct RidePartial {
     pub description: Option<String>,
 }
 
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct RideTotal {
-    pub total_distance: f64,
-}
-
 #[derive(Debug, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct RideMonth {

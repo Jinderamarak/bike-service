@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRecoilState } from "recoil";
 import { selectedBikeAtom } from "../atoms";
 
@@ -23,8 +23,11 @@ export default function Rides() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [years, setYears] = useState([new Date().getFullYear()]);
 
-  const [totalDistance, setTotalDistance] = useState(null);
   const [rideGroups, setRideGroups] = useState(null);
+  const totalDistance = useMemo(() => {
+    if (rideGroups === null) return null;
+    return rideGroups.reduce((acc, group) => acc + group.totalDistance, 0);
+  }, [rideGroups]);
 
   const [loadingDelete, setLoadingDelete] = useState(false);
 
@@ -81,7 +84,6 @@ export default function Rides() {
           (g) => g.year === year && g.month === month
         );
 
-        setTotalDistance((current) => current + ride.distance);
         if (group) {
           group.rides.push(ride);
           group.totalDistance += ride.distance;
@@ -108,7 +110,6 @@ export default function Rides() {
           group.rides.forEach((ride) => {
             if (ride.id === rideId) {
               group.totalDistance -= ride.distance;
-              setTotalDistance((current) => current - ride.distance);
             }
           });
           group.rides = group.rides.filter((ride) => ride.id !== rideId);
@@ -150,7 +151,6 @@ export default function Rides() {
 
           const distanceDiff = ride.distance - editedRide.distance;
           group.totalDistance += distanceDiff;
-          setTotalDistance((current) => current + distanceDiff);
 
           editedRide.date = ride.date;
           editedRide.distance = ride.distance;
@@ -199,17 +199,8 @@ export default function Rides() {
 
   useEffect(() => {
     if (selectedBike === null) return;
-    setTotalDistance(null);
 
     let controller = new AbortController();
-
-    fetch(`/api/bikes/${selectedBike}/rides/total`, {
-      signal: controller.signal,
-    })
-      .then((response) => response.json())
-      .then((data) => setTotalDistance(data.totalDistance))
-      .catch((err) => console.warn(err));
-
     fetch(`/api/bikes/${selectedBike}/rides/years`, {
       signal: controller.signal,
     })
