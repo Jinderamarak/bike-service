@@ -107,7 +107,7 @@ export default function Navigation() {
             </Button>
           </Flex>
         </Collapse>
-        <Skeleton visible={bikes === null}>
+        <Skeleton visible={bikes === null} w="fit-content">
           <Combobox store={bikeCombobox} onOptionSubmit={selectBike}>
             <Combobox.Target>
               <InputBase
