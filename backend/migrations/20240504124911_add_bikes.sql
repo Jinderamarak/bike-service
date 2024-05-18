@@ -34,5 +34,5 @@ CREATE TABLE rides
     deleted_at  TEXT    NULL,
     bike_id     INTEGER NOT NULL REFERENCES bikes (id)
 );
-INSERT INTO rides (id, date, description, distance, bike_id) SELECT id, date, description, distance, bike_id FROM rides_backup;
+INSERT INTO rides (id, date, distance, description, deleted_at, bike_id) SELECT id, date, distance, description, deleted_at, bike_id FROM rides_backup;
 DROP TABLE rides_backup;
