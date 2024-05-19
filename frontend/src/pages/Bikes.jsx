@@ -131,7 +131,7 @@ export default function Bikes() {
   return (
     <Container size="lg" style={{ width: "100%" }} p="0">
       <Flex direction={{ base: "column", xs: "row" }} wrap="nowrap" gap="xs">
-        <Paper shadow="xl" p="xs" style={{ flexShrink: 0 }}>
+        <Paper shadow="xl" p="xs" style={{ flexShrink: 0 }} withBorder>
           <form onSubmit={newForm.onSubmit(createBike)}>
             <Stack>
               <TextInput
@@ -163,14 +163,14 @@ export default function Bikes() {
             }}
           >
             {bikes?.length === 0 && (
-              <Paper shadow="xl" py="xs" px="md">
+              <Paper shadow="xl" py="xs" px="md" withBorder>
                 <Text fw="bold" size="lg" ta="center">
                   No Bikes
                 </Text>
               </Paper>
             )}
             {(bikes ?? []).map((bike) => (
-              <Paper key={bike.id} shadow="xl" py="xs" px="md">
+              <Paper key={bike.id} shadow="xl" py="xs" px="md" withBorder>
                 <Stack gap="xs">
                   <Stack>
                     <Group justify="space-between">

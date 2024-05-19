@@ -226,7 +226,7 @@ export default function Rides() {
   return (
     <Container size="lg" style={{ width: "100%" }} p="0">
       <Flex direction={{ base: "column", xs: "row" }} wrap="nowrap" gap="xs">
-        <Paper shadow="xl" p="xs" style={{ flexShrink: 0 }}>
+        <Paper shadow="xl" p="xs" style={{ flexShrink: 0 }} withBorder>
           <form onSubmit={newForm.onSubmit(createRide)}>
             <Stack>
               <DateInput
@@ -265,7 +265,7 @@ export default function Rides() {
           }}
         >
           <Skeleton visible={totalDistance === null}>
-            <Paper shadow="xl" py="xs" px="md">
+            <Paper shadow="xl" py="xs" px="md" withBorder>
               <Group justify="space-between">
                 <Text fw="bold" size="xl">
                   Total Distance
@@ -284,6 +284,7 @@ export default function Rides() {
                 shadow="xl"
                 py="xs"
                 px="md"
+                withBorder
               >
                 <Stack gap="xs">
                   <Group justify="space-between" pb="xs">
@@ -292,7 +293,7 @@ export default function Rides() {
                       {group.month}
                     </Text>
                     <Text fw="bold" size="lg">
-                      {group.totalDistance.toFixed(3)} km
+                      {group.totalDistance.toFixed(2)} km
                     </Text>
                   </Group>
                   {group.rides.map((ride) => (
@@ -332,7 +333,7 @@ export default function Rides() {
                   <Button
                     key={year}
                     variant={year === selectedYear ? "filled" : "default"}
-                    onClick={() => setSelectedYear(year)}
+                    onClick={() => selectYear(year)}
                   >
                     {year}
                   </Button>

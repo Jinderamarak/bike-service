@@ -79,7 +79,7 @@ export default function Navigation() {
   const isStats = location.pathname === "/stats";
   const isData = location.pathname === "/data";
   return (
-    <Paper shadow="xl" p="sm">
+    <Paper shadow="xl" p="sm" withBorder>
       <Flex direction={{ base: "column", xs: "row" }} gap="sm">
         <Flex direction="row" justify="space-between" style={{ flexShrink: 0 }}>
           <Text size="xl">Bike Service</Text>
