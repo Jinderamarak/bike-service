@@ -1,4 +1,4 @@
-import { Stack } from "@mantine/core";
+import { Stack, rem } from "@mantine/core";
 import Navigation from "./parts/Navigation";
 import Rides from "./pages/Rides";
 import Bikes from "./pages/Bikes";
@@ -8,6 +8,8 @@ import { Routes, Route } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { selectedBikeAtom } from "./atoms";
 import { useEffect } from "react";
+import { notifications } from "@mantine/notifications";
+import { IconAntenna, IconAntennaOff } from "@tabler/icons-react";
 
 function App() {
   const selectedBike = useRecoilState(selectedBikeAtom)[0];
@@ -17,6 +19,36 @@ function App() {
       localStorage.setItem("selectedBike", selectedBike);
     }
   }, [selectedBike]);
+
+  useEffect(() => {
+    const offlineHandler = () => {
+      notifications.show({
+        title: "Offline",
+        message: "You are currently offline",
+        autoClose: 5000,
+        withBorder: true,
+        icon: <IconAntennaOff style={{ width: rem(20), height: rem(20) }} />,
+      });
+    };
+
+    const onlineHandler = () => {
+      notifications.show({
+        title: "Online",
+        message: "You are back online",
+        autoClose: 5000,
+        withBorder: true,
+        icon: <IconAntenna style={{ width: rem(20), height: rem(20) }} />,
+      });
+    };
+
+    window.addEventListener("offline", offlineHandler);
+    window.addEventListener("online", onlineHandler);
+
+    return () => {
+      window.removeEventListener("offline", offlineHandler);
+      window.removeEventListener("online", onlineHandler);
+    };
+  }, []);
 
   return (
     <Stack p="xs" gap="xs">
