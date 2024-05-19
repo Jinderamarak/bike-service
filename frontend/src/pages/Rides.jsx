@@ -271,7 +271,7 @@ export default function Rides() {
                   Total Distance
                 </Text>
                 <Text fw="bold" size="lg">
-                  {totalDistance} km
+                  {(totalDistance ?? 0).toFixed(2)} km
                 </Text>
               </Group>
             </Paper>
@@ -292,7 +292,7 @@ export default function Rides() {
                       {group.month}
                     </Text>
                     <Text fw="bold" size="lg">
-                      {group.totalDistance} km
+                      {group.totalDistance.toFixed(3)} km
                     </Text>
                   </Group>
                   {group.rides.map((ride) => (
@@ -318,7 +318,7 @@ export default function Rides() {
                         {ride.description}
                       </Text>
                       <Text size="md" fw="bolder" style={{ flexShrink: 0 }}>
-                        {ride.distance} km
+                        {ride.distance.toFixed(2)} km
                       </Text>
                     </Group>
                   ))}
