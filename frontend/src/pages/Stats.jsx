@@ -89,6 +89,7 @@ export default function Stats() {
           unit=" km"
           referenceLines={[{ y: 100, label: "Monthly goal", color: "red" }]}
           withXAxis={false}
+          valueFormatter={(v) => v.toFixed(2)}
         />
       </Skeleton>
       <Skeleton visible={stats === null}>
