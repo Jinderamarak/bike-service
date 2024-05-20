@@ -24,6 +24,7 @@ function mapData(data) {
     .map((item) => ({
       ...item,
       rides: item.rides.length === 0 ? null : item.rides.length,
+      totalDistance: item.rides.length === 0 ? null : item.totalDistance,
       month: Months[item.month - 1],
     }))
     .reverse();
