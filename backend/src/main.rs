@@ -1,10 +1,12 @@
+use std::path::Path;
+
 use axum::Router;
 use clap::Parser;
 #[cfg(debug_assertions)]
 use dotenv::dotenv;
 use sqlx::SqlitePool;
 use tokio::net;
-use tower_http::services::ServeDir;
+use tower_http::services::{ServeDir, ServeFile};
 
 use crate::config::Configuration;
 use crate::services::api_router;
@@ -37,11 +39,13 @@ async fn main() -> anyhow::Result<()> {
     // initialize tracing
     // tracing_subscriber::fmt::init();
 
-    let serve_dir = ServeDir::new(&config.static_dir);
+    let spa = ServeDir::new(&config.static_dir).not_found_service(ServeFile::new(
+        Path::new(&config.static_dir).join("index.html"),
+    ));
     let state = AppState::new(pool);
     let app = Router::new()
         .nest("/api", api_router())
-        .fallback_service(serve_dir)
+        .fallback_service(spa)
         .with_state(state);
 
     let socket_addr = config.socket_address();
