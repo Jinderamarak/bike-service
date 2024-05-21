@@ -18,5 +18,6 @@ module.exports = {
       { allowConstantExport: true },
     ],
     "no-unused-vars": ["error", { ignorePatterns: "^_" }],
+    indent: ["error", 4],
   },
 };
