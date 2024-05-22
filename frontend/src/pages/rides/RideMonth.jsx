@@ -18,8 +18,8 @@ export default function RideMonth({
     }
 
     return (
-        <Paper withBorder p="xs">
-            <Stack gap="xs">
+        <Paper withBorder p="md">
+            <Stack gap="md">
                 <Group justify="space-between">
                     <Text fw="bold" size="lg">
                         {label}

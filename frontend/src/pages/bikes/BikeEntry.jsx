@@ -8,7 +8,7 @@ export default function BikeEntry({ id, name, description, onEditBike }) {
     }
 
     return (
-        <Paper withBorder p="xs">
+        <Paper withBorder p="md">
             <Stack>
                 <Group justify="space-between" wrap="nowrap">
                     <Text fw="bold" size="lg" truncate="end">

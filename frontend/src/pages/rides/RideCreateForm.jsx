@@ -46,7 +46,7 @@ export default function RideCreateForm({ onRideCreated }) {
 
     return (
         <Stack style={{ flexShrink: 0 }}>
-            <Paper withBorder p="xs">
+            <Paper withBorder p="md">
                 <Form form={newForm} onSubmit={handleSubmit}>
                     <Stack>
                         <RideFormFieds form={newForm} disabled={loading} />

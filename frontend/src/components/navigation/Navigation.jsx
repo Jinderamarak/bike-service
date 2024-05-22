@@ -8,7 +8,7 @@ export default function Navigation() {
 
     return (
         <Paper withBorder p="md">
-            <Flex direction={{ base: "column", xs: "row" }} gap="sm">
+            <Flex direction={{ base: "column", xs: "row" }} gap="md">
                 <Flex
                     direction="row"
                     justify="space-between"

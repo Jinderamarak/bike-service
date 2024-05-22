@@ -12,16 +12,16 @@ import "@mantine/notifications/styles.css";
 import { Notifications } from "@mantine/notifications";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <RecoilRoot>
-      <MantineProvider defaultColorScheme="dark">
-        <DatesProvider settings={{ timezone: "UTC" }}>
-          <Notifications />
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </DatesProvider>
-      </MantineProvider>
-    </RecoilRoot>
-  </React.StrictMode>
+    <React.StrictMode>
+        <RecoilRoot>
+            <MantineProvider defaultColorScheme="dark">
+                <DatesProvider settings={{ timezone: "UTC" }}>
+                    <Notifications />
+                    <BrowserRouter>
+                        <App />
+                    </BrowserRouter>
+                </DatesProvider>
+            </MantineProvider>
+        </RecoilRoot>
+    </React.StrictMode>
 );

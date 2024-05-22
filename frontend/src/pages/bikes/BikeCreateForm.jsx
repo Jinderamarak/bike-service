@@ -43,7 +43,7 @@ export default function BikeCreateForm({ onBikeCreated }) {
 
     return (
         <Stack style={{ flexShrink: 0 }}>
-            <Paper withBorder p="xs">
+            <Paper withBorder p="md">
                 <Form form={newForm} onSubmit={createBike}>
                     <Stack>
                         <BikeFormFields form={newForm} disabled={loading} />

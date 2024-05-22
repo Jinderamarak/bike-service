@@ -44,15 +44,15 @@ export default function BikesPage() {
 
     return (
         <Container size="lg" p={0} style={{ width: "100%" }}>
-            <Flex direction={{ base: "column", xs: "row" }} gap="xs">
+            <Flex direction={{ base: "column", xs: "row" }} gap="md">
                 <BikeCreateForm onBikeCreated={handleOnBikeCreated} />
                 <Skeleton
                     visible={bikes === null}
                     style={{ flexGrow: 1, overflow: "hidden" }}
                 >
-                    <Stack gap="sm">
+                    <Stack gap="md">
                         {bikes?.length === 0 && (
-                            <Paper withBorder p="xs">
+                            <Paper withBorder p="md">
                                 <Text fw="bold" size="lg" ta="center">
                                     No Bikes
                                 </Text>

@@ -141,17 +141,17 @@ export default function RidesPage() {
     return (
         <Container size="lg" p={0} style={{ width: "100%" }}>
             <WithSelectedBike>
-                <Flex direction={{ base: "column", xs: "row" }} gap="xs">
+                <Flex direction={{ base: "column", xs: "row" }} gap="md">
                     <RideCreateForm onRideCreated={handleOnRideCreated} />
                     <Stack
-                        gap="sm"
+                        gap="md"
                         style={{
                             flexGrow: 1,
                             overflow: "hidden",
                         }}
                     >
                         <Skeleton visible={totalDistance === null}>
-                            <Paper withBorder p="xs">
+                            <Paper withBorder p="md">
                                 <Group justify="space-between">
                                     <Text fw="bold" size="xl">
                                         Total Distance

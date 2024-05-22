@@ -42,7 +42,7 @@ export default function NavLinks({ open, onClose }) {
             <Flex
                 direction={{ base: "column", xs: "row" }}
                 wrap="nowrap"
-                gap="sm"
+                gap="md"
                 justify="center"
             >
                 <Button
