@@ -11,15 +11,7 @@ export default function BikeEntry({ id, name, description, onEditBike }) {
         <Paper withBorder p="xs">
             <Stack>
                 <Group justify="space-between" wrap="nowrap">
-                    <Text
-                        fw="bold"
-                        size="lg"
-                        style={{
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                        }}
-                    >
+                    <Text fw="bold" size="lg" truncate="end">
                         {name}
                     </Text>
                     <ActionIcon variant="filled" onClick={handleOnEditClick}>
@@ -27,7 +19,7 @@ export default function BikeEntry({ id, name, description, onEditBike }) {
                     </ActionIcon>
                 </Group>
                 {description && (
-                    <Text style={{ overflowWrap: "anywhere" }}>
+                    <Text lineClamp={3} style={{ overflowWrap: "anywhere" }}>
                         {description}
                     </Text>
                 )}
