@@ -88,7 +88,7 @@ export default function BikeEditDrawer({
                     />
                     <Group justify="space-between">
                         <Button
-                            variant="light"
+                            variant="filled"
                             type="submit"
                             loading={loadingUpdate}
                             disabled={loadingDelete}
@@ -96,7 +96,7 @@ export default function BikeEditDrawer({
                             Save
                         </Button>
                         <Button
-                            variant="light"
+                            variant="filled"
                             color="red"
                             onClick={deleteBike}
                             loading={loadingDelete}

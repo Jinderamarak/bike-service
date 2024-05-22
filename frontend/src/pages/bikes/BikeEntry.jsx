@@ -22,7 +22,7 @@ export default function BikeEntry({ id, name, description, onEditBike }) {
                     >
                         {name}
                     </Text>
-                    <ActionIcon variant="light" onClick={handleOnEditClick}>
+                    <ActionIcon variant="filled" onClick={handleOnEditClick}>
                         <IconPencil />
                     </ActionIcon>
                 </Group>

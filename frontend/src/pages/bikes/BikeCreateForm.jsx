@@ -47,7 +47,11 @@ export default function BikeCreateForm({ onBikeCreated }) {
                 <Form form={newForm} onSubmit={createBike}>
                     <Stack>
                         <BikeFormFields form={newForm} disabled={loading} />
-                        <Button loading={loading} variant="light" type="submit">
+                        <Button
+                            loading={loading}
+                            variant="filled"
+                            type="submit"
+                        >
                             Create
                         </Button>
                     </Stack>
