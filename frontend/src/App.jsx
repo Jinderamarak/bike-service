@@ -1,8 +1,8 @@
 import { Stack, rem } from "@mantine/core";
-import Navigation from "./parts/Navigation";
-import Rides from "./pages/Rides";
+import Navigation from "./components/Navigation";
 import BikesPage from "./pages/bikes/BikesPage";
-import Stats from "./pages/Stats";
+import StatsPage from "./pages/stats/StatsPage";
+import RidesPage from "./pages/rides/RidesPage";
 import Data from "./pages/Data";
 import { Routes, Route } from "react-router-dom";
 import { useRecoilState } from "recoil";
@@ -54,7 +54,7 @@ function App() {
     <Stack p="xs" gap="xs">
       <Navigation />
       <Routes>
-        <Route index element={<Rides />} />
+                <Route index element={<RidesPage />} />
         <Route path="/bikes" element={<BikesPage />} />
         <Route path="/stats" element={<StatsPage />} />
         <Route path="/data" element={<Data />} />

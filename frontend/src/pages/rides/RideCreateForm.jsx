@@ -1,24 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
+import rideForm from "./rideForm";
 import { Form, useForm } from "@mantine/form";
-import bikeForm from "./bikeForm";
-import { useState } from "react";
+import { useRecoilState } from "recoil";
+import { selectedBikeAtom } from "../../atoms";
 import { notifications } from "@mantine/notifications";
-import { Button, Paper, Stack } from "@mantine/core";
-import BikeFormFields from "./BikeFormFields";
+import RideFormFieds from "./RideFormFields";
+import { Stack, Paper, Button } from "@mantine/core";
 
-export default function BikeCreateForm({ onBikeCreated }) {
+export default function RideCreateForm({ onRideCreated }) {
+    const [selectedBike, _] = useRecoilState(selectedBikeAtom);
     const [loading, setLoading] = useState(false);
-    const newForm = useForm(bikeForm);
+    const newForm = useForm(rideForm);
 
-    async function createBike(values) {
+    async function handleSubmit(values) {
         setLoading(true);
         const body = {
-            name: values.name,
+            date: values.date.toISOString().split("T")[0],
+            distance: values.distance,
             description: values.description || null,
         };
 
         try {
-            const response = await fetch("/api/bikes", {
+            const response = await fetch(`/api/bikes/${selectedBike}/rides`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -28,11 +31,11 @@ export default function BikeCreateForm({ onBikeCreated }) {
 
             const data = await response.json();
             newForm.reset();
-            onBikeCreated(data);
+            onRideCreated(data);
         } catch (error) {
             console.error(error);
             notifications.show({
-                title: "Failed to create bike",
+                title: "Failed to create ride",
                 message: error.message,
                 color: "red",
             });
@@ -44,9 +47,9 @@ export default function BikeCreateForm({ onBikeCreated }) {
     return (
         <Stack style={{ flexShrink: 0 }}>
             <Paper withBorder p="xs">
-                <Form form={newForm} onSubmit={createBike}>
+                <Form form={newForm} onSubmit={handleSubmit}>
                     <Stack>
-                        <BikeFormFields form={newForm} disabled={loading} />
+                        <RideFormFieds form={newForm} disabled={loading} />
                         <Button
                             loading={loading}
                             variant="filled"

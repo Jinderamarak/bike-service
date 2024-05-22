@@ -8,7 +8,7 @@ export default function BikesPage() {
     const [bikes, setBikes] = useState(null);
     const [editedBike, setEditedBike] = useState(null);
 
-    function handleOnBikeCreate(bike) {
+    function handleOnBikeCreated(bike) {
         setBikes((current) => [...current, bike]);
     }
 
@@ -45,14 +45,14 @@ export default function BikesPage() {
     return (
         <Container size="lg" p={0} style={{ width: "100%" }}>
             <Flex direction={{ base: "column", xs: "row" }} gap="xs">
-                <BikeCreateForm onBikeCreated={handleOnBikeCreate} />
+                <BikeCreateForm onBikeCreated={handleOnBikeCreated} />
                 <Skeleton
                     visible={bikes === null}
                     style={{ flexGrow: 1, overflow: "hidden" }}
                 >
                     <Stack gap="sm">
                         {bikes?.length === 0 && (
-                            <Paper shadow="xl" py="xs" px="md" withBorder>
+                            <Paper withBorder p="xs">
                                 <Text fw="bold" size="lg" ta="center">
                                     No Bikes
                                 </Text>
