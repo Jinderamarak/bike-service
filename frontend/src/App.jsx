@@ -56,7 +56,7 @@ function App() {
       <Routes>
         <Route index element={<Rides />} />
         <Route path="/bikes" element={<BikesPage />} />
-        <Route path="/stats" element={<Stats />} />
+        <Route path="/stats" element={<StatsPage />} />
         <Route path="/data" element={<Data />} />
       </Routes>
     </Stack>

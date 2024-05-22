@@ -43,7 +43,7 @@ export default function BikesPage() {
     }, []);
 
     return (
-        <Container size="lg" style={{ width: "100%" }} p={0}>
+        <Container size="lg" p={0} style={{ width: "100%" }}>
             <Flex direction={{ base: "column", xs: "row" }} gap="xs">
                 <BikeCreateForm onBikeCreated={handleOnBikeCreate} />
                 <Skeleton
