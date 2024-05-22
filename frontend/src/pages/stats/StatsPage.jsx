@@ -53,6 +53,7 @@ export default function StatsPage() {
                             ]}
                             withXAxis={false}
                             valueFormatter={(v) => v.toFixed(2)}
+                            connectNulls={false}
                         />
                     </Skeleton>
                     <Skeleton visible={stats === null}>
@@ -70,6 +71,7 @@ export default function StatsPage() {
                             areaChartProps={{ syncId: "statsPage" }}
                             tickLine="xy"
                             withLegend
+                            connectNulls={false}
                         />
                     </Skeleton>
                     <Group justify="center">
