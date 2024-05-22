@@ -1,5 +1,5 @@
 import { Stack, rem } from "@mantine/core";
-import Navigation from "./components/Navigation";
+import Navigation from "./components/navigation/Navigation";
 import BikesPage from "./pages/bikes/BikesPage";
 import StatsPage from "./pages/stats/StatsPage";
 import RidesPage from "./pages/rides/RidesPage";
