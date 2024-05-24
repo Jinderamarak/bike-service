@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { selectedBikeAtom } from "../../atoms";
+import { selectedBikeAtom, selectedColorAtom } from "../../atoms";
 import { useRecoilState } from "recoil";
 import {
     Combobox,
@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export default function BikeSelect() {
+    const [_, setSelectedColor] = useRecoilState(selectedColorAtom);
     const [selectedBike, setSelectedBike] = useRecoilState(selectedBikeAtom);
     const [bikes, setBikes] = useState(null);
     const bikeCombobox = useCombobox();
@@ -44,6 +45,9 @@ export default function BikeSelect() {
                 setSelectedBike(null);
             }
         }
+
+        let bike = bikes.find((b) => b.id === selectedBike);
+        setSelectedColor(bike?.color ?? null);
     }, [bikes, selectedBike, setSelectedBike]);
 
     return (

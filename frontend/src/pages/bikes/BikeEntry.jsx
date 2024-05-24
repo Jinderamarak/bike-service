@@ -1,19 +1,33 @@
 import React from "react";
-import { ActionIcon, Group, Paper, Stack, Text } from "@mantine/core";
+import {
+    ActionIcon,
+    ColorSwatch,
+    Group,
+    Paper,
+    Stack,
+    Text,
+} from "@mantine/core";
 import { IconPencil } from "@tabler/icons-react";
 
-export default function BikeEntry({ id, name, description, onEditBike }) {
+export default function BikeEntry({
+    id,
+    name,
+    description,
+    color,
+    onEditBike,
+}) {
     function handleOnEditClick() {
-        onEditBike({ id, name, description });
+        onEditBike({ id, name, description, color });
     }
 
     return (
         <Paper withBorder p="md">
             <Stack>
-                <Group justify="space-between" wrap="nowrap">
-                    <Text fw="bold" size="lg" truncate="end">
+                <Group wrap="nowrap">
+                    <Text fw="bold" size="lg" truncate="end" flex="1 1 auto">
                         {name}
                     </Text>
+                    <ColorSwatch color={color} />
                     <ActionIcon variant="filled" onClick={handleOnEditClick}>
                         <IconPencil />
                     </ActionIcon>

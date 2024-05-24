@@ -58,9 +58,10 @@ impl BikeRepository {
 
     pub async fn create(&self, new: &BikePartial) -> AppResult<BikeModel> {
         let id = sqlx::query!(
-            "INSERT INTO bikes (name, description) VALUES (?, ?)",
+            "INSERT INTO bikes (name, description, color) VALUES (?, ?, ?)",
             new.name,
-            new.description
+            new.description,
+            new.color
         )
         .execute(&self.0)
         .await?
@@ -71,6 +72,7 @@ impl BikeRepository {
             name: new.name.clone(),
             description: new.description.clone(),
             deleted_at: None,
+            color: new.color.clone(),
         };
 
         Ok(model)
@@ -78,9 +80,10 @@ impl BikeRepository {
 
     pub async fn update(&self, bike_id: i64, update: &BikePartial) -> AppResult<BikeModel> {
         let affected = sqlx::query!(
-            "UPDATE bikes SET name = ?, description = ? WHERE id = ? AND deleted_at IS NULL",
+            "UPDATE bikes SET name = ?, description = ?, color = ? WHERE id = ? AND deleted_at IS NULL",
             update.name,
             update.description,
+            update.color,
             bike_id
         )
         .execute(&self.0)
@@ -98,6 +101,7 @@ impl BikeRepository {
             name: update.name.clone(),
             description: update.description.clone(),
             deleted_at: None,
+            color: update.color.clone(),
         };
 
         Ok(model)

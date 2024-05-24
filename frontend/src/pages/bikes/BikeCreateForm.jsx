@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, useForm } from "@mantine/form";
-import bikeForm from "./bikeForm";
+import bikeForm, { bikeFormToBody } from "./bikeForm";
 import { useState } from "react";
 import { notifications } from "@mantine/notifications";
 import { Button, Paper, Stack } from "@mantine/core";
@@ -12,10 +12,7 @@ export default function BikeCreateForm({ onBikeCreated }) {
 
     async function createBike(values) {
         setLoading(true);
-        const body = {
-            name: values.name,
-            description: values.description || null,
-        };
+        const body = bikeFormToBody(values);
 
         try {
             const response = await fetch("/api/bikes", {

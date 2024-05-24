@@ -70,8 +70,9 @@ export default function BikesPage() {
             </Flex>
             <BikeEditDrawer
                 id={editedBike?.id}
-                name={editedBike?.name}
-                description={editedBike?.description}
+                name={editedBike?.name ?? ""}
+                description={editedBike?.description ?? ""}
+                color={editedBike?.color ?? ""}
                 onCancel={handleOnCancel}
                 onBikeEdited={handleOnBikeEdited}
                 onBikeDeleted={handleOnBikeDeleted}

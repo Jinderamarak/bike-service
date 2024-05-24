@@ -7,14 +7,24 @@ function nameValidator(value) {
 
 /** @type {any} */
 const bikeForm = {
-    mode: "uncontrolled",
+    mode: "controlled",
     initialValues: {
         name: "",
         description: "",
+        hasColor: false,
+        color: "",
     },
     validate: {
         name: nameValidator,
     },
 };
+
+export function bikeFormToBody(values) {
+    return {
+        name: values.name,
+        description: values.description || null,
+        color: values.hasColor ? values.color : null,
+    };
+}
 
 export default bikeForm;

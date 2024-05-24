@@ -1,7 +1,7 @@
 import React from "react";
 import { Form, useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
-import bikeForm from "./bikeForm";
+import bikeForm, { bikeFormToBody } from "./bikeForm";
 import { Button, Drawer, Group, Stack } from "@mantine/core";
 import BikeFormFields from "./BikeFormFields";
 import { notifications } from "@mantine/notifications";
@@ -10,6 +10,7 @@ export default function BikeEditDrawer({
     id,
     name,
     description,
+    color,
     onCancel,
     onBikeEdited,
     onBikeDeleted,
@@ -20,10 +21,7 @@ export default function BikeEditDrawer({
 
     async function updateBike(values) {
         setLoadingUpdate(true);
-        const body = {
-            name: values.name,
-            description: values.description || null,
-        };
+        const body = bikeFormToBody(values);
 
         try {
             const response = await fetch(`/api/bikes/${id}`, {
@@ -70,8 +68,13 @@ export default function BikeEditDrawer({
     }
 
     useEffect(() => {
-        editForm.setValues({ name, description });
-    }, [name, description]);
+        editForm.setValues({
+            name,
+            description,
+            hasColor: Boolean(color),
+            color: color || "",
+        });
+    }, [name, description, color]);
 
     return (
         <Drawer
