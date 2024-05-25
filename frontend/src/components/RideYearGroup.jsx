@@ -19,7 +19,7 @@ export default function RideYearGroup({ year, onYearSelected }) {
             .catch((err) => console.warn(err));
 
         return () => controller.abort();
-    });
+    }, [selectedBike]);
 
     return (
         <Button.Group>
