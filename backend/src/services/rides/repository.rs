@@ -37,7 +37,7 @@ impl RideRepository {
     pub async fn get_all(&self) -> AppResult<Vec<RideModel>> {
         let models = sqlx::query_as!(
             RideRaw,
-            "SELECT * FROM rides WHERE deleted_at IS NULL ORDER BY date DESC"
+            "SELECT * FROM rides WHERE deleted_at IS NULL ORDER BY date DESC, id DESC"
         )
         .fetch_all(&self.0)
         .await?
@@ -49,7 +49,7 @@ impl RideRepository {
     pub async fn get_all_for_bike(&self, bike_id: i64) -> AppResult<Vec<RideModel>> {
         let models = sqlx::query_as!(
             RideRaw,
-            "SELECT * FROM rides WHERE deleted_at IS NULL AND bike_id = ? ORDER BY date DESC",
+            "SELECT * FROM rides WHERE deleted_at IS NULL AND bike_id = ? ORDER BY date DESC, id DESC",
             bike_id
         )
         .fetch_all(&self.0)
@@ -67,7 +67,7 @@ impl RideRepository {
         let starts_with = format!("{}%", date);
         let models = sqlx::query_as!(
             RideRaw,
-            "SELECT * FROM rides WHERE deleted_at IS NULL AND bike_id = ? AND date LIKE ? ORDER BY date DESC",
+            "SELECT * FROM rides WHERE deleted_at IS NULL AND bike_id = ? AND date LIKE ? ORDER BY date DESC, id DESC",
             bike_id,
             starts_with
         )
