@@ -15,7 +15,10 @@ export default function RideYearGroup({ year, onYearSelected }) {
             signal: controller.signal,
         })
             .then((response) => response.json())
-            .then((data) => setYears(data))
+            .then((data) => {
+                data.sort((a, b) => b - a);
+                setYears(data);
+            })
             .catch((err) => console.warn(err));
 
         return () => controller.abort();
