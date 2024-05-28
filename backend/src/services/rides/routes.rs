@@ -64,9 +64,9 @@ async fn update_ride(
 async fn delete_ride(
     State(repo): State<RideRepository>,
     Path(ride_id): Path<i64>,
-) -> AppResult<Json<()>> {
+) -> AppResult<(StatusCode, Json<()>)> {
     repo.delete(ride_id).await?;
-    Ok(Json(()))
+    Ok((StatusCode::NO_CONTENT, Json(())))
 }
 
 async fn get_active_years(

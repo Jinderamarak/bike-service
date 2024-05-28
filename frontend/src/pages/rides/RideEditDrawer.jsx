@@ -56,7 +56,12 @@ export default function RideEditDrawer({
                 method: "DELETE",
             });
 
-            const _ = await response.json();
+            if (response.status !== 204) {
+                throw new Error(
+                    "Failed to delete ride: status code is not 204"
+                );
+            }
+
             onRideDeleted(id);
         } catch (error) {
             console.error(error);

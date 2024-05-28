@@ -53,7 +53,12 @@ export default function BikeEditDrawer({
                 method: "DELETE",
             });
 
-            const _ = await response.json();
+            if (response.status !== 204) {
+                throw new Error(
+                    "Failed to delete bike: status code is not 204"
+                );
+            }
+
             onBikeDeleted(id);
         } catch (error) {
             console.error(error);
