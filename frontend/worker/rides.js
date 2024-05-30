@@ -1,7 +1,6 @@
 import AsyncDB from "./db";
 import AsyncMutex from "./lock";
 import { del, get, post, put } from "./router";
-import { sw } from "./worker";
 
 export const ridesDb = new AsyncDB("rides", 1, initializeDb);
 const lock = new AsyncMutex();

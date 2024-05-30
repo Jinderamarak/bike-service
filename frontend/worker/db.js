@@ -12,6 +12,7 @@ class AsyncDB {
         const request = sw.indexedDB.open(this.name, this.version);
         return new Promise((resolve, reject) => {
             request.onupgradeneeded = (event) => {
+                // @ts-ignore
                 const db = event.target.result;
                 const old = event.oldVersion;
                 const next = event.newVersion;
@@ -19,11 +20,13 @@ class AsyncDB {
             };
 
             request.onsuccess = (event) => {
+                // @ts-ignore
                 this.db = event.target.result;
                 resolve(this);
             };
 
             request.onerror = (event) => {
+                // @ts-ignore
                 reject(event.target.error);
             };
         });
