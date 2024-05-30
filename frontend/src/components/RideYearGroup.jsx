@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { selectedBikeAtom } from "../atoms";
+import { selectedBikeIdAtom } from "../data/persistentAtoms";
 import { Button } from "@mantine/core";
 
 export default function RideYearGroup({ year, onYearSelected }) {
-    const [selectedBike, _] = useRecoilState(selectedBikeAtom);
+    const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
     const [years, setYears] = useState([year]);
 
     useEffect(() => {

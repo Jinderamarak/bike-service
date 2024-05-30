@@ -7,18 +7,12 @@ import RidesPage from "./pages/rides/RidesPage";
 import Data from "./pages/Data";
 import { Routes, Route } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { selectedBikeAtom } from "./atoms";
+import { selectedBikeIdAtom, syncLocalStorate } from "./data/persistentAtoms";
 import { notifications } from "@mantine/notifications";
 import { IconAntenna, IconAntennaOff } from "@tabler/icons-react";
 
 function App() {
-    const selectedBike = useRecoilState(selectedBikeAtom)[0];
-
-    useEffect(() => {
-        if (selectedBike) {
-            localStorage.setItem("selectedBike", `${selectedBike}`);
-        }
-    }, [selectedBike]);
+    syncLocalStorate();
 
     useEffect(() => {
         const offlineHandler = () => {

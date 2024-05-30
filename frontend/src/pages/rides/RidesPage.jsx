@@ -9,7 +9,7 @@ import {
 } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { useRecoilState } from "recoil";
-import { selectedBikeAtom } from "../../atoms";
+import { selectedBikeIdAtom } from "../../data/persistentAtoms";
 import RideCreateForm from "./RideCreateForm";
 import React from "react";
 import RideMonth from "./RideMonth";
@@ -18,7 +18,7 @@ import RideYearGroup from "../../components/RideYearGroup";
 import WithSelectedBike from "../../components/WithSelectedBike";
 
 export default function RidesPage() {
-    const [selectedBike, _] = useRecoilState(selectedBikeAtom);
+    const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [rideMonths, setRideMonths] = useState(null);
     const [editedRide, setEditedRide] = useState(null);

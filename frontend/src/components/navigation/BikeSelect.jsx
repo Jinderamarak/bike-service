@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { selectedBikeAtom, selectedColorAtom } from "../../atoms";
+import {
+    selectedBikeIdAtom,
+    selectedBikeColorAtom,
+} from "../../data/persistentAtoms";
 import { useRecoilState } from "recoil";
 import {
     Combobox,
@@ -10,11 +13,12 @@ import {
     Text,
 } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
+import useBikes from "../../data/useBikes";
 
 export default function BikeSelect() {
-    const [_, setSelectedColor] = useRecoilState(selectedColorAtom);
-    const [selectedBike, setSelectedBike] = useRecoilState(selectedBikeAtom);
-    const [bikes, setBikes] = useState(null);
+    const { bikes } = useBikes();
+    const [_, setSelectedColor] = useRecoilState(selectedBikeColorAtom);
+    const [selectedBike, setSelectedBike] = useRecoilState(selectedBikeIdAtom);
     const bikeCombobox = useCombobox();
     const navigate = useNavigate();
 
@@ -26,16 +30,6 @@ export default function BikeSelect() {
         }
         setSelectedBike(bikeId);
     }
-
-    useEffect(() => {
-        const controller = new AbortController();
-        fetch("/api/bikes", { signal: controller.signal })
-            .then((response) => response.json())
-            .then((data) => setBikes(data))
-            .catch((err) => console.warn(err));
-
-        return () => controller.abort();
-    }, []);
 
     useEffect(() => {
         if (bikes === null) return;

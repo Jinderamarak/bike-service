@@ -10,7 +10,7 @@ import "@mantine/dates/styles.css";
 import "@mantine/charts/styles.css";
 import "@mantine/notifications/styles.css";
 import { Notifications } from "@mantine/notifications";
-import { selectedColorAtom } from "./atoms.js";
+import { selectedBikeColorAtom } from "./data/persistentAtoms.js";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
@@ -28,12 +28,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 );
 
 function AppTheme({ children }) {
-    const [color, _] = useRecoilState(selectedColorAtom);
+    const [color, _] = useRecoilState(selectedBikeColorAtom);
 
     const theme = createTheme({
         autoContrast: true,
         primaryColor: color ? "bikeColor" : "blue",
         colors: {
+            // @ts-ignore
             bikeColor: Array(10).fill(color),
         },
     });

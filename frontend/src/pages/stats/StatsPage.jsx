@@ -1,7 +1,7 @@
 import { Button, Container, Group, Skeleton, Stack, Text } from "@mantine/core";
 import { AreaChart } from "@mantine/charts";
 import { useEffect, useState } from "react";
-import { selectedBikeAtom } from "../../atoms";
+import { selectedBikeIdAtom } from "../../data/persistentAtoms";
 import { useRecoilState } from "recoil";
 import RideYearGroup from "../../components/RideYearGroup";
 import React from "react";
@@ -9,7 +9,7 @@ import WithSelectedBike from "../../components/WithSelectedBike";
 import { mapStatsData } from "./data";
 
 export default function StatsPage() {
-    const [selectedBike, _] = useRecoilState(selectedBikeAtom);
+    const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [stats, setStats] = useState(null);
 

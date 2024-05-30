@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import rideForm from "./rideForm";
 import { Form, useForm } from "@mantine/form";
 import { useRecoilState } from "recoil";
-import { selectedBikeAtom } from "../../atoms";
+import { selectedBikeIdAtom } from "../../data/persistentAtoms";
 import { notifications } from "@mantine/notifications";
 import RideFormFieds from "./RideFormFields";
 import { Stack, Paper, Button } from "@mantine/core";
 
 export default function RideCreateForm({ onRideCreated }) {
-    const [selectedBike, _] = useRecoilState(selectedBikeAtom);
+    const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
     const [loading, setLoading] = useState(false);
     const newForm = useForm(rideForm);
 

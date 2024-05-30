@@ -3,13 +3,14 @@ import { Container, Flex, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import BikeCreateForm from "./BikeCreateForm";
 import BikeEntry from "./BikeEntry";
 import BikeEditDrawer from "./BikeEditDrawer";
+import useBikes from "../../data/useBikes";
 
 export default function BikesPage() {
-    const [bikes, setBikes] = useState(null);
+    const { bikes, addBike, editBike, deleteBike } = useBikes();
     const [editedBike, setEditedBike] = useState(null);
 
     function handleOnBikeCreated(bike) {
-        setBikes((current) => [...current, bike]);
+        addBike(bike);
     }
 
     function handleOnBikeEdit(bike) {
@@ -22,25 +23,13 @@ export default function BikesPage() {
 
     function handleOnBikeEdited(bike) {
         setEditedBike(null);
-        setBikes((current) =>
-            current.map((r) => (r.id === bike.id ? bike : r))
-        );
+        editBike(bike);
     }
 
     function handleOnBikeDeleted(bikeId) {
         setEditedBike(null);
-        setBikes((current) => current.filter((r) => r.id !== bikeId));
+        deleteBike(bikeId);
     }
-
-    useEffect(() => {
-        const controller = new AbortController();
-        fetch("/api/bikes", { signal: controller.signal })
-            .then((response) => response.json())
-            .then((data) => setBikes(data))
-            .catch((err) => console.warn(err));
-
-        return () => controller.abort();
-    }, []);
 
     return (
         <Container size="lg" p={0} style={{ width: "100%" }}>
