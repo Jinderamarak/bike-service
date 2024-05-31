@@ -168,8 +168,7 @@ impl RideRepository {
 
         let years: Result<Vec<i32>, _> = years
             .into_iter()
-            .map(|r| r.year)
-            .filter_map(|y| y)
+            .filter_map(|r| r.year)
             .map(|y| y.parse::<i32>())
             .collect();
         Ok(years.map_err(anyhow::Error::from)?)

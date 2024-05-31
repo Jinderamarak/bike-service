@@ -1,6 +1,6 @@
 {
   "db_name": "SQLite",
-  "query": "SELECT * FROM rides WHERE deleted_at IS NULL AND bike_id = ? ORDER BY date DESC",
+  "query": "SELECT * FROM rides WHERE deleted_at IS NULL AND bike_id = ? AND date LIKE ? ORDER BY date DESC, id DESC",
   "describe": {
     "columns": [
       {
@@ -35,7 +35,7 @@
       }
     ],
     "parameters": {
-      "Right": 1
+      "Right": 2
     },
     "nullable": [
       false,
@@ -46,5 +46,5 @@
       false
     ]
   },
-  "hash": "927afebce98899e27086aeb07d102a1b07da98fe4fe8b3bae6b78ba78f96999e"
+  "hash": "393a97ec315d6ce33cf1785daa5fcbb0a9b14b68da91a35dcb152ca1d99221a9"
 }
