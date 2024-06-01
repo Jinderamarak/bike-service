@@ -36,6 +36,7 @@ async function tryFetch(request, refetch = false) {
 async function trySync() {
     console.log("Syncing rides");
 
+    await ridesDb.open();
     const rides = await ridesDb.getAll("rides");
     if (rides.length === 0) {
         console.log("No rides to sync");
@@ -76,6 +77,7 @@ async function getRides(request, [bikeIdStr]) {
     }
 
     const bikeId = parseInt(bikeIdStr, 10);
+    await ridesDb.open();
     const rides = await ridesDb.getAll("rides");
     const bikeRides = rides.filter((ride) => ride.bikeId === bikeId);
 
@@ -95,6 +97,7 @@ async function createRide(request, [bikeIdStr]) {
     ride.bikeId = bikeId;
     ride.deletedAt = null;
 
+    await ridesDb.open();
     const id = await ridesDb.insert("rides", ride);
     ride.id = id;
 
@@ -111,6 +114,7 @@ async function activeYears(request, [bikeIdStr]) {
     }
 
     const bikeId = parseInt(bikeIdStr, 10);
+    await ridesDb.open();
     const rides = await ridesDb.getAll("rides");
     const bikeRides = rides.filter((ride) => ride.bikeId === bikeId);
 
@@ -134,6 +138,7 @@ async function monthlyRides(request, [bikeIdStr, yearStr]) {
     const bikeId = parseInt(bikeIdStr, 10);
     const year = parseInt(yearStr, 10);
 
+    await ridesDb.open();
     const rides = await ridesDb.getAll("rides");
     const bikeRides = rides.filter((ride) => ride.bikeId === bikeId);
 
@@ -170,6 +175,7 @@ async function updateRide(request, [rideIdStr]) {
 
     const rideId = parseInt(rideIdStr, 10);
     const ride = await request.json();
+    await ridesDb.open();
     const oldRide = await ridesDb.get("rides", rideId);
 
     const updateRide = { ...oldRide, ...ride };
@@ -187,6 +193,7 @@ async function deleteRide(request, [rideIdStr]) {
     }
 
     const rideId = parseInt(rideIdStr, 10);
+    await ridesDb.open();
     await ridesDb.remove("rides", rideId);
 
     return new Response(null, { status: 204 });

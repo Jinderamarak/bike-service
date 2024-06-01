@@ -9,9 +9,16 @@ class AsyncDB {
     }
 
     async open() {
+        if (this.db) {
+            return this;
+        }
+
         const request = sw.indexedDB.open(this.name, this.version);
         return new Promise((resolve, reject) => {
             request.onupgradeneeded = (event) => {
+                console.log(
+                    `Upgrading database "${this.name}" from ${event.oldVersion} to ${event.newVersion}`
+                );
                 // @ts-ignore
                 const db = event.target.result;
                 const old = event.oldVersion;
@@ -20,12 +27,14 @@ class AsyncDB {
             };
 
             request.onsuccess = (event) => {
+                console.log(`Opened database "${this.name}"`);
                 // @ts-ignore
                 this.db = event.target.result;
                 resolve(this);
             };
 
             request.onerror = (event) => {
+                console.error(`Failed to open database "${this.name}"`, event);
                 // @ts-ignore
                 reject(event.target.error);
             };

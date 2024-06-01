@@ -19,6 +19,7 @@ export const OfflineResponse = new Response("Offline", { status: 408 });
 function onInstall(event) {
     event.waitUntil(
         (async () => {
+            // Open the database to upgrade it
             await ridesDb.open();
             await cacheResources([
                 "/index.html",
@@ -95,7 +96,7 @@ async function handleRequest(request) {
         }
     } catch (e) {
         console.error("Top Level Error", e);
-        throw e;
+        return await fetch(request);
     }
 }
 
