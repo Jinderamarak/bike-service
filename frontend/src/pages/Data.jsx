@@ -1,11 +1,18 @@
 import React from "react";
-import { Anchor, Button, Container, FileInput, Flex } from "@mantine/core";
+import {
+    Anchor,
+    Button,
+    Container,
+    FileInput,
+    Flex,
+    Stack,
+} from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 
 export default function Data() {
-    async function installWorker() {
+    async function registerWorker() {
         notifications.show({
-            message: `Installing service worker: ${""}`,
+            message: `Registering service worker: ${""}`,
             color: "green",
         });
 
@@ -42,6 +49,38 @@ export default function Data() {
         }
     }
 
+    async function unregisterWorker() {
+        notifications.show({
+            message: "Unregistering service worker",
+            color: "green",
+        });
+
+        try {
+            const registration = await navigator.serviceWorker.getRegistration(
+                "/"
+            );
+
+            if (registration) {
+                await registration.unregister();
+                notifications.show({
+                    message: "Service worker unregistered",
+                    color: "green",
+                });
+            } else {
+                notifications.show({
+                    message: "No service worker to unregister",
+                    color: "red",
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            notifications.show({
+                message: `Service worker unregistration failed: ${error}`,
+                color: "red",
+            });
+        }
+    }
+
     return (
         <Container size="lg" style={{ style: "100%" }} p={0}>
             <Flex
@@ -68,7 +107,14 @@ export default function Data() {
                         Import Rides
                     </Button>
                 </form>
-                <Button onClick={installWorker}>Install Service Worker</Button>
+                <Stack>
+                    <Button variant="filled" onClick={registerWorker}>
+                        Register Service Worker
+                    </Button>
+                    <Button variant="light" onClick={unregisterWorker}>
+                        Unregister Service Worker
+                    </Button>
+                </Stack>
             </Flex>
         </Container>
     );
