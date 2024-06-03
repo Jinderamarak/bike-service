@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 function linkVariant(current, target) {
     if (current === target) return "filled";
-    return "light";
+    return "default";
 }
 
 export default function NavLinks({ open, onClose }) {
