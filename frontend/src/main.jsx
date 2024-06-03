@@ -11,16 +11,19 @@ import "@mantine/charts/styles.css";
 import "@mantine/notifications/styles.css";
 import { Notifications } from "@mantine/notifications";
 import { selectedBikeColorAtom } from "./data/persistentAtoms.js";
+import { ModalsProvider } from "@mantine/modals";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
         <RecoilRoot>
             <AppTheme>
                 <DatesProvider settings={{ timezone: "UTC" }}>
-                    <Notifications />
-                    <BrowserRouter>
-                        <App />
-                    </BrowserRouter>
+                    <ModalsProvider>
+                        <Notifications />
+                        <BrowserRouter>
+                            <App />
+                        </BrowserRouter>
+                    </ModalsProvider>
                 </DatesProvider>
             </AppTheme>
         </RecoilRoot>

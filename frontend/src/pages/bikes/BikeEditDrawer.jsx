@@ -2,9 +2,10 @@ import React from "react";
 import { Form, useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
 import bikeForm, { bikeFormToBody } from "./bikeForm";
-import { Button, Drawer, Group, Stack } from "@mantine/core";
+import { Button, Drawer, Group, Stack, Text } from "@mantine/core";
 import BikeFormFields from "./BikeFormFields";
 import { notifications } from "@mantine/notifications";
+import { modals } from "@mantine/modals";
 
 export default function BikeEditDrawer({
     id,
@@ -44,6 +45,25 @@ export default function BikeEditDrawer({
         } finally {
             setLoadingUpdate(false);
         }
+    }
+
+    function askDeleteBike() {
+        setLoadingDelete(true);
+        modals.openConfirmModal({
+            title: "Confirm bike deletion",
+            children: (
+                <Text size="sm">
+                    Are you sure you want to delete bike <strong>{name}</strong>
+                    ?
+                </Text>
+            ),
+            centered: true,
+            labels: { confirm: "Delete bike", cancel: "Cancel" },
+            confirmProps: { color: "red" },
+            onConfirm: deleteBike,
+            onCancel: () => setLoadingDelete(false),
+            onClose: () => setLoadingDelete(false),
+        });
     }
 
     async function deleteBike() {
@@ -98,7 +118,7 @@ export default function BikeEditDrawer({
                         <Button
                             variant="light"
                             color="red"
-                            onClick={deleteBike}
+                            onClick={askDeleteBike}
                             loading={loadingDelete}
                             disabled={loadingUpdate}
                         >

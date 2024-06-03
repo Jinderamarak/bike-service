@@ -1,9 +1,10 @@
 import { Form, useForm } from "@mantine/form";
 import React, { useEffect, useState } from "react";
 import rideForm from "./rideForm";
-import { Button, Drawer, Group, Stack } from "@mantine/core";
+import { Button, Drawer, Group, Stack, Text } from "@mantine/core";
 import RideFormFields from "./RideFormFields";
 import { notifications } from "@mantine/notifications";
+import { modals } from "@mantine/modals";
 
 export default function RideEditDrawer({
     id,
@@ -49,8 +50,26 @@ export default function RideEditDrawer({
         }
     }
 
-    async function deleteRide() {
+    function askDeleteRide() {
         setLoadingDelete(true);
+        modals.openConfirmModal({
+            title: "Confirm ride deletion",
+            children: (
+                <Text size="sm">
+                    Are you sure you want to delete ride from{" "}
+                    <strong>{date}</strong>?
+                </Text>
+            ),
+            centered: true,
+            labels: { confirm: "Delete ride", cancel: "Cancel" },
+            confirmProps: { color: "red" },
+            onConfirm: deleteRide,
+            onCancel: () => setLoadingDelete(false),
+            onClose: () => setLoadingDelete(false),
+        });
+    }
+
+    async function deleteRide() {
         try {
             const response = await fetch(`/api/rides/${id}`, {
                 method: "DELETE",
@@ -100,7 +119,7 @@ export default function RideEditDrawer({
                         <Button
                             variant="light"
                             color="red"
-                            onClick={deleteRide}
+                            onClick={askDeleteRide}
                             loading={loadingDelete}
                             disabled={loadingUpdate}
                         >
