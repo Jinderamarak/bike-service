@@ -98,21 +98,21 @@ export default function RideEditDrawer({
                     />
                     <Group justify="space-between">
                         <Button
-                            variant="filled"
-                            type="submit"
-                            loading={loadingUpdate}
-                            disabled={loadingDelete}
-                        >
-                            Save
-                        </Button>
-                        <Button
-                            variant="filled"
+                            variant="light"
                             color="red"
                             onClick={deleteRide}
                             loading={loadingDelete}
                             disabled={loadingUpdate}
                         >
                             Delete
+                        </Button>
+                        <Button
+                            variant="filled"
+                            type="submit"
+                            loading={loadingUpdate}
+                            disabled={loadingDelete}
+                        >
+                            Save
                         </Button>
                     </Group>
                 </Stack>
