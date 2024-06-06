@@ -8,6 +8,12 @@ export default function Versions() {
     const [serverStatus, setServerStatus] = useState(null);
     const [workerVersions, setWorkerVersions] = useState([]);
 
+    function handleOnMessage(event) {
+        if (event.data.type === "version") {
+            setWorkerVersions((current) => [...current, event.data.version]);
+        }
+    }
+
     useEffect(() => {
         let controller = new AbortController();
         fetch("/api/status", { signal: controller.signal })
@@ -16,19 +22,19 @@ export default function Versions() {
             .catch((error) => console.error(error));
 
         setWorkerVersions([]);
-        navigator.serviceWorker.addEventListener("message", (event) => {
-            if (event.data.type === "version") {
-                setWorkerVersions((current) => [
-                    ...current,
-                    event.data.version,
-                ]);
-            }
-        });
+
+        navigator.serviceWorker.addEventListener("message", handleOnMessage);
         navigator.serviceWorker.ready.then((registration) => {
             registration.active.postMessage({ type: "version" });
         });
 
-        return () => controller.abort();
+        return () => {
+            controller.abort();
+            navigator.serviceWorker.removeEventListener(
+                "message",
+                handleOnMessage
+            );
+        };
     }, []);
 
     return (
