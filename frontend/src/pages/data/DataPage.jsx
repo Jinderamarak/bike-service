@@ -3,6 +3,7 @@ import { Container, Flex } from "@mantine/core";
 import ImportExport from "./ImportExport";
 import ManageWorker from "./ManageWorker";
 import Versions from "./Versions";
+import Hostnames from "./Hostnames";
 
 export default function DataPage() {
     return (
@@ -11,6 +12,7 @@ export default function DataPage() {
                 <ImportExport />
                 <ManageWorker />
                 <Versions />
+                <Hostnames />
             </Flex>
         </Container>
     );
