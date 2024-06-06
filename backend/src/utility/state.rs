@@ -1,22 +1,35 @@
 use axum::extract::FromRef;
 use sqlx::SqlitePool;
 
-use crate::services::{
-    bikes::repository::BikeRepository, bikes::rides::repository::RideRepository,
+use crate::{
+    config::Configuration,
+    services::bikes::{repository::BikeRepository, rides::repository::RideRepository},
 };
 
 #[derive(Clone)]
 pub struct AppState {
+    config: Configuration,
     pool: SqlitePool,
     rides: RideRepository,
     bikes: BikeRepository,
 }
 
 impl AppState {
-    pub fn new(pool: SqlitePool) -> Self {
+    pub fn new(config: Configuration, pool: SqlitePool) -> Self {
         let rides = RideRepository::new(pool.clone());
         let bikes = BikeRepository::new(pool.clone());
-        Self { pool, rides, bikes }
+        Self {
+            config,
+            pool,
+            rides,
+            bikes,
+        }
+    }
+}
+
+impl FromRef<AppState> for Configuration {
+    fn from_ref(state: &AppState) -> Self {
+        state.config.clone()
     }
 }
 

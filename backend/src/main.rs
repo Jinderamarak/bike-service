@@ -36,17 +36,16 @@ async fn main() -> anyhow::Result<()> {
     let pool = SqlitePool::connect(&config.database_url).await?;
     sqlx::migrate!().run(&pool).await?;
 
-    // initialize tracing
-    // tracing_subscriber::fmt::init();
-
     let spa = ServeDir::new(&config.static_dir).not_found_service(ServeFile::new(
         Path::new(&config.static_dir).join("index.html"),
     ));
-    let state = AppState::new(pool);
+    let state = AppState::new(config.clone(), pool);
+    let cors = config.create_cors_layer()?;
     let app = Router::new()
-        .nest("/api", api_router())
         .fallback_service(spa)
-        .with_state(state);
+        .nest("/api", api_router())
+        .with_state(state)
+        .layer(cors);
 
     let socket_addr = config.socket_address();
     let listener = net::TcpListener::bind(socket_addr).await?;

@@ -1,6 +1,7 @@
-use axum::{debug_handler, routing::get, Json, Router};
+use axum::{debug_handler, extract::State, routing::get, Json, Router};
 
 use crate::{
+    config::Configuration,
     utility::{error::AppResult, state::AppState},
     APP_VERSION,
 };
@@ -12,9 +13,9 @@ pub fn router() -> Router<AppState> {
 }
 
 #[debug_handler]
-async fn get_status() -> AppResult<Json<StatusModel>> {
+async fn get_status(State(config): State<Configuration>) -> AppResult<Json<StatusModel>> {
     Ok(Json(StatusModel {
         version: APP_VERSION.unwrap_or("unknown").to_string(),
-        hosts: vec![],
+        hostnames: config.hostnames,
     }))
 }

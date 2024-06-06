@@ -4,5 +4,5 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct StatusModel {
     pub version: String,
-    pub hosts: Vec<String>,
+    pub hostnames: Vec<String>,
 }

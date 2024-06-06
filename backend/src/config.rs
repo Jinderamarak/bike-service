@@ -1,10 +1,13 @@
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
+use anyhow::Result;
+use axum::http::HeaderValue;
 use clap::Parser;
+use tower_http::cors::{Any, CorsLayer};
 
 const IPV4_ALL: IpAddr = IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0));
 
-#[derive(Debug, Parser)]
+#[derive(Debug, Clone, Parser)]
 #[command(author, version, about)]
 pub struct Configuration {
     #[arg(short, long, env = "BIKE_ADDRESS", default_value_t = IPV4_ALL, help = "IP address for the server to listen on")]
@@ -33,11 +36,32 @@ pub struct Configuration {
         help = "Directory to serve static files from"
     )]
     pub static_dir: String,
+    #[arg(
+        long,
+        env = "BIKE_HOSTNAMES",
+        help = "List of possible hostnames for frontend syncing",
+        value_delimiter = ','
+    )]
+    pub hostnames: Vec<String>,
 }
 
 impl Configuration {
     #[inline]
     pub fn socket_address(&self) -> SocketAddr {
         SocketAddr::new(self.address, self.port)
+    }
+
+    pub fn create_cors_layer(&self) -> Result<CorsLayer> {
+        let layer = CorsLayer::new();
+        if self.hostnames.is_empty() {
+            return Ok(layer);
+        }
+
+        let origins = self
+            .hostnames
+            .iter()
+            .map(|o| o.parse::<HeaderValue>())
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(CorsLayer::new().allow_methods(Any).allow_origin(origins))
     }
 }
