@@ -4,6 +4,9 @@ import react from "@vitejs/plugin-react-swc";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    define: {
+        APP_VERSION: JSON.stringify(process.env.npm_package_version),
+    },
     plugins: [
         react(),
         {
@@ -15,6 +18,11 @@ export default defineConfig({
                     bundle: true,
                     entryPoints: ["worker/worker.js"],
                     outfile: "dist/worker.js",
+                    define: {
+                        APP_VERSION: JSON.stringify(
+                            process.env.npm_package_version
+                        ),
+                    },
                 });
             },
         },
@@ -32,6 +40,11 @@ export default defineConfig({
                             bundle: true,
                             entryPoints: ["worker/worker.js"],
                             write: false,
+                            define: {
+                                APP_VERSION: JSON.stringify(
+                                    process.env.npm_package_version
+                                ),
+                            },
                         }).outputFiles[0].text
                     );
                 });

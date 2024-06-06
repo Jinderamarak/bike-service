@@ -4,7 +4,7 @@ import Navigation from "./components/navigation/Navigation";
 import BikesPage from "./pages/bikes/BikesPage";
 import StatsPage from "./pages/stats/StatsPage";
 import RidesPage from "./pages/rides/RidesPage";
-import Data from "./pages/Data";
+import DataPage from "./pages/data/DataPage";
 import { Routes, Route } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { selectedBikeIdAtom, syncLocalStorate } from "./data/persistentAtoms";
@@ -57,7 +57,7 @@ function App() {
                 <Route index element={<RidesPage />} />
                 <Route path="/bikes" element={<BikesPage />} />
                 <Route path="/stats" element={<StatsPage />} />
-                <Route path="/data" element={<Data />} />
+                <Route path="/data" element={<DataPage />} />
             </Routes>
         </Stack>
     );

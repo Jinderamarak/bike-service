@@ -1,15 +1,8 @@
 import React from "react";
-import {
-    Anchor,
-    Button,
-    Container,
-    FileInput,
-    Flex,
-    Stack,
-} from "@mantine/core";
+import { Button, Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 
-export default function Data() {
+export default function ManageWorker() {
     async function registerWorker() {
         notifications.show({
             message: `Registering service worker: ${""}`,
@@ -82,40 +75,13 @@ export default function Data() {
     }
 
     return (
-        <Container size="lg" style={{ style: "100%" }} p={0}>
-            <Flex
-                direction={{ base: "column", xs: "row" }}
-                wrap="nowrap"
-                gap="md"
-            >
-                <Anchor href="/api/data/export" download>
-                    Export Rides
-                </Anchor>
-                <form
-                    method="POST"
-                    action="/api/data/import"
-                    encType="multipart/form-data"
-                >
-                    <FileInput
-                        label="File"
-                        withAsterisk
-                        accept="text/csv"
-                        name="rides-file"
-                        id="rides-file"
-                    />
-                    <Button variant="filled" type="submit">
-                        Import Rides
-                    </Button>
-                </form>
-                <Stack>
-                    <Button variant="filled" onClick={registerWorker}>
-                        Register Service Worker
-                    </Button>
-                    <Button variant="light" onClick={unregisterWorker}>
-                        Unregister Service Worker
-                    </Button>
-                </Stack>
-            </Flex>
-        </Container>
+        <Stack>
+            <Button variant="filled" onClick={registerWorker}>
+                Register Service Worker
+            </Button>
+            <Button variant="light" onClick={unregisterWorker}>
+                Unregister Service Worker
+            </Button>
+        </Stack>
     );
 }

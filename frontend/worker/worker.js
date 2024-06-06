@@ -11,6 +11,9 @@ export const sw = /** @type {ServiceWorkerGlobalScope & typeof globalThis} */ (
     globalThis
 );
 
+// @ts-ignore
+const WORKER_VERSION = APP_VERSION;
+
 export const OfflineResponse = new Response("Offline", { status: 408 });
 
 /**
@@ -107,5 +110,15 @@ function onFetch(event) {
     event.respondWith(handleRequest(event.request));
 }
 
+/**
+ * @param {MessageEvent & ExtendableMessageEvent} event
+ */
+function onMessage(event) {
+    if (event.data.type === "version") {
+        event.source.postMessage({ type: "version", version: WORKER_VERSION });
+    }
+}
+
 sw.oninstall = onInstall;
 sw.onfetch = onFetch;
+sw.onmessage = onMessage;
