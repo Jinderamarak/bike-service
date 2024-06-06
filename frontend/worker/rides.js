@@ -1,6 +1,6 @@
 import AsyncDB from "./db";
 import AsyncMutex from "./lock";
-import { del, get, post, put } from "./router";
+import { del, get, post as pot, put } from "./router";
 
 export const ridesDb = new AsyncDB("rides", 1, initializeDb);
 const lock = new AsyncMutex();
@@ -167,7 +167,7 @@ async function monthlyRides(request, [bikeIdStr, yearStr]) {
     });
 }
 
-async function updateRide(request, [rideIdStr]) {
+async function updateRide(request, [_, rideIdStr]) {
     const response = await tryFetch(request, false);
     if (response) {
         return response;
@@ -186,7 +186,7 @@ async function updateRide(request, [rideIdStr]) {
     });
 }
 
-async function deleteRide(request, [rideIdStr]) {
+async function deleteRide(request, [_, rideIdStr]) {
     const response = await tryFetch(request, false);
     if (response) {
         return response;
@@ -201,9 +201,9 @@ async function deleteRide(request, [rideIdStr]) {
 
 export const rideRoutes = [
     get(/^\/api\/bikes\/(\d+)\/rides$/g, getRides),
-    post(/^\/api\/bikes\/(\d+)\/rides$/g, createRide),
+    pot(/^\/api\/bikes\/(\d+)\/rides$/g, createRide),
     get(/^\/api\/bikes\/(\d+)\/rides\/years$/g, activeYears),
     get(/^\/api\/bikes\/(\d+)\/rides\/monthly\/(\d+)$/g, monthlyRides),
-    put(/^\/api\/rides\/(\d+)$/g, updateRide),
-    del(/^\/api\/rides\/(\d+)$/g, deleteRide),
+    put(/^\/api\/bikes\/(\d+)\/rides\/(\d+)$/g, updateRide),
+    del(/^\/api\/bikes\/(\d+)\/rides\/(\d+)$/g, deleteRide),
 ];

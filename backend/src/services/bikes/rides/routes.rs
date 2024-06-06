@@ -13,13 +13,13 @@ use super::repository::RideRepository;
 
 pub fn router() -> Router<AppState> {
     Router::new()
-        .route("/bikes/:id/rides", get(get_all_rides))
-        .route("/bikes/:id/rides", post(create_ride))
-        .route("/bikes/:id/rides/years", get(get_active_years))
-        .route("/bikes/:id/rides/monthly/:year", get(get_monthly_rides))
-        .route("/rides/:id", get(get_ride))
-        .route("/rides/:id", put(update_ride))
-        .route("/rides/:id", delete(delete_ride))
+        .route("/", get(get_all_rides))
+        .route("/", post(create_ride))
+        .route("/years", get(get_active_years))
+        .route("/monthly/:year", get(get_monthly_rides))
+        .route("/:id", get(get_ride))
+        .route("/:id", put(update_ride))
+        .route("/:id", delete(delete_ride))
 }
 
 async fn get_all_rides(
@@ -45,7 +45,7 @@ async fn create_ride(
 
 async fn get_ride(
     State(repo): State<RideRepository>,
-    Path(ride_id): Path<i64>,
+    Path((_bike_id, ride_id)): Path<(i64, i64)>,
 ) -> AppResult<Json<RideModel>> {
     repo.check_exists(ride_id).await?;
     let model = repo.get_one(ride_id).await?;
@@ -54,7 +54,7 @@ async fn get_ride(
 
 async fn update_ride(
     State(repo): State<RideRepository>,
-    Path(ride_id): Path<i64>,
+    Path((_bike_id, ride_id)): Path<(i64, i64)>,
     Json(payload): Json<RidePartial>,
 ) -> AppResult<Json<RideModel>> {
     let model = repo.update(ride_id, &payload).await?;
@@ -63,7 +63,7 @@ async fn update_ride(
 
 async fn delete_ride(
     State(repo): State<RideRepository>,
-    Path(ride_id): Path<i64>,
+    Path((_bike_id, ride_id)): Path<(i64, i64)>,
 ) -> AppResult<(StatusCode, Json<()>)> {
     repo.delete(ride_id).await?;
     Ok((StatusCode::NO_CONTENT, Json(())))

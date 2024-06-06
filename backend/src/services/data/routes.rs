@@ -7,7 +7,7 @@ use axum::{
 use csv::Writer;
 
 use crate::{
-    services::rides::{
+    services::bikes::rides::{
         models::{RideModel, RidePartial},
         repository::RideRepository,
     },
@@ -19,8 +19,8 @@ use crate::{
 
 pub fn router() -> Router<AppState> {
     Router::new()
-        .route("/data/export", get(export_data))
-        .route("/data/import", post(import_data))
+        .route("/export", get(export_data))
+        .route("/import", post(import_data))
 }
 
 async fn export_data(State(ride_repo): State<RideRepository>) -> AppResult<(HeaderMap, String)> {

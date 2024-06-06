@@ -8,14 +8,16 @@ use crate::utility::state::AppState;
 
 use super::models::{BikeModel, BikePartial};
 use super::repository::BikeRepository;
+use super::rides;
 
 pub fn router() -> Router<AppState> {
     Router::new()
-        .route("/bikes", get(get_all_bikes))
-        .route("/bikes", post(create_bike))
-        .route("/bikes/:id", get(get_bike))
-        .route("/bikes/:id", put(update_bike))
-        .route("/bikes/:id", delete(delete_bike))
+        .nest("/:id/rides", rides::routes::router())
+        .route("/", get(get_all_bikes))
+        .route("/", post(create_bike))
+        .route("/:id", get(get_bike))
+        .route("/:id", put(update_bike))
+        .route("/:id", delete(delete_bike))
 }
 
 async fn get_all_bikes(State(repo): State<BikeRepository>) -> AppResult<Json<Vec<BikeModel>>> {

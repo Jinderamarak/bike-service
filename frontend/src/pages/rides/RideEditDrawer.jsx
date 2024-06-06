@@ -5,6 +5,8 @@ import { Button, Drawer, Group, Stack, Text } from "@mantine/core";
 import RideFormFields from "./RideFormFields";
 import { notifications } from "@mantine/notifications";
 import { modals } from "@mantine/modals";
+import { useRecoilState } from "recoil";
+import { selectedBikeIdAtom } from "../../data/persistentAtoms";
 
 export default function RideEditDrawer({
     id,
@@ -15,6 +17,7 @@ export default function RideEditDrawer({
     onRideEdited,
     onRideDeleted,
 }) {
+    const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
     const [loadingUpdate, setLoadingUpdate] = useState(false);
     const [loadingDelete, setLoadingDelete] = useState(false);
     const editForm = useForm(rideForm);
@@ -28,13 +31,16 @@ export default function RideEditDrawer({
         };
 
         try {
-            const response = await fetch(`/api/rides/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(body),
-            });
+            const response = await fetch(
+                `/api/bikes/${selectedBike}/rides/${id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(body),
+                }
+            );
 
             const data = await response.json();
             onRideEdited(data);
@@ -71,9 +77,12 @@ export default function RideEditDrawer({
 
     async function deleteRide() {
         try {
-            const response = await fetch(`/api/rides/${id}`, {
-                method: "DELETE",
-            });
+            const response = await fetch(
+                `/api/bikes/${selectedBike}/rides/${id}`,
+                {
+                    method: "DELETE",
+                }
+            );
 
             if (response.status !== 204) {
                 throw new Error(
