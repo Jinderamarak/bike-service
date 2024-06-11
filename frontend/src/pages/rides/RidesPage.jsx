@@ -7,44 +7,23 @@ import {
     Container,
     Skeleton,
 } from "@mantine/core";
-import { useEffect, useMemo, useState } from "react";
-import { useRecoilState } from "recoil";
-import { selectedBikeIdAtom } from "../../data/persistentAtoms";
+import { useMemo, useState } from "react";
 import RideCreateForm from "./RideCreateForm";
 import React from "react";
 import RideMonth from "./RideMonth";
 import RideEditDrawer from "./RideEditDrawer";
 import RideYearGroup from "../../components/RideYearGroup";
 import WithSelectedBike from "../../components/WithSelectedBike";
+import useRides from "../../data/useRides";
 
 export default function RidesPage() {
-    const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-    const [rideMonths, setRideMonths] = useState(null);
     const [editedRide, setEditedRide] = useState(null);
-
-    const totalDistance = useMemo(() => {
-        if (rideMonths === null) return null;
-        return rideMonths.reduce((acc, group) => acc + group.totalDistance, 0);
-    }, [rideMonths]);
+    const { rides, loading, addRide, editRide, deleteRide } =
+        useRides(selectedYear);
 
     function handleOnRideCreated(ride) {
-        const date = new Date(ride.date);
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1;
-        const group = rideMonths?.find(
-            (g) => g.year === year && g.month === month
-        );
-
-        if (group) {
-            group.rides = [ride, ...group.rides];
-            group.totalDistance += ride.distance;
-            setRideMonths([...rideMonths]);
-        }
-
-        if (year !== selectedYear) {
-            setSelectedYear(year);
-        }
+        addRide(ride);
     }
 
     function handleOnRideEdit(ride) {
@@ -57,86 +36,25 @@ export default function RidesPage() {
 
     function handleOnRideEdited(newRide) {
         setEditedRide(null);
-
-        const newDate = new Date(newRide.date);
-        const newYear = newDate.getFullYear();
-        const newMonth = newDate.getMonth() + 1;
-
-        const oldRide = rideMonths
-            .flatMap((g) => g.rides)
-            .find((r) => r.id === newRide.id);
-        const oldDate = new Date(oldRide.date);
-        const oldYear = oldDate.getFullYear();
-        const oldMonth = oldDate.getMonth() + 1;
-
-        const visitedMonths = [];
-        setRideMonths((current) => {
-            return current.map((group) => {
-                if (visitedMonths.includes(group.month)) {
-                    return group;
-                }
-                visitedMonths.push(group.month);
-
-                if (group.year === oldYear && group.month === oldMonth) {
-                    group.rides = group.rides.filter(
-                        (r) => r.id !== newRide.id
-                    );
-                    group.totalDistance -= oldRide.distance;
-                }
-                if (group.year === newYear && group.month === newMonth) {
-                    group.rides = [newRide, ...group.rides];
-                    group.totalDistance += newRide.distance;
-                }
-                return group;
-            });
-        });
+        editRide(newRide);
     }
 
     function handleOnRideDeleted(rideId) {
         setEditedRide(null);
-
-        const ride = rideMonths
-            .flatMap((g) => g.rides)
-            .find((r) => r.id === rideId);
-        const date = new Date(ride.date);
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1;
-
-        setRideMonths((current) => {
-            return current.map((group) => {
-                if (group.year === year && group.month === month) {
-                    group.rides = group.rides.filter((r) => r.id !== rideId);
-                    group.totalDistance -= ride.distance;
-                }
-                return group;
-            });
-        });
+        deleteRide(rideId);
     }
 
-    useEffect(() => {
-        if (selectedBike === null) return;
-        setRideMonths(null);
-
-        let controller = new AbortController();
-        fetch(`/api/bikes/${selectedBike}/rides/monthly/${selectedYear}`, {
-            signal: controller.signal,
-        })
-            .then((response) => response.json())
-            .then((data) => setRideMonths(data))
-            .catch((err) => console.warn(err));
-
-        return () => controller.abort();
-    }, [selectedBike, selectedYear]);
+    const totalDistance = useMemo(() => {
+        return rides.reduce((acc, group) => acc + group.totalDistance, 0);
+    }, [rides]);
 
     const cutoffMonth = useMemo(() => {
-        const lastWithRides = (rideMonths ?? []).find(
-            (g) => g.rides.length !== 0
-        );
+        const lastWithRides = rides.find((g) => g.rides?.length !== 0);
         const now = new Date();
         const currentMonth =
             now.getFullYear() == selectedYear ? now.getMonth() + 1 : 12;
         return Math.max(currentMonth, lastWithRides?.month ?? 1);
-    }, [rideMonths, selectedYear]);
+    }, [rides, selectedYear]);
 
     return (
         <Container size="lg" p={0} style={{ width: "100%" }}>
@@ -162,11 +80,12 @@ export default function RidesPage() {
                                 </Group>
                             </Paper>
                         </Skeleton>
-                        {(rideMonths ?? [])
+                        {rides
                             .filter((g) => g.month <= cutoffMonth)
-                            .map((group) => (
+                            .map((group, i) => (
                                 <RideMonth
                                     key={`${group.year}-${group.month}`}
+                                    loading={loading[i]}
                                     {...group}
                                     onEditRide={handleOnRideEdit}
                                 />

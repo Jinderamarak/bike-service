@@ -14,7 +14,7 @@ const innerBikeSubscribers = atom({
 
 const innerBikeLoading = atom({
     key: "innerBikeLoading",
-    default: false,
+    default: true,
 });
 
 export default function useBikes() {

@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { Divider, Group, Paper, Stack, Text } from "@mantine/core";
+import React from "react";
+import { Divider, Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import RideEntry from "./RideEntry";
 
 export default function RideMonth({
@@ -7,12 +7,16 @@ export default function RideMonth({
     month,
     totalDistance,
     rides,
+    loading,
     onEditRide,
 }) {
-    const label = useMemo(() => {
-        return `${year}-${month < 10 ? `0${month}` : month}`;
-    }, [year, month]);
+    if (loading) {
+        return <Skeleton height={100} />;
+    } else if (rides === null) {
+        return null;
+    }
 
+    const label = `${year}-${month < 10 ? `0${month}` : month}`;
     if (rides.length === 0) {
         return <Divider label={label} labelPosition="center" />;
     }

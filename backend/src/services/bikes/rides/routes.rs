@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::routing::{delete, get, post, put};
@@ -17,6 +19,7 @@ pub fn router() -> Router<AppState> {
         .route("/", post(create_ride))
         .route("/years", get(get_active_years))
         .route("/monthly/:year", get(get_monthly_rides))
+        .route("/:year/:month", get(get_month))
         .route("/:id", get(get_ride))
         .route("/:id", put(update_ride))
         .route("/:id", delete(delete_ride))
@@ -101,4 +104,20 @@ async fn get_monthly_rides(
     }
 
     Ok(Json(result))
+}
+
+async fn get_month(
+    State(repo): State<RideRepository>,
+    Path((bike_id, year, month)): Path<(i64, i32, i32)>,
+) -> AppResult<Json<RideMonth>> {
+    let filter = format!("{year}-{month:02}-");
+    let models = repo.get_all_for_bike_with_date(bike_id, &filter).await?;
+    let total_distance = models.iter().map(|m| m.distance).sum();
+
+    Ok(Json(RideMonth {
+        year,
+        month,
+        total_distance,
+        rides: models,
+    }))
 }
