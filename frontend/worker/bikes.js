@@ -1,5 +1,5 @@
 import { openCache } from "./cache";
-import { get } from "./router";
+import { get } from "./lib/router";
 import { OfflineResponse, sw } from "./worker";
 
 async function getBikes(request) {

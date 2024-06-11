@@ -1,6 +1,6 @@
-import AsyncDB from "./db";
-import AsyncMutex from "./lock";
-import { del, get, post as pot, put } from "./router";
+import AsyncDB from "./lib/db";
+import AsyncMutex from "./lib/lock";
+import { del, get, post as pot, put } from "./lib/router";
 
 export const ridesDb = new AsyncDB("rides", 1, initializeDb);
 const lock = new AsyncMutex();

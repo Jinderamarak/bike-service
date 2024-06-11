@@ -5,7 +5,7 @@
 import { bikeRoutes } from "./bikes";
 import { cacheResources } from "./cache";
 import { rideRoutes, ridesDb } from "./rides";
-import { router } from "./router";
+import { Router } from "./lib/router";
 
 export const sw = /** @type {ServiceWorkerGlobalScope & typeof globalThis} */ (
     globalThis
@@ -58,7 +58,7 @@ async function handleSpaRequest(request) {
     return await caches.match("/index.html");
 }
 
-const apiRouter = router([...bikeRoutes, ...rideRoutes]);
+const apiRouter = Router([...bikeRoutes, ...rideRoutes]);
 
 /**
  * @param {Request} request
