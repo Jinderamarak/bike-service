@@ -54,7 +54,7 @@ async fn update_bike(
 async fn delete_bike(
     State(repo): State<BikeRepository>,
     Path(id): Path<i64>,
-) -> AppResult<(StatusCode, Json<()>)> {
+) -> AppResult<StatusCode> {
     repo.delete(id).await?;
-    Ok((StatusCode::NO_CONTENT, Json(())))
+    Ok(StatusCode::NO_CONTENT)
 }
