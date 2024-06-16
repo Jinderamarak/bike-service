@@ -5,8 +5,11 @@ import { useState } from "react";
 import { notifications } from "@mantine/notifications";
 import { Button, Paper, Stack } from "@mantine/core";
 import BikeFormFields from "./BikeFormFields";
+import { useRecoilState } from "recoil";
+import { networkStatusAtom } from "../../data/useNetworkStatus";
 
 export default function BikeCreateForm({ onBikeCreated }) {
+    const [online, _] = useRecoilState(networkStatusAtom);
     const [loading, setLoading] = useState(false);
     const newForm = useForm(bikeForm);
 
@@ -44,8 +47,12 @@ export default function BikeCreateForm({ onBikeCreated }) {
             <Paper withBorder p="md">
                 <Form form={newForm} onSubmit={createBike}>
                     <Stack>
-                        <BikeFormFields form={newForm} disabled={loading} />
+                        <BikeFormFields
+                            form={newForm}
+                            disabled={loading || !online}
+                        />
                         <Button
+                            disabled={!online}
                             loading={loading}
                             variant="filled"
                             type="submit"

@@ -7,6 +7,7 @@ import RideYearGroup from "../../components/RideYearGroup";
 import React from "react";
 import WithSelectedBike from "../../components/WithSelectedBike";
 import { mapStatsData } from "./data";
+import WithNetwork from "../../components/WithNetwork";
 
 export default function StatsPage() {
     const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
@@ -31,56 +32,62 @@ export default function StatsPage() {
     return (
         <Container size="lg" p={0} style={{ width: "100%" }}>
             <WithSelectedBike>
-                <Stack gap="md">
-                    <Skeleton visible={stats === null}>
-                        <AreaChart
-                            h={200}
-                            data={stats ?? []}
-                            dataKey="month"
-                            series={[
-                                {
-                                    label: "Total Distance",
-                                    name: "totalDistance",
-                                    color: "blue",
-                                },
-                            ]}
-                            areaChartProps={{ syncId: "statsPage" }}
-                            tickLine="xy"
-                            withLegend
-                            unit=" km"
-                            referenceLines={[
-                                { y: 100, label: "Monthly goal", color: "red" },
-                            ]}
-                            withXAxis={false}
-                            valueFormatter={(v) => v.toFixed(2)}
-                            connectNulls={false}
-                        />
-                    </Skeleton>
-                    <Skeleton visible={stats === null}>
-                        <AreaChart
-                            h={200}
-                            data={stats ?? []}
-                            dataKey="month"
-                            series={[
-                                {
-                                    label: "Rides",
-                                    name: "rides",
-                                    color: "indigo",
-                                },
-                            ]}
-                            areaChartProps={{ syncId: "statsPage" }}
-                            tickLine="xy"
-                            withLegend
-                            connectNulls={false}
-                        />
-                    </Skeleton>
-                    <Group justify="center">
-                        <RideYearGroup
-                            year={selectedYear}
-                            onYearSelected={setSelectedYear}
-                        />
-                    </Group>
-                </Stack>
+                <WithNetwork>
+                    <Stack gap="md">
+                        <Skeleton visible={stats === null}>
+                            <AreaChart
+                                h={200}
+                                data={stats ?? []}
+                                dataKey="month"
+                                series={[
+                                    {
+                                        label: "Total Distance",
+                                        name: "totalDistance",
+                                        color: "blue",
+                                    },
+                                ]}
+                                areaChartProps={{ syncId: "statsPage" }}
+                                tickLine="xy"
+                                withLegend
+                                unit=" km"
+                                referenceLines={[
+                                    {
+                                        y: 100,
+                                        label: "Monthly goal",
+                                        color: "red",
+                                    },
+                                ]}
+                                withXAxis={false}
+                                valueFormatter={(v) => v.toFixed(2)}
+                                connectNulls={false}
+                            />
+                        </Skeleton>
+                        <Skeleton visible={stats === null}>
+                            <AreaChart
+                                h={200}
+                                data={stats ?? []}
+                                dataKey="month"
+                                series={[
+                                    {
+                                        label: "Rides",
+                                        name: "rides",
+                                        color: "indigo",
+                                    },
+                                ]}
+                                areaChartProps={{ syncId: "statsPage" }}
+                                tickLine="xy"
+                                withLegend
+                                connectNulls={false}
+                            />
+                        </Skeleton>
+                        <Group justify="center">
+                            <RideYearGroup
+                                year={selectedYear}
+                                onYearSelected={setSelectedYear}
+                            />
+                        </Group>
+                    </Stack>
+                </WithNetwork>
             </WithSelectedBike>
         </Container>
     );

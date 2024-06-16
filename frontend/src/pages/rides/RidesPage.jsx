@@ -15,6 +15,7 @@ import RideEditDrawer from "./RideEditDrawer";
 import RideYearGroup from "../../components/RideYearGroup";
 import WithSelectedBike from "../../components/WithSelectedBike";
 import useRides from "../../data/useRides";
+import { WhenOffline } from "../../components/WhenNetwork";
 
 export default function RidesPage() {
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -68,6 +69,11 @@ export default function RidesPage() {
                             overflow: "hidden",
                         }}
                     >
+                        <WhenOffline>
+                            <Text fs="italic" ta="center">
+                                Some rides can be unavailable while offline!
+                            </Text>
+                        </WhenOffline>
                         <Skeleton visible={totalDistance === null}>
                             <Paper withBorder p="md">
                                 <Group justify="space-between">

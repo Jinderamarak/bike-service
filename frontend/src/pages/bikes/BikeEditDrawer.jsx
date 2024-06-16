@@ -6,6 +6,8 @@ import { Button, Drawer, Group, Stack, Text } from "@mantine/core";
 import BikeFormFields from "./BikeFormFields";
 import { notifications } from "@mantine/notifications";
 import { modals } from "@mantine/modals";
+import { useRecoilState } from "recoil";
+import { networkStatusAtom } from "../../data/useNetworkStatus";
 
 export default function BikeEditDrawer({
     id,
@@ -16,6 +18,7 @@ export default function BikeEditDrawer({
     onBikeEdited,
     onBikeDeleted,
 }) {
+    const [online, _] = useRecoilState(networkStatusAtom);
     const [loadingUpdate, setLoadingUpdate] = useState(false);
     const [loadingDelete, setLoadingDelete] = useState(false);
     const editForm = useForm(bikeForm);
@@ -114,7 +117,7 @@ export default function BikeEditDrawer({
                 <Stack>
                     <BikeFormFields
                         form={editForm}
-                        disabled={loadingUpdate || loadingDelete}
+                        disabled={loadingUpdate || loadingDelete || !online}
                     />
                     <Group justify="space-between">
                         <Button
@@ -122,7 +125,7 @@ export default function BikeEditDrawer({
                             color="red"
                             onClick={askDeleteBike}
                             loading={loadingDelete}
-                            disabled={loadingUpdate}
+                            disabled={loadingUpdate || !online}
                         >
                             Delete
                         </Button>
@@ -130,7 +133,7 @@ export default function BikeEditDrawer({
                             variant="filled"
                             type="submit"
                             loading={loadingUpdate}
-                            disabled={loadingDelete}
+                            disabled={loadingDelete || !online}
                         >
                             Save
                         </Button>

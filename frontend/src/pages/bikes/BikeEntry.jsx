@@ -8,6 +8,7 @@ import {
     Text,
 } from "@mantine/core";
 import { IconPencil } from "@tabler/icons-react";
+import { WhenOnline } from "../../components/WhenNetwork";
 
 export default function BikeEntry({
     id,
@@ -28,9 +29,14 @@ export default function BikeEntry({
                         {name}
                     </Text>
                     <ColorSwatch color={color} />
-                    <ActionIcon variant="filled" onClick={handleOnEditClick}>
-                        <IconPencil />
-                    </ActionIcon>
+                    <WhenOnline>
+                        <ActionIcon
+                            variant="filled"
+                            onClick={handleOnEditClick}
+                        >
+                            <IconPencil />
+                        </ActionIcon>
+                    </WhenOnline>
                 </Group>
                 {description && (
                     <Text lineClamp={3} style={{ overflowWrap: "anywhere" }}>

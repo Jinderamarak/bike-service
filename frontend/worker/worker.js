@@ -68,6 +68,15 @@ function onMessage(event) {
             })()
         );
     }
+    if (event.data.type === "status") {
+        event.waitUntil(
+            (async () => {
+                const fetcher = await getMultiFetcher();
+                const isOnline = !fetcher.isOffline();
+                event.source.postMessage({ type: "status", isOnline });
+            })()
+        );
+    }
     if (event.data.type === "sync") {
         event.waitUntil(
             (async () => {
