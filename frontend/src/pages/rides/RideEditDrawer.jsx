@@ -50,6 +50,7 @@ export default function RideEditDrawer({
                 title: "Failed to update ride",
                 message: error.message,
                 color: "red",
+                withBorder: true,
             });
         } finally {
             setLoadingUpdate(false);
@@ -97,6 +98,7 @@ export default function RideEditDrawer({
                 title: "Failed to delete ride",
                 message: error.message,
                 color: "red",
+                withBorder: true,
             });
         } finally {
             setLoadingDelete(false);

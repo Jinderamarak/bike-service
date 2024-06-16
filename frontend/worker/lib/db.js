@@ -37,6 +37,14 @@ class AsyncDB {
     }
 
     /**
+     * Gets the underlying IndexedDB database.
+     * @returns {IDBDatabase | null} Database
+     */
+    get db() {
+        return this.#db;
+    }
+
+    /**
      * Opens the database and upgrades it if necessary.
      * Opening the database is needed before any other operations.
      * @returns {Promise<AsyncDB>} This database
@@ -49,7 +57,7 @@ class AsyncDB {
         const request = sw.indexedDB.open(this.#name, this.#version);
         return new Promise((resolve, reject) => {
             request.onupgradeneeded = (event) => {
-                console.log(
+                console.warn(
                     `Upgrading database "${this.#name}" from ${
                         event.oldVersion
                     } to ${event.newVersion}`
@@ -62,7 +70,6 @@ class AsyncDB {
             };
 
             request.onsuccess = (event) => {
-                console.log(`Opened database "${this.#name}"`);
                 // @ts-ignore
                 this.#db = event.target.result;
                 resolve(this);
@@ -77,12 +84,12 @@ class AsyncDB {
     }
 
     /**
-     * Inserts a new row into the table.
+     * Adds a new row without a key into the table.
      * @param {string} table Table name
      * @param {any} row Row to insert
      * @returns {Promise<any>} Key of the inserted row
      */
-    async insert(table, row) {
+    async add(table, row) {
         return new Promise((resolve, reject) => {
             const transaction = this.#db.transaction(table, "readwrite");
             const store = transaction.objectStore(table);
@@ -101,12 +108,12 @@ class AsyncDB {
     }
 
     /**
-     * Updates an existing row in the table.
+     * Puts a row with key into the table.
      * @param {string} table Table name
-     * @param {any} row Row to update
-     * @returns {Promise<any>} Key of the updated row
+     * @param {any} row Row to put
+     * @returns {Promise<any>} Key of the row
      */
-    async update(table, row) {
+    async put(table, row) {
         return new Promise((resolve, reject) => {
             const transaction = this.#db.transaction(table, "readwrite");
             const store = transaction.objectStore(table);
@@ -130,7 +137,7 @@ class AsyncDB {
      * @param {any} key Key of the row to remove
      * @returns {Promise<any>} Key of the removed row
      */
-    async remove(table, key) {
+    async delete(table, key) {
         return new Promise((resolve, reject) => {
             const transaction = this.#db.transaction(table, "readwrite");
             const store = transaction.objectStore(table);
@@ -138,7 +145,7 @@ class AsyncDB {
 
             request.onsuccess = (event) => {
                 // @ts-ignore
-                resolve(event.target.result);
+                resolve(event.target.undefined);
             };
 
             request.onerror = (event) => {

@@ -3,7 +3,7 @@
  * a response or null in case the request is unhandled.
  * @callback RouteHandler
  * @param {Request} request HTTP Request
- * @param {string[]} params Captured groups from the path
+ * @param {(string | number)[]} params Captured groups from the path
  * @returns {Promise<Response | null>} Response or null if the request is unhandled
  */
 
@@ -46,13 +46,25 @@ function anyRoute(method, regexp, handler) {
         const matches = [...match];
 
         if (matches.length > 0) {
-            return await handler(
-                request,
-                matches[0].slice(1).map((s) => String(s))
-            );
+            const params = matches[0].slice(1).map(String).map(transformParam);
+            const response = await handler(request, params);
+            return response;
         }
         return null;
     };
+}
+
+/**
+ * @param {string} param
+ * @returns {string | number}
+ */
+function transformParam(param) {
+    const asInt = parseInt(param);
+    if (param === asInt.toString()) {
+        return asInt;
+    }
+
+    return param;
 }
 
 /**
@@ -71,7 +83,7 @@ export function get(regexp, handler) {
  * @param {RouteHandler} handler Route handler
  * @returns {Route} New route
  */
-export function post(regexp, handler) {
+export function pot(regexp, handler) {
     return anyRoute("POST", regexp, handler);
 }
 

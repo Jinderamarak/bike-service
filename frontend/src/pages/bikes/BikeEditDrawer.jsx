@@ -41,6 +41,7 @@ export default function BikeEditDrawer({
                 title: "Failed to update bike",
                 message: error.message,
                 color: "red",
+                withBorder: true,
             });
         } finally {
             setLoadingUpdate(false);
@@ -86,6 +87,7 @@ export default function BikeEditDrawer({
                 title: "Failed to delete bike",
                 message: error.message,
                 color: "red",
+                withBorder: true,
             });
         } finally {
             setLoadingDelete(false);

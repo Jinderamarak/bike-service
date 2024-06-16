@@ -76,6 +76,7 @@ export default function useRides(year) {
                     title: `Failed to fetch rides from ${year}-${month}`,
                     message: err.message,
                     color: "red",
+                    withBorder: true,
                 });
             } finally {
                 setLoading((current) => {

@@ -51,6 +51,7 @@ export default function useBikes() {
                     title: "Failed to fetch bikes",
                     message: err.message,
                     color: "red",
+                    withBorder: true,
                 });
             })
             .finally(() => {

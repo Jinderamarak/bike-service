@@ -7,6 +7,7 @@ export default function ManageWorker() {
         notifications.show({
             message: `Registering service worker: ${""}`,
             color: "green",
+            withBorder: true,
         });
 
         try {
@@ -19,18 +20,21 @@ export default function ManageWorker() {
                 notifications.show({
                     message: "Service worker installing",
                     color: "green",
+                    withBorder: true,
                 });
             }
             if (registration.waiting) {
                 notifications.show({
                     message: "Service worker waiting",
                     color: "green",
+                    withBorder: true,
                 });
             }
             if (registration.active) {
                 notifications.show({
                     message: "Service worker active",
                     color: "green",
+                    withBorder: true,
                 });
             }
         } catch (error) {
@@ -38,6 +42,7 @@ export default function ManageWorker() {
             notifications.show({
                 message: `Service worker registration failed: ${error}`,
                 color: "red",
+                withBorder: true,
             });
         }
     }
@@ -46,6 +51,7 @@ export default function ManageWorker() {
         notifications.show({
             message: "Unregistering service worker",
             color: "green",
+            withBorder: true,
         });
 
         try {
@@ -58,11 +64,13 @@ export default function ManageWorker() {
                 notifications.show({
                     message: "Service worker unregistered",
                     color: "green",
+                    withBorder: true,
                 });
             } else {
                 notifications.show({
                     message: "No service worker to unregister",
                     color: "red",
+                    withBorder: true,
                 });
             }
         } catch (error) {
@@ -70,6 +78,7 @@ export default function ManageWorker() {
             notifications.show({
                 message: `Service worker unregistration failed: ${error}`,
                 color: "red",
+                withBorder: true,
             });
         }
     }

@@ -61,7 +61,7 @@ class AsyncMutex {
             const resolve = this.#waiters.shift();
             resolve(() => this.#release());
         } else {
-            this.locked = false;
+            this.#locked = false;
         }
     }
 

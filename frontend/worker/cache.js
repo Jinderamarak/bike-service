@@ -1,10 +1,10 @@
-const CacheName = "v1";
+const CACHE_NAME = "v1";
 
 /**
  * @returns {Promise<Cache>}
  */
 export async function openCache() {
-    return await caches.open(CacheName);
+    return await caches.open(CACHE_NAME);
 }
 
 /**

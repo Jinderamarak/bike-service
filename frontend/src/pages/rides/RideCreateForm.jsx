@@ -38,6 +38,7 @@ export default function RideCreateForm({ onRideCreated }) {
                 title: "Failed to create ride",
                 message: error.message,
                 color: "red",
+                withBorder: true,
             });
         } finally {
             setLoading(false);

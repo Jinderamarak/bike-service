@@ -2,58 +2,36 @@ import React, { useEffect, useState } from "react";
 import { Group, Skeleton, Stack, Text } from "@mantine/core";
 
 export default function Hostnames() {
-    const [serverStatus, setServerStatus] = useState(null);
-    const [reachable, setReachable] = useState({});
+    const [tests, setTests] = useState(null);
+
+    function handleOnMessage(event) {
+        if (event.data.type === "checkHosts") {
+            setTests(event.data.results);
+        }
+    }
 
     useEffect(() => {
-        let controller = new AbortController();
-        fetch("/api/status", { signal: controller.signal })
-            .then((response) => response.json())
-            .then((data) => setServerStatus(data))
-            .catch((error) => console.error(error));
+        navigator.serviceWorker.addEventListener("message", handleOnMessage);
+        navigator.serviceWorker.ready.then((registration) => {
+            registration.active.postMessage({ type: "checkHosts" });
+        });
 
-        return () => controller.abort();
-    }, []);
-
-    useEffect(() => {
-        if (serverStatus == null) return;
-
-        let controller = new AbortController();
-        Promise.all(
-            serverStatus.hostnames.map((host) =>
-                fetch(`${host}/api/status`, {
-                    signal: controller.signal,
-                })
-                    .then((response) => response.json())
-                    .then(() =>
-                        setReachable((prev) => ({
-                            ...prev,
-                            [host]: true,
-                        }))
-                    )
-                    .catch(() =>
-                        setReachable((prev) => ({ ...prev, [host]: false }))
-                    )
-            )
-        );
-
-        const timeout = setTimeout(() => controller.abort(), 5000);
         return () => {
-            controller.abort();
-            clearTimeout(timeout);
+            navigator.serviceWorker.removeEventListener(
+                "message",
+                handleOnMessage
+            );
         };
-    }, [serverStatus]);
+    }, []);
 
     return (
         <Stack>
-            <Skeleton visible={serverStatus == null}>
-                {(serverStatus?.hostnames ?? []).map((host) => (
-                    <Text key={host}>
-                        {host}
-                        <Skeleton visible={reachable[host] == undefined}>
-                            <HostStatus state={reachable[host]} />
-                        </Skeleton>
-                    </Text>
+            <Skeleton visible={tests == null}>
+                {(tests ?? []).map((test) => (
+                    <Group key={test.host}>
+                        {test.host}
+                        <HostStatus state={test.available} />
+                    </Group>
                 ))}
             </Skeleton>
         </Stack>

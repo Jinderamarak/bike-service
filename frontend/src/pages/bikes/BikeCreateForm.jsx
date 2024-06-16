@@ -32,6 +32,7 @@ export default function BikeCreateForm({ onBikeCreated }) {
                 title: "Failed to create bike",
                 message: error.message,
                 color: "red",
+                withBorder: true,
             });
         } finally {
             setLoading(false);
