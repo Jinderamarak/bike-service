@@ -1,5 +1,5 @@
 import { openCache } from "../cache";
-import { postNetworkChanged } from "../messages";
+import { postNetworkChanged } from "../messages/outbound";
 import { sw } from "../worker";
 import AsyncMutex from "./lock";
 

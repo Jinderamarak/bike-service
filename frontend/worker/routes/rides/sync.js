@@ -3,7 +3,7 @@ import {
     postSyncCompleted,
     postSyncFailed,
     postSyncStarted,
-} from "../../messages";
+} from "../../messages/outbound";
 import ridesDb from "./db";
 
 async function syncRides() {

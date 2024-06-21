@@ -8,13 +8,18 @@ import ridesDb from "./routes/rides/db";
 import handleRequest from "./routes";
 import syncRides from "./routes/rides/sync";
 import AsyncMutex from "./lib/lock";
+import { onVersionMessage } from "./messages";
+import { onCheckHostsMessage } from "./messages";
+import { onStatusMessage } from "./messages";
+import { onSyncMessage } from "./messages";
 
 export const sw = /** @type {ServiceWorkerGlobalScope & typeof globalThis} */ (
     globalThis
 );
 
+/** @type {string} */
 // @ts-ignore
-const WORKER_VERSION = APP_VERSION;
+export const WORKER_VERSION = APP_VERSION;
 
 export const OfflineResponse = new Response("Offline", { status: 408 });
 
@@ -53,48 +58,16 @@ function onFetch(event) {
  */
 function onMessage(event) {
     if (event.data.type === "version") {
-        event.source.postMessage({ type: "version", version: WORKER_VERSION });
+        event.waitUntil(onVersionMessage(event));
     }
     if (event.data.type === "checkHosts") {
-        event.waitUntil(
-            (async () => {
-                const fetcher = await getMultiFetcher();
-                const tests = await fetcher.testHosts();
-                const results = tests.map((t) => ({
-                    host: t.host.origin,
-                    available: t.available,
-                }));
-                event.source.postMessage({ type: "checkHosts", results });
-            })()
-        );
+        event.waitUntil(onCheckHostsMessage(event));
     }
     if (event.data.type === "status") {
-        event.waitUntil(
-            (async () => {
-                const fetcher = await getMultiFetcher();
-                const isOnline = !fetcher.isOffline();
-                event.source.postMessage({ type: "status", isOnline });
-            })()
-        );
+        event.waitUntil(onStatusMessage(event));
     }
     if (event.data.type === "sync") {
-        event.waitUntil(
-            (async () => {
-                if (syncLock.isLocked()) {
-                    return;
-                }
-
-                await syncLock.run(async () => {
-                    const fetcher = await getMultiFetcher();
-                    const online = await fetcher.selectHost();
-                    if (!online) {
-                        return;
-                    }
-
-                    await syncRides();
-                });
-            })()
-        );
+        event.waitUntil(onSyncMessage(event));
     }
 }
 
