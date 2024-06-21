@@ -80,9 +80,7 @@ export default function RideEditDrawer({
         try {
             const response = await fetch(
                 `/api/bikes/${selectedBike}/rides/${id}`,
-                {
-                    method: "DELETE",
-                }
+                { method: "DELETE" }
             );
 
             if (response.status !== 204) {

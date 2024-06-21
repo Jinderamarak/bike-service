@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { selectedBikeIdAtom } from "../data/persistentAtoms";
 import { Button } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 
 export default function RideYearGroup({ year, onYearSelected }) {
     const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
@@ -10,7 +11,7 @@ export default function RideYearGroup({ year, onYearSelected }) {
     useEffect(() => {
         if (selectedBike === null) return;
 
-        let controller = new AbortController();
+        const controller = new AbortController();
         fetch(`/api/bikes/${selectedBike}/rides/years`, {
             signal: controller.signal,
         })
@@ -19,7 +20,16 @@ export default function RideYearGroup({ year, onYearSelected }) {
                 data.sort((a, b) => b - a);
                 setYears(data);
             })
-            .catch((err) => console.warn(err));
+            .catch((err) => {
+                if (err.name === "AbortError") return;
+                console.error(err);
+                notifications.show({
+                    title: "Failed to fetch ride years",
+                    message: err.message,
+                    color: "red",
+                    withBorder: true,
+                });
+            });
 
         return () => controller.abort();
     }, [selectedBike]);

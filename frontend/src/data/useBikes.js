@@ -39,13 +39,17 @@ export default function useBikes() {
             return;
         }
 
+        const controller = new AbortController();
         setLoading(true);
-        fetch("/api/bikes")
+        fetch("/api/bikes", {
+            signal: controller.signal,
+        })
             .then((res) => res.json())
             .then((bikes) => {
                 setBikes(bikes);
             })
             .catch((err) => {
+                if (err.name === "AbortError") return;
                 console.error(err);
                 notifications.show({
                     title: "Failed to fetch bikes",
@@ -57,6 +61,8 @@ export default function useBikes() {
             .finally(() => {
                 setLoading(false);
             });
+
+        return () => controller.abort();
     }, [subscribers]);
 
     function addBike(bike) {

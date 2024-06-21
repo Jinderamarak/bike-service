@@ -2,6 +2,7 @@ import { notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { selectedBikeIdAtom } from "./persistentAtoms";
+import { networkStatusAtom } from "./useNetworkStatus";
 
 function mergeRideMonths(first, second) {
     if (first.rides == null) return second;
@@ -44,7 +45,8 @@ function idx(m) {
 }
 
 export default function useRides(year) {
-    const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
+    const [networkStatus, _] = useRecoilState(networkStatusAtom);
+    const [selectedBike, __] = useRecoilState(selectedBikeIdAtom);
     const [rides, setRides] = useState(createDefault(year));
     const [loading, setLoading] = useState(Array(12).fill(true));
 
@@ -99,7 +101,7 @@ export default function useRides(year) {
         fetchRides(controller.signal);
 
         return () => controller.abort();
-    }, [selectedBike, year]);
+    }, [selectedBike, year, networkStatus]);
 
     function addRide(ride) {
         const date = new Date(ride.date);
