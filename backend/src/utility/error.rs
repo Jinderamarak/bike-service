@@ -10,7 +10,9 @@ pub type AppResult<T> = Result<T, AppError>;
 pub enum AppError {
     NotFound(String),
     BadRequest(String),
+    #[cfg_attr(not(debug_assertions), allow(dead_code))]
     Database(sqlx::Error),
+    #[cfg_attr(not(debug_assertions), allow(dead_code))]
     Other(anyhow::Error),
 }
 
