@@ -1,4 +1,10 @@
-use axum::Router;
+use axum::{
+    extract::Request,
+    http::header,
+    middleware::{from_fn, Next},
+    response::IntoResponse,
+    Router,
+};
 
 use crate::utility::state::AppState;
 
@@ -11,4 +17,14 @@ pub fn api_router() -> Router<AppState> {
         .nest("/bikes", bikes::routes::router())
         .nest("/data", data::routes::router())
         .nest("/status", status::routes::router())
+        .layer(from_fn(without_caching))
+}
+
+async fn without_caching(request: Request, next: Next) -> impl IntoResponse {
+    let mut response = next.run(request).await.into_response();
+    response.headers_mut().insert(
+        header::CACHE_CONTROL,
+        header::HeaderValue::from_static("no-store"),
+    );
+    response
 }
