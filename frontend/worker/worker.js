@@ -3,15 +3,14 @@
 /// <reference lib="webworker" />
 
 import { cacheResources } from "./cache";
-import { getMultiFetcher } from "./lib/fetching";
 import ridesDb from "./routes/rides/db";
 import handleRequest from "./routes";
-import syncRides from "./routes/rides/sync";
 import AsyncMutex from "./lib/lock";
 import { onVersionMessage } from "./messages";
 import { onCheckHostsMessage } from "./messages";
 import { onStatusMessage } from "./messages";
 import { onSyncMessage } from "./messages";
+import { FRONTEND_RESOURCES } from "../src/constants";
 
 export const sw = /** @type {ServiceWorkerGlobalScope & typeof globalThis} */ (
     globalThis
@@ -34,11 +33,7 @@ function onInstall(event) {
             // Open the database to upgrade it
             await ridesDb.initialize();
             await cacheResources([
-                "/index.html",
-                "/favicon.svg",
-                "/worker.js",
-                "/assets/index.css",
-                "/assets/index.js",
+                ...FRONTEND_RESOURCES,
                 "/api/bikes",
                 "/api/status",
             ]);
