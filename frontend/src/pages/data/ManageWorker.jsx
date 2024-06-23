@@ -11,6 +11,10 @@ export default function ManageWorker() {
         });
 
         try {
+            if (!("serviceWorker" in navigator)) {
+                throw new Error("Service workers not supported");
+            }
+
             const registration = await navigator.serviceWorker.register(
                 "/worker.js",
                 { scope: "/" }
@@ -55,6 +59,10 @@ export default function ManageWorker() {
         });
 
         try {
+            if (!("serviceWorker" in navigator)) {
+                throw new Error("Service workers not supported");
+            }
+
             const registration = await navigator.serviceWorker.getRegistration(
                 "/"
             );

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Skeleton, Stack, Text } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 
 // @ts-ignore
 const FRONTEND_VERSION = APP_VERSION;
@@ -19,18 +20,27 @@ export default function Versions() {
         fetch("/api/status", { signal: controller.signal })
             .then((response) => response.json())
             .then((data) => setServerStatus(data))
-            .catch((error) => console.error(error));
+            .catch((err) => {
+                if (err.name === "AbortError") return;
+                console.error(err);
+                notifications.show({
+                    title: "Failed to fetch backend version",
+                    message: err.message,
+                    color: "red",
+                    withBorder: true,
+                });
+            });
 
         setWorkerVersions([]);
 
-        navigator.serviceWorker.addEventListener("message", handleOnMessage);
-        navigator.serviceWorker.ready.then((registration) => {
+        navigator.serviceWorker?.addEventListener("message", handleOnMessage);
+        navigator.serviceWorker?.ready?.then((registration) => {
             registration.active.postMessage({ type: "version" });
         });
 
         return () => {
             controller.abort();
-            navigator.serviceWorker.removeEventListener(
+            navigator.serviceWorker?.removeEventListener(
                 "message",
                 handleOnMessage
             );

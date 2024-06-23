@@ -11,13 +11,13 @@ export default function Hostnames() {
     }
 
     useEffect(() => {
-        navigator.serviceWorker.addEventListener("message", handleOnMessage);
-        navigator.serviceWorker.ready.then((registration) => {
+        navigator.serviceWorker?.addEventListener("message", handleOnMessage);
+        navigator.serviceWorker?.ready?.then((registration) => {
             registration.active.postMessage({ type: "checkHosts" });
         });
 
         return () => {
-            navigator.serviceWorker.removeEventListener(
+            navigator.serviceWorker?.removeEventListener(
                 "message",
                 handleOnMessage
             );
