@@ -1,6 +1,9 @@
 export const FRONTEND_RESOURCES = [
     "/index.html",
-    "/favicon.svg",
+    "/icon-vector.svg",
+    "/icon-512.png",
+    "/icon-192.png",
+    "/app.webmanifest",
     "/worker.js",
     "/assets/index.css",
     "/assets/index.js",
