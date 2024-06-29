@@ -19,6 +19,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/bikes", bikes::routes::router())
         .nest("/data", data::routes::router())
         .nest("/status", status::routes::router())
+        .nest("/users", users::routes::router())
         .layer(from_fn(without_caching))
 }
 

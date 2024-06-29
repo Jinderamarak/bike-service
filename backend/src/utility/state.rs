@@ -3,7 +3,10 @@ use sqlx::SqlitePool;
 
 use crate::{
     config::Configuration,
-    services::bikes::{repository::BikeRepository, rides::repository::RideRepository},
+    services::{
+        bikes::{repository::BikeRepository, rides::repository::RideRepository},
+        users::repository::UserRepository,
+    },
 };
 
 #[derive(Clone)]
@@ -12,17 +15,20 @@ pub struct AppState {
     pool: SqlitePool,
     rides: RideRepository,
     bikes: BikeRepository,
+    users: UserRepository,
 }
 
 impl AppState {
     pub fn new(config: Configuration, pool: SqlitePool) -> Self {
         let rides = RideRepository::new(pool.clone());
         let bikes = BikeRepository::new(pool.clone());
+        let users = UserRepository::new(pool.clone());
         Self {
             config,
             pool,
             rides,
             bikes,
+            users,
         }
     }
 }
@@ -48,5 +54,11 @@ impl FromRef<AppState> for RideRepository {
 impl FromRef<AppState> for BikeRepository {
     fn from_ref(state: &AppState) -> Self {
         state.bikes.clone()
+    }
+}
+
+impl FromRef<AppState> for UserRepository {
+    fn from_ref(state: &AppState) -> Self {
+        state.users.clone()
     }
 }
