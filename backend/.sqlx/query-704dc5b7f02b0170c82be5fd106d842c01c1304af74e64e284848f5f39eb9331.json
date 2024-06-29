@@ -27,6 +27,11 @@
         "name": "color",
         "ordinal": 4,
         "type_info": "Text"
+      },
+      {
+        "name": "owner_id",
+        "ordinal": 5,
+        "type_info": "Int64"
       }
     ],
     "parameters": {
@@ -37,7 +42,8 @@
       false,
       true,
       true,
-      true
+      true,
+      false
     ]
   },
   "hash": "704dc5b7f02b0170c82be5fd106d842c01c1304af74e64e284848f5f39eb9331"

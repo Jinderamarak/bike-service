@@ -29,7 +29,8 @@ async fn create_bike(
     State(repo): State<BikeRepository>,
     Json(payload): Json<BikePartial>,
 ) -> AppResult<(StatusCode, Json<BikeModel>)> {
-    let model = repo.create(&payload).await?;
+    let owner_id = 1; // TODO: Extract from token
+    let model = repo.create(owner_id, &payload).await?;
     Ok((StatusCode::CREATED, Json(model)))
 }
 
@@ -47,7 +48,8 @@ async fn update_bike(
     Path(id): Path<i64>,
     Json(payload): Json<BikePartial>,
 ) -> AppResult<Json<BikeModel>> {
-    let model = repo.update(id, &payload).await?;
+    let owner_id = 1; // TODO: Extract from token
+    let model = repo.update(id, owner_id, &payload).await?;
     Ok(Json(model))
 }
 
