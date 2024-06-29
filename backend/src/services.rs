@@ -8,9 +8,11 @@ use axum::{
 
 use crate::utility::state::AppState;
 
+pub mod auth;
 pub mod bikes;
 pub mod data;
 pub mod status;
+pub mod users;
 
 pub fn api_router() -> Router<AppState> {
     Router::new()
