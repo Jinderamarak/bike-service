@@ -15,7 +15,7 @@ CREATE TABLE sessions
     user_id      INTEGER NOT NULL REFERENCES users (id),
     token        TEXT    NOT NULL,
     created_at   TEXT    NOT NULL,
-    last_used_at TEXT    NOT NULL,
+    last_used_at TEXT    NOT NULL
 );
 
 -- Create a default user if there are any bikes
