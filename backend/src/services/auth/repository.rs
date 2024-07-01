@@ -3,7 +3,7 @@ use sqlx::SqlitePool;
 
 use crate::utility::{db_format::format_date_time, error::AppResult};
 
-use super::models::{SessionModel, SessionNew, SessionRaw};
+use super::models::{SessionModel, SessionRaw};
 
 #[derive(Clone)]
 pub struct AuthRepository(SqlitePool);
@@ -13,10 +13,11 @@ impl AuthRepository {
         Self(pool)
     }
 
-    pub async fn create(&self, session: &SessionNew) -> AppResult<SessionModel> {
-        let raw = SessionRaw::from(session.with_id(-1));
-        let id = sqlx::query!(
-            "INSERT INTO sessions (token, user_id, user_agent, created_at, last_used_at) VALUES (?, ?, ?, ?, ?)",
+    pub async fn create(&self, session: &SessionModel) -> AppResult<()> {
+        let raw = SessionRaw::from(session.clone());
+        let _ = sqlx::query!(
+            "INSERT INTO sessions (id, token, user_id, user_agent, created_at, last_used_at) VALUES (?, ?, ?, ?, ?, ?)",
+            raw.id,
             raw.token,
             raw.user_id,
             raw.user_agent,
@@ -24,10 +25,9 @@ impl AuthRepository {
             raw.last_used_at
         )
         .execute(&self.0)
-        .await?
-        .last_insert_rowid();
+        .await?;
 
-        Ok(session.with_id(id))
+        Ok(())
     }
 
     pub async fn get_by_token(&self, token: &str) -> AppResult<SessionModel> {

@@ -11,7 +11,8 @@ CREATE TABLE users
 -- Create table for sessions
 CREATE TABLE sessions
 (
-    id           INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    -- use UUID for session id to obscure other users' sessions
+    id           TEXT    PRIMARY KEY NOT NULL,
     token        TEXT    NOT NULL UNIQUE,
     user_id      INTEGER NOT NULL REFERENCES users (id),
     user_agent   TEXT    NOT NULL,

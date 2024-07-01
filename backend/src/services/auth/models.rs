@@ -1,5 +1,6 @@
 use chrono::NaiveDateTime;
 use serde::Serialize;
+use uuid::Uuid;
 
 use crate::utility::{
     db_extensions::Model,
@@ -8,7 +9,7 @@ use crate::utility::{
 
 #[derive(Debug, Clone)]
 pub struct SessionRaw {
-    pub id: i64,
+    pub id: String,
     pub token: String,
     pub user_id: i64,
     pub user_agent: String,
@@ -19,7 +20,7 @@ pub struct SessionRaw {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct SessionModel {
-    pub id: i64,
+    pub id: Uuid,
     pub token: String,
     pub user_id: i64,
     pub user_agent: String,
@@ -36,7 +37,7 @@ impl From<SessionModel> for SessionRaw {
         let last_used_at = format_date_time(&model.last_used_at);
         let revoked_at = model.revoked_at.map(|dt| format_date_time(&dt));
         SessionRaw {
-            id: model.id,
+            id: model.id.to_string(),
             token: model.token,
             user_id: model.user_id,
             user_agent: model.user_agent,
@@ -50,11 +51,12 @@ impl From<SessionModel> for SessionRaw {
 impl TryFrom<SessionRaw> for SessionModel {
     type Error = anyhow::Error;
     fn try_from(raw: SessionRaw) -> Result<Self, Self::Error> {
+        let id = Uuid::parse_str(&raw.id)?;
         let created_at = parse_date_time(&raw.created_at)?;
         let last_used_at = parse_date_time(&raw.last_used_at)?;
         let revoked_at = raw.revoked_at.map(|dt| parse_date_time(&dt)).transpose()?;
         Ok(SessionModel {
-            id: raw.id,
+            id,
             token: raw.token,
             user_id: raw.user_id,
             user_agent: raw.user_agent,
@@ -62,27 +64,5 @@ impl TryFrom<SessionRaw> for SessionModel {
             last_used_at,
             revoked_at,
         })
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct SessionNew {
-    pub token: String,
-    pub user_id: i64,
-    pub user_agent: String,
-    pub created_at: NaiveDateTime,
-}
-
-impl SessionNew {
-    pub fn with_id(&self, id: i64) -> SessionModel {
-        SessionModel {
-            id,
-            token: self.token.clone(),
-            user_id: self.user_id,
-            user_agent: self.user_agent.clone(),
-            created_at: self.created_at,
-            last_used_at: self.created_at,
-            revoked_at: None,
-        }
     }
 }

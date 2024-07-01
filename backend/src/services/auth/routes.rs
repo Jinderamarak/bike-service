@@ -36,7 +36,7 @@ async fn login(
     let user = user_repo.get_by_username(&user.username).await?;
 
     let session = create_session(user.id, &headers);
-    let session = auth_repo.create(&session).await?;
+    auth_repo.create(&session).await?;
 
     Ok(Json(session))
 }
