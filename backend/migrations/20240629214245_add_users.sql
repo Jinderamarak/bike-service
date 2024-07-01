@@ -1,8 +1,8 @@
 -- Create table for users
 CREATE TABLE users
 (
-    id           INTEGER PRIMARY KEY AUTOINCREMENT,
-    username     TEXT    NOT NULL,
+    id           INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    username     TEXT    NOT NULL UNIQUE,
     monthly_goal DOUBLE  NULL,
     created_at   TEXT    NOT NULL,
     deleted_at   TEXT    NULL
@@ -11,11 +11,13 @@ CREATE TABLE users
 -- Create table for sessions
 CREATE TABLE sessions
 (
-    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    id           INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    token        TEXT    NOT NULL UNIQUE,
     user_id      INTEGER NOT NULL REFERENCES users (id),
-    token        TEXT    NOT NULL,
+    user_agent   TEXT    NOT NULL,
     created_at   TEXT    NOT NULL,
-    last_used_at TEXT    NOT NULL
+    last_used_at TEXT    NOT NULL,
+    revoked_at   TEXT    NULL
 );
 
 -- Create a default user if there are any bikes

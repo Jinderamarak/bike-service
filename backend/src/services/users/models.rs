@@ -62,3 +62,8 @@ pub struct UserPartial {
     pub username: String,
     pub monthly_goal: Option<f64>,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct UserLogin {
+    pub username: String,
+}

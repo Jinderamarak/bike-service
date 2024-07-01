@@ -33,11 +33,24 @@ impl UserRepository {
         }
     }
 
-    pub async fn get_one(&self, user_id: i64) -> AppResult<UserModel> {
+    pub async fn get_by_id(&self, user_id: i64) -> AppResult<UserModel> {
         let model = sqlx::query_as!(
             UserRaw,
             "SELECT * FROM users WHERE id = ? AND deleted_at IS NULL",
             user_id
+        )
+        .fetch_one(&self.0)
+        .await?
+        .try_into()?;
+
+        Ok(model)
+    }
+
+    pub async fn get_by_username(&self, username: &str) -> AppResult<UserModel> {
+        let model = sqlx::query_as!(
+            UserRaw,
+            "SELECT * FROM users WHERE username = ? AND deleted_at IS NULL",
+            username
         )
         .fetch_one(&self.0)
         .await?

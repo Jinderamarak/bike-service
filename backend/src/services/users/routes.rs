@@ -3,7 +3,7 @@ use axum::http::StatusCode;
 use axum::routing::{delete, post};
 use axum::{Json, Router};
 
-use crate::utility::error::AppResult;
+use crate::utility::error::{AppError, AppResult};
 use crate::utility::state::AppState;
 
 use super::models::{UserModel, UserPartial};
@@ -19,6 +19,11 @@ async fn create_user(
     State(repo): State<UserRepository>,
     Json(payload): Json<UserPartial>,
 ) -> AppResult<(StatusCode, Json<UserModel>)> {
+    let user = repo.get_by_username(&payload.username).await;
+    if user.is_ok() {
+        return Err(AppError::Conflict("Username already exists".to_string()));
+    }
+
     let model = repo.create(&payload).await?;
     Ok((StatusCode::CREATED, Json(model)))
 }

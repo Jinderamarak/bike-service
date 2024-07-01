@@ -10,6 +10,9 @@ pub type AppResult<T> = Result<T, AppError>;
 pub enum AppError {
     NotFound(String),
     BadRequest(String),
+    NotAuthenticated,
+    NotAuthorized,
+    Conflict(String),
     #[cfg_attr(not(debug_assertions), allow(dead_code))]
     Database(sqlx::Error),
     #[cfg_attr(not(debug_assertions), allow(dead_code))]
@@ -21,6 +24,9 @@ impl AppError {
         match self {
             AppError::NotFound(_) => StatusCode::NOT_FOUND,
             AppError::BadRequest(_) => StatusCode::BAD_REQUEST,
+            AppError::NotAuthenticated => StatusCode::BAD_REQUEST,
+            AppError::NotAuthorized => StatusCode::UNAUTHORIZED,
+            AppError::Conflict(_) => StatusCode::CONFLICT,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
@@ -28,18 +34,24 @@ impl AppError {
     #[cfg(debug_assertions)]
     fn message(&self) -> String {
         match self {
-            AppError::NotFound(e) => format!("Not Found: {}", e),
-            AppError::BadRequest(e) => format!("Bad Request: {}", e),
-            AppError::Database(e) => format!("Database Error: {}", e),
-            AppError::Other(e) => format!("Internal Server Error: {}", e),
+            AppError::NotFound(e) => format!("Not Found: {e}"),
+            AppError::BadRequest(e) => format!("Bad Request: {e}"),
+            AppError::NotAuthenticated => "Not Authenticated".to_string(),
+            AppError::NotAuthorized => "Not Authorized".to_string(),
+            AppError::Conflict(e) => format!("Conflict: {e}"),
+            AppError::Database(e) => format!("Database Error: {e}"),
+            AppError::Other(e) => format!("Internal Server Error: {e}"),
         }
     }
 
     #[cfg(not(debug_assertions))]
     fn message(&self) -> String {
         match self {
-            AppError::NotFound(e) => format!("Not Found: {}", e),
-            AppError::BadRequest(e) => format!("Bad Request: {}", e),
+            AppError::NotFound(e) => format!("Not Found: {e}"),
+            AppError::BadRequest(e) => format!("Bad Request: {e}"),
+            AppError::NotAuthenticated => format!("Bad Request: Not Authenticated"),
+            AppError::NotAuthorized => format!("Unauthorized"),
+            AppError::Conflict(e) => format!("Conflict: {e}"),
             _ => "Internal Server Error".to_string(),
         }
     }

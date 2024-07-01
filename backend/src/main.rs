@@ -43,7 +43,7 @@ async fn main() -> anyhow::Result<()> {
     let cors = config.create_cors_layer()?;
     let app = Router::new()
         .fallback_service(spa)
-        .nest("/api", api_router())
+        .nest("/api", api_router(state.clone()))
         .with_state(state)
         .layer(cors);
 
