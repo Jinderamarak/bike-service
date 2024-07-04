@@ -20,6 +20,7 @@ pub fn router() -> Router<AppState> {
 pub fn router_with_auth() -> Router<AppState> {
     Router::new()
         .route("/", get(whoami))
+        .route("/", delete(logout))
         .route("/:id", delete(revoke))
 }
 
@@ -42,6 +43,17 @@ async fn login(
     auth_repo.create(&session).await?;
 
     Ok(Json(session))
+}
+
+async fn logout(
+    State(auth_repo): State<AuthRepository>,
+    Extension(session): Extension<SessionModel>,
+) -> AppResult<StatusCode> {
+    let now = Utc::now().naive_utc();
+    auth_repo
+        .revoke(session.user_id, &session.id.to_string(), &now)
+        .await?;
+    Ok(StatusCode::NO_CONTENT)
 }
 
 async fn revoke(
