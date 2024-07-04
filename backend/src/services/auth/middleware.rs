@@ -36,6 +36,12 @@ pub async fn auth_layer(
         return Err(AppError::NotAuthenticated);
     }
 
+    if let Some(revoked) = session.revoked_at {
+        if now > revoked {
+            return Err(AppError::NotAuthenticated);
+        }
+    }
+
     auth_repo.update(&session.token, &now).await?;
     session.last_used_at = now;
 

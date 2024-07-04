@@ -51,4 +51,23 @@ impl AuthRepository {
 
         Ok(())
     }
+
+    pub async fn revoke(
+        &self,
+        user_id: i64,
+        session_id: &str,
+        time: &NaiveDateTime,
+    ) -> AppResult<()> {
+        let now = format_date_time(time);
+        sqlx::query!(
+            "UPDATE sessions SET revoked_at = ? WHERE user_id = ? AND id = ?",
+            now,
+            user_id,
+            session_id
+        )
+        .execute(&self.0)
+        .await?;
+
+        Ok(())
+    }
 }

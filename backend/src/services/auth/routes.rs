@@ -1,7 +1,8 @@
-use axum::extract::State;
-use axum::http::HeaderMap;
-use axum::routing::{get, post};
+use axum::extract::{Path, State};
+use axum::http::{HeaderMap, StatusCode};
+use axum::routing::{delete, get, post};
 use axum::{Extension, Json, Router};
+use chrono::Utc;
 
 use crate::services::users::models::{UserLogin, UserModel};
 use crate::services::users::repository::UserRepository;
@@ -17,14 +18,16 @@ pub fn router() -> Router<AppState> {
 }
 
 pub fn router_with_auth() -> Router<AppState> {
-    Router::new().route("/", get(whoami))
+    Router::new()
+        .route("/", get(whoami))
+        .route("/:id", delete(revoke))
 }
 
 async fn whoami(
     Extension(user): Extension<UserModel>,
-    //Extension(session): Extension<SessionModel>,
-) -> AppResult<Json<UserModel>> {
-    Ok(Json(user))
+    Extension(session): Extension<SessionModel>,
+) -> AppResult<Json<(UserModel, SessionModel)>> {
+    Ok(Json((user, session)))
 }
 
 async fn login(
@@ -39,4 +42,14 @@ async fn login(
     auth_repo.create(&session).await?;
 
     Ok(Json(session))
+}
+
+async fn revoke(
+    State(auth_repo): State<AuthRepository>,
+    Extension(session): Extension<SessionModel>,
+    Path(session_id): Path<String>,
+) -> AppResult<StatusCode> {
+    let now = Utc::now().naive_utc();
+    auth_repo.revoke(session.user_id, &session_id, &now).await?;
+    Ok(StatusCode::NO_CONTENT)
 }
