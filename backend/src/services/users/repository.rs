@@ -16,23 +16,6 @@ impl UserRepository {
         Self(pool)
     }
 
-    pub async fn check_exists(&self, user_id: i64) -> AppResult<()> {
-        let user = sqlx::query_as!(
-            UserRaw,
-            "SELECT * FROM users WHERE id = ? AND deleted_at IS NULL",
-            user_id
-        )
-        .fetch_optional(&self.0)
-        .await?;
-
-        match user {
-            Some(_) => Ok(()),
-            None => Err(AppError::NotFound(format!(
-                "No user found with id {user_id}",
-            ))),
-        }
-    }
-
     pub async fn get_by_id(&self, user_id: i64) -> AppResult<UserModel> {
         let model = sqlx::query_as!(
             UserRaw,
