@@ -1,9 +1,4 @@
-use axum::{
-    extract::State,
-    http::StatusCode,
-    routing::{get, head},
-    Json, Router,
-};
+use axum::{extract::State, routing::get, Json, Router};
 
 use crate::{
     config::Configuration,
@@ -14,9 +9,7 @@ use crate::{
 use super::models::StatusModel;
 
 pub fn router() -> Router<AppState> {
-    Router::new()
-        .route("/", get(get_status))
-        .route("/", head(status_check))
+    Router::new().route("/", get(get_status))
 }
 
 async fn get_status(State(config): State<Configuration>) -> AppResult<Json<StatusModel>> {
@@ -24,8 +17,4 @@ async fn get_status(State(config): State<Configuration>) -> AppResult<Json<Statu
         version: APP_VERSION.unwrap_or("unknown").to_string(),
         hostnames: config.hostnames,
     }))
-}
-
-async fn status_check() -> AppResult<StatusCode> {
-    Ok(StatusCode::OK)
 }
