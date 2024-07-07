@@ -2,7 +2,6 @@ use std::path::Path;
 
 use axum::Router;
 use clap::Parser;
-#[cfg(debug_assertions)]
 use dotenv::dotenv;
 use sqlx::SqlitePool;
 use tokio::net;
@@ -21,7 +20,6 @@ pub const APP_VERSION: Option<&str> = option_env!("CARGO_PKG_VERSION");
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    #[cfg(debug_assertions)]
     dotenv().ok();
 
     println!(
