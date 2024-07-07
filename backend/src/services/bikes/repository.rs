@@ -17,28 +17,30 @@ impl BikeRepository {
         Self(pool)
     }
 
-    pub async fn check_exists(&self, bike_id: i64) -> AppResult<()> {
-        let bike = sqlx::query_as!(
-            BikeRaw,
-            "SELECT * FROM bikes WHERE id = ? AND deleted_at IS NULL",
-            bike_id
+    pub async fn assert_owner(&self, bike_id: i64, user_id: i64) -> AppResult<()> {
+        let something = sqlx::query!(
+            "SELECT id FROM bikes WHERE id = ? AND owner_id = ? AND deleted_at IS NULL",
+            bike_id,
+            user_id
         )
         .fetch_optional(&self.0)
         .await?;
 
-        match bike {
+        match something {
             Some(_) => Ok(()),
-            None => Err(AppError::NotFound(format!(
-                "No bike found with id {bike_id}",
-            ))),
+            None => Err(AppError::NotAuthorized),
         }
     }
 
-    pub async fn get_all(&self) -> AppResult<Vec<BikeModel>> {
-        let models = sqlx::query_as!(BikeRaw, "SELECT * FROM bikes WHERE deleted_at IS NULL")
-            .fetch_all(&self.0)
-            .await?
-            .into_models()?;
+    pub async fn get_all(&self, owner_id: i64) -> AppResult<Vec<BikeModel>> {
+        let models = sqlx::query_as!(
+            BikeRaw,
+            "SELECT * FROM bikes WHERE owner_id = ? AND deleted_at IS NULL",
+            owner_id
+        )
+        .fetch_all(&self.0)
+        .await?
+        .into_models()?;
 
         Ok(models)
     }

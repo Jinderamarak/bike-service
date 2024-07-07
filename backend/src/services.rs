@@ -17,7 +17,6 @@ pub mod users;
 
 pub fn api_router(state: AppState) -> Router<AppState> {
     Router::new()
-        .nest("/bikes", bikes::routes::router())
         .nest("/data", data::routes::router())
         .nest("/status", status::routes::router())
         .nest("/users", users::routes::router())
@@ -28,6 +27,8 @@ pub fn api_router(state: AppState) -> Router<AppState> {
 
 fn router_with_auth(state: AppState) -> Router<AppState> {
     Router::new()
+        .nest("/bikes", bikes::routes::router_with_auth())
+        .nest("/users", users::routes::router_with_auth())
         .nest("/auth", auth::routes::router_with_auth())
         .route_layer(from_fn_with_state(state, auth_layer))
 }

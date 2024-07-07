@@ -11,9 +11,11 @@ use super::models::{UserModel, UserPartial};
 use super::repository::UserRepository;
 
 pub fn router() -> Router<AppState> {
-    Router::new()
-        .route("/", post(create_user))
-        .route("/", delete(delete_user))
+    Router::new().route("/", post(create_user))
+}
+
+pub fn router_with_auth() -> Router<AppState> {
+    Router::new().route("/", delete(delete_user))
 }
 
 async fn create_user(

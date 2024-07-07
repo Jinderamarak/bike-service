@@ -17,23 +17,6 @@ impl RideRepository {
         Self(pool)
     }
 
-    pub async fn check_exists(&self, ride_id: i64) -> AppResult<()> {
-        let ride = sqlx::query_as!(
-            RideRaw,
-            "SELECT * FROM rides WHERE id = ? AND deleted_at IS NULL",
-            ride_id
-        )
-        .fetch_optional(&self.0)
-        .await?;
-
-        match ride {
-            Some(_) => Ok(()),
-            None => Err(AppError::NotFound(format!(
-                "No ride found with id {ride_id}",
-            ))),
-        }
-    }
-
     pub async fn get_all(&self) -> AppResult<Vec<RideModel>> {
         let models = sqlx::query_as!(
             RideRaw,

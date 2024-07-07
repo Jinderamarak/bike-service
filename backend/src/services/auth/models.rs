@@ -19,6 +19,7 @@ pub struct SessionRaw {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SessionModel {
     pub id: Uuid,
     pub token: String,
