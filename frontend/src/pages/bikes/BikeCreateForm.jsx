@@ -1,12 +1,12 @@
 import React from "react";
 import { Form, useForm } from "@mantine/form";
-import bikeForm, { bikeFormToBody } from "./bikeForm";
+import bikeForm, { bikeFormToBody } from "./bikeForm.js";
 import { useState } from "react";
 import { notifications } from "@mantine/notifications";
 import { Button, Paper, Stack } from "@mantine/core";
-import BikeFormFields from "./BikeFormFields";
+import BikeFormFields from "./BikeFormFields.jsx";
 import { useRecoilState } from "recoil";
-import { networkStatusAtom } from "../../data/useNetworkStatus";
+import { networkStatusAtom } from "../../data/useNetworkStatus.jsx";
 
 export default function BikeCreateForm({ onBikeCreated }) {
     const [online, _] = useRecoilState(networkStatusAtom);

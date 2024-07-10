@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Paper, Flex, Burger, Title } from "@mantine/core";
-import NavLinks from "./NavLinks";
-import BikeSelect from "./BikeSelect";
+import NavLinks from "./NavLinks.jsx";
+import BikeSelect from "./BikeSelect.jsx";
 
 export default function Navigation() {
     const [open, setOpen] = useState(false);

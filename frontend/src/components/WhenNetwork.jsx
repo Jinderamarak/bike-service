@@ -1,5 +1,5 @@
 import { useRecoilState } from "recoil";
-import { networkStatusAtom } from "../data/useNetworkStatus";
+import { networkStatusAtom } from "../data/useNetworkStatus.jsx";
 
 export function WhenOnline({ children }) {
     const [online, _] = useRecoilState(networkStatusAtom);

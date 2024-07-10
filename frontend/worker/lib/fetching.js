@@ -1,7 +1,7 @@
-import { openCache } from "../cache";
-import { postNetworkChanged } from "../messages/outbound";
-import { sw } from "../worker";
-import AsyncMutex from "./lock";
+import { openCache } from "../cache.js";
+import { postNetworkChanged } from "../messages/outbound.js";
+import { sw } from "../worker.js";
+import AsyncMutex from "./lock.js";
 
 const TIMEOUT_TIME = 5000;
 

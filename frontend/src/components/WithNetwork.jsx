@@ -1,7 +1,7 @@
 import React from "react";
 import { useRecoilState } from "recoil";
 import { Text } from "@mantine/core";
-import { networkStatusAtom } from "../data/useNetworkStatus";
+import { networkStatusAtom } from "../data/useNetworkStatus.jsx";
 
 export default function WithNetwork({ children }) {
     const [online, _] = useRecoilState(networkStatusAtom);

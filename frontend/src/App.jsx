@@ -1,13 +1,13 @@
 import React from "react";
 import { Stack } from "@mantine/core";
-import Navigation from "./components/navigation/Navigation";
-import BikesPage from "./pages/bikes/BikesPage";
-import StatsPage from "./pages/stats/StatsPage";
-import RidesPage from "./pages/rides/RidesPage";
-import DataPage from "./pages/data/DataPage";
+import Navigation from "./components/navigation/Navigation.jsx";
+import BikesPage from "./pages/bikes/BikesPage.jsx";
+import StatsPage from "./pages/stats/StatsPage.jsx";
+import RidesPage from "./pages/rides/RidesPage.jsx";
+import DataPage from "./pages/data/DataPage.jsx";
 import { Routes, Route } from "react-router-dom";
-import { syncLocalStorate as syncLocalStorage } from "./data/persistentAtoms";
-import { syncNetworkStatus } from "./data/useNetworkStatus";
+import { syncLocalStorate as syncLocalStorage } from "./data/persistentAtoms.js";
+import { syncNetworkStatus } from "./data/useNetworkStatus.jsx";
 
 function App() {
     syncLocalStorage();

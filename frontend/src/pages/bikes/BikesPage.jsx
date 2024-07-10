@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Container, Flex, Paper, Skeleton, Stack, Text } from "@mantine/core";
-import BikeCreateForm from "./BikeCreateForm";
-import BikeEntry from "./BikeEntry";
-import BikeEditDrawer from "./BikeEditDrawer";
-import useBikes from "../../data/useBikes";
+import BikeCreateForm from "./BikeCreateForm.jsx";
+import BikeEntry from "./BikeEntry.jsx";
+import BikeEditDrawer from "./BikeEditDrawer.jsx";
+import useBikes from "../../data/useBikes.js";
 
 export default function BikesPage() {
     const { bikes, addBike, editBike, deleteBike } = useBikes();

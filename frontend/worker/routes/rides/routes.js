@@ -1,5 +1,5 @@
-import ridesDb from "./db";
-import { del, get, pot, put } from "../../lib/router";
+import ridesDb from "./db.js";
+import { del, get, pot, put } from "../../lib/router.js";
 
 async function getRides(_, [bikeId]) {
     const rides = ridesDb.getRides(bikeId);

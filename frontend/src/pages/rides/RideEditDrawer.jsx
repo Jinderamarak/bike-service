@@ -1,12 +1,12 @@
 import { Form, useForm } from "@mantine/form";
 import React, { useEffect, useState } from "react";
-import rideForm from "./rideForm";
+import rideForm from "./rideForm.js";
 import { Button, Drawer, Group, Stack, Text } from "@mantine/core";
-import RideFormFields from "./RideFormFields";
+import RideFormFields from "./RideFormFields.jsx";
 import { notifications } from "@mantine/notifications";
 import { modals } from "@mantine/modals";
 import { useRecoilState } from "recoil";
-import { selectedBikeIdAtom } from "../../data/persistentAtoms";
+import { selectedBikeIdAtom } from "../../data/persistentAtoms.js";
 
 export default function RideEditDrawer({
     id,

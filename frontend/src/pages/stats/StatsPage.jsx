@@ -1,13 +1,13 @@
 import { Button, Container, Group, Skeleton, Stack, Text } from "@mantine/core";
 import { AreaChart } from "@mantine/charts";
 import { useEffect, useState } from "react";
-import { selectedBikeIdAtom } from "../../data/persistentAtoms";
+import { selectedBikeIdAtom } from "../../data/persistentAtoms.js";
 import { useRecoilState } from "recoil";
-import RideYearGroup from "../../components/RideYearGroup";
+import RideYearGroup from "../../components/RideYearGroup.jsx";
 import React from "react";
-import WithSelectedBike from "../../components/WithSelectedBike";
-import { mapStatsData } from "./data";
-import WithNetwork from "../../components/WithNetwork";
+import WithSelectedBike from "../../components/WithSelectedBike.jsx";
+import { mapStatsData } from "./data.js";
+import WithNetwork from "../../components/WithNetwork.jsx";
 
 export default function StatsPage() {
     const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);

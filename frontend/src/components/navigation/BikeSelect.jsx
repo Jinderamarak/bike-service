@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
     selectedBikeIdAtom,
     selectedBikeColorAtom,
-} from "../../data/persistentAtoms";
+} from "../../data/persistentAtoms.js";
 import { useRecoilState } from "recoil";
 import {
     Combobox,
@@ -13,7 +13,7 @@ import {
     Text,
 } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
-import useBikes from "../../data/useBikes";
+import useBikes from "../../data/useBikes.js";
 
 export default function BikeSelect() {
     const { bikes } = useBikes();

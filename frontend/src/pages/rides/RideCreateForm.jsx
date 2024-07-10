@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import rideForm from "./rideForm";
+import rideForm from "./rideForm.js";
 import { Form, useForm } from "@mantine/form";
 import { useRecoilState } from "recoil";
-import { selectedBikeIdAtom } from "../../data/persistentAtoms";
+import { selectedBikeIdAtom } from "../../data/persistentAtoms.js";
 import { notifications } from "@mantine/notifications";
-import RideFormFieds from "./RideFormFields";
+import RideFormFieds from "./RideFormFields.jsx";
 import { Stack, Paper, Button } from "@mantine/core";
 
 export default function RideCreateForm({ onRideCreated }) {

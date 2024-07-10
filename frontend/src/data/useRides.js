@@ -1,8 +1,8 @@
 import { notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { selectedBikeIdAtom } from "./persistentAtoms";
-import { networkStatusAtom } from "./useNetworkStatus";
+import { selectedBikeIdAtom } from "./persistentAtoms.js";
+import { networkStatusAtom } from "./useNetworkStatus.jsx";
 
 function mergeRideMonths(first, second) {
     if (first.rides == null) return second;

@@ -1,13 +1,13 @@
 import React from "react";
 import { Form, useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
-import bikeForm, { bikeFormToBody } from "./bikeForm";
+import bikeForm, { bikeFormToBody } from "./bikeForm.js";
 import { Button, Drawer, Group, Stack, Text } from "@mantine/core";
-import BikeFormFields from "./BikeFormFields";
+import BikeFormFields from "./BikeFormFields.jsx";
 import { notifications } from "@mantine/notifications";
 import { modals } from "@mantine/modals";
 import { useRecoilState } from "recoil";
-import { networkStatusAtom } from "../../data/useNetworkStatus";
+import { networkStatusAtom } from "../../data/useNetworkStatus.jsx";
 
 export default function BikeEditDrawer({
     id,

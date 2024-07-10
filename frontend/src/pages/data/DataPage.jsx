@@ -1,9 +1,9 @@
 import React from "react";
 import { Container, Flex } from "@mantine/core";
-import ImportExport from "./ImportExport";
-import ManageWorker from "./ManageWorker";
-import Versions from "./Versions";
-import Hostnames from "./Hostnames";
+import ImportExport from "./ImportExport.jsx";
+import ManageWorker from "./ManageWorker.jsx";
+import Versions from "./Versions.jsx";
+import Hostnames from "./Hostnames.jsx";
 
 export default function DataPage() {
     return (

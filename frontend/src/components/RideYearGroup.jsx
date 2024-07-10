@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { selectedBikeIdAtom } from "../data/persistentAtoms";
+import { selectedBikeIdAtom } from "../data/persistentAtoms.js";
 import { Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Skeleton, Stack, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { FRONTEND_RESOURCES } from "../../constants";
+import { FRONTEND_RESOURCES } from "../../constants.js";
 
 // @ts-ignore
 const FRONTEND_VERSION = APP_VERSION;
