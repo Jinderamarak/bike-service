@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Center, Stack, Title, Button, Paper, TextInput } from "@mantine/core";
 import { Form, useForm } from "@mantine/form";
 import useAuthService from "../services/authService.js";
-import { useAuth } from "../services/AuthContext.jsx";
+import { useAuth } from "../components/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
@@ -21,7 +21,7 @@ function Login() {
         setLoading(true);
         try {
             const session = await authService.login(values);
-            auth.setAuthToken(session.token);
+            auth.setSession(session);
             navigate("/");
         } finally {
             setLoading(false);

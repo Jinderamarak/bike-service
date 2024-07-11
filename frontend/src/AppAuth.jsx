@@ -5,13 +5,13 @@ import StatsPage from "./pages/stats/StatsPage.jsx";
 import RidesPage from "./pages/rides/RidesPage.jsx";
 import DataPage from "./pages/data/DataPage.jsx";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import { useAuth } from "./services/AuthContext.jsx";
+import { useAuth } from "./components/AuthContext.jsx";
 
 function AppAuth() {
     const auth = useAuth();
     const navigate = useNavigate();
 
-    if (!auth.isLoggedIn) {
+    if (!auth.authUserId) {
         navigate("/login");
         return null;
     }

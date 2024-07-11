@@ -10,7 +10,7 @@ import { Notifications } from "@mantine/notifications";
 import { ModalsProvider } from "@mantine/modals";
 import AppTheme from "./AppTheme.jsx";
 import AppEntry from "./AppEntry.jsx";
-import { AuthProvider } from "./services/AuthContext.jsx";
+import { AuthProvider } from "./components/AuthContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>

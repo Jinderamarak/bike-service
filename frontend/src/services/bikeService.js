@@ -1,4 +1,4 @@
-import { useApiClient } from "./AuthContext.jsx";
+import { useApiClient } from "../components/AuthContext.jsx";
 
 /**
  * @typedef BikeModel
