@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import bikeForm, { bikeFormToBody } from "./bikeForm.js";
 import { Button, Drawer, Group, Stack, Text } from "@mantine/core";
 import BikeFormFields from "./BikeFormFields.jsx";
-import { notifications } from "@mantine/notifications";
 import { modals } from "@mantine/modals";
 import { useRecoilState } from "recoil";
 import { networkStatusAtom } from "../../data/useNetworkStatus.jsx";
+import useBikeService from "../../services/bikeService.js";
 
 export default function BikeEditDrawer({
     id,
@@ -18,6 +18,7 @@ export default function BikeEditDrawer({
     onBikeEdited,
     onBikeDeleted,
 }) {
+    const bikeService = useBikeService();
     const [online, _] = useRecoilState(networkStatusAtom);
     const [loadingUpdate, setLoadingUpdate] = useState(false);
     const [loadingDelete, setLoadingDelete] = useState(false);
@@ -27,28 +28,10 @@ export default function BikeEditDrawer({
         setLoadingUpdate(true);
         const body = bikeFormToBody(values);
 
-        try {
-            const response = await fetch(`/api/bikes/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(body),
-            });
-
-            const data = await response.json();
-            onBikeEdited(data);
-        } catch (error) {
-            console.error(error);
-            notifications.show({
-                title: "Failed to update bike",
-                message: error.message,
-                color: "red",
-                withBorder: true,
-            });
-        } finally {
-            setLoadingUpdate(false);
-        }
+        bikeService
+            .update(id, body)
+            .then(onBikeEdited)
+            .finally(() => setLoadingUpdate(false));
     }
 
     function askDeleteBike() {
@@ -72,29 +55,11 @@ export default function BikeEditDrawer({
 
     async function deleteBike() {
         setLoadingDelete(true);
-        try {
-            const response = await fetch(`/api/bikes/${id}`, {
-                method: "DELETE",
-            });
 
-            if (response.status !== 204) {
-                throw new Error(
-                    "Failed to delete bike: status code is not 204"
-                );
-            }
-
-            onBikeDeleted(id);
-        } catch (error) {
-            console.error(error);
-            notifications.show({
-                title: "Failed to delete bike",
-                message: error.message,
-                color: "red",
-                withBorder: true,
-            });
-        } finally {
-            setLoadingDelete(false);
-        }
+        bikeService
+            .delete(id)
+            .then(() => onBikeDeleted(id))
+            .finally(() => setLoadingDelete(false));
     }
 
     useEffect(() => {

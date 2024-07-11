@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Button, Skeleton, Stack, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { FRONTEND_RESOURCES } from "../../constants.js";
+import useStatusService from "../../services/statusService.js";
 
 // @ts-ignore
 const FRONTEND_VERSION = APP_VERSION;
 
 export default function Versions() {
+    const statusService = useStatusService();
     const [loading, setLoading] = useState(false);
     const [serverStatus, setServerStatus] = useState(null);
     const [workerVersions, setWorkerVersions] = useState([]);
@@ -53,20 +55,7 @@ export default function Versions() {
     }
 
     useEffect(() => {
-        let controller = new AbortController();
-        fetch("/api/status", { signal: controller.signal })
-            .then((response) => response.json())
-            .then((data) => setServerStatus(data))
-            .catch((err) => {
-                if (err.name === "AbortError") return;
-                console.error(err);
-                notifications.show({
-                    title: "Failed to fetch backend version",
-                    message: err.message,
-                    color: "red",
-                    withBorder: true,
-                });
-            });
+        statusService.get().then(setServerStatus);
 
         setWorkerVersions([]);
 
@@ -76,7 +65,6 @@ export default function Versions() {
         });
 
         return () => {
-            controller.abort();
             navigator.serviceWorker?.removeEventListener(
                 "message",
                 handleOnMessage

@@ -2,13 +2,14 @@ import React from "react";
 import { Form, useForm } from "@mantine/form";
 import bikeForm, { bikeFormToBody } from "./bikeForm.js";
 import { useState } from "react";
-import { notifications } from "@mantine/notifications";
 import { Button, Paper, Stack } from "@mantine/core";
 import BikeFormFields from "./BikeFormFields.jsx";
 import { useRecoilState } from "recoil";
 import { networkStatusAtom } from "../../data/useNetworkStatus.jsx";
+import useBikeService from "../../services/bikeService.js";
 
 export default function BikeCreateForm({ onBikeCreated }) {
+    const bikeService = useBikeService();
     const [online, _] = useRecoilState(networkStatusAtom);
     const [loading, setLoading] = useState(false);
     const newForm = useForm(bikeForm);
@@ -16,30 +17,13 @@ export default function BikeCreateForm({ onBikeCreated }) {
     async function createBike(values) {
         setLoading(true);
         const body = bikeFormToBody(values);
-
-        try {
-            const response = await fetch("/api/bikes", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(body),
-            });
-
-            const data = await response.json();
-            newForm.reset();
-            onBikeCreated(data);
-        } catch (error) {
-            console.error(error);
-            notifications.show({
-                title: "Failed to create bike",
-                message: error.message,
-                color: "red",
-                withBorder: true,
-            });
-        } finally {
-            setLoading(false);
-        }
+        bikeService
+            .create(body)
+            .then((bike) => {
+                newForm.reset();
+                onBikeCreated(bike);
+            })
+            .finally(() => setLoading(false));
     }
 
     return (

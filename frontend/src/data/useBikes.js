@@ -1,6 +1,6 @@
-import { notifications } from "@mantine/notifications";
 import { useEffect } from "react";
 import { atom, useRecoilState } from "recoil";
+import useBikeService from "../services/bikeService.js";
 
 const innerBikeStore = atom({
     key: "innerBikeStore",
@@ -18,6 +18,7 @@ const innerBikeLoading = atom({
 });
 
 export default function useBikes() {
+    const bikeService = useBikeService();
     const [bikes, setBikes] = useRecoilState(innerBikeStore);
     const [subscribers, setSubscribers] = useRecoilState(innerBikeSubscribers);
     const [loading, setLoading] = useRecoilState(innerBikeLoading);
@@ -39,30 +40,11 @@ export default function useBikes() {
             return;
         }
 
-        const controller = new AbortController();
         setLoading(true);
-        fetch("/api/bikes", {
-            signal: controller.signal,
-        })
-            .then((res) => res.json())
-            .then((bikes) => {
-                setBikes(bikes);
-            })
-            .catch((err) => {
-                if (err.name === "AbortError") return;
-                console.error(err);
-                notifications.show({
-                    title: "Failed to fetch bikes",
-                    message: err.message,
-                    color: "red",
-                    withBorder: true,
-                });
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-
-        return () => controller.abort();
+        bikeService
+            .getAll()
+            .then(setBikes)
+            .finally(() => setLoading(false));
     }, [subscribers]);
 
     function addBike(bike) {

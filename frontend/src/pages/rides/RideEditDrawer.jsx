@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 import rideForm from "./rideForm.js";
 import { Button, Drawer, Group, Stack, Text } from "@mantine/core";
 import RideFormFields from "./RideFormFields.jsx";
-import { notifications } from "@mantine/notifications";
 import { modals } from "@mantine/modals";
 import { useRecoilState } from "recoil";
 import { selectedBikeIdAtom } from "../../data/persistentAtoms.js";
+import useRideService from "../../services/rideService.js";
 
 export default function RideEditDrawer({
     id,
@@ -20,6 +20,7 @@ export default function RideEditDrawer({
     const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
     const [loadingUpdate, setLoadingUpdate] = useState(false);
     const [loadingDelete, setLoadingDelete] = useState(false);
+    const rideService = useRideService(selectedBike);
     const editForm = useForm(rideForm);
 
     async function updateRide(values) {
@@ -30,31 +31,10 @@ export default function RideEditDrawer({
             description: values.description || null,
         };
 
-        try {
-            const response = await fetch(
-                `/api/bikes/${selectedBike}/rides/${id}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(body),
-                }
-            );
-
-            const data = await response.json();
-            onRideEdited(data);
-        } catch (error) {
-            console.error(error);
-            notifications.show({
-                title: "Failed to update ride",
-                message: error.message,
-                color: "red",
-                withBorder: true,
-            });
-        } finally {
-            setLoadingUpdate(false);
-        }
+        rideService
+            .update(id, body)
+            .then(onRideEdited)
+            .finally(() => setLoadingUpdate(false));
     }
 
     function askDeleteRide() {
@@ -77,30 +57,12 @@ export default function RideEditDrawer({
     }
 
     async function deleteRide() {
-        try {
-            const response = await fetch(
-                `/api/bikes/${selectedBike}/rides/${id}`,
-                { method: "DELETE" }
-            );
+        setLoadingDelete(true);
 
-            if (response.status !== 204) {
-                throw new Error(
-                    "Failed to delete ride: status code is not 204"
-                );
-            }
-
-            onRideDeleted(id);
-        } catch (error) {
-            console.error(error);
-            notifications.show({
-                title: "Failed to delete ride",
-                message: error.message,
-                color: "red",
-                withBorder: true,
-            });
-        } finally {
-            setLoadingDelete(false);
-        }
+        rideService
+            .delete(id)
+            .then(() => onRideDeleted(id))
+            .finally(() => setLoadingDelete(false));
     }
 
     useEffect(() => {
