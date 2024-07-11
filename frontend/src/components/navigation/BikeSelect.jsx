@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
     selectedBikeIdAtom,
     selectedBikeColorAtom,
@@ -12,7 +12,6 @@ import {
     useCombobox,
     Text,
 } from "@mantine/core";
-import { useNavigate } from "react-router-dom";
 import useBikes from "../../data/useBikes.js";
 
 export default function BikeSelect() {
@@ -20,14 +19,9 @@ export default function BikeSelect() {
     const [_, setSelectedColor] = useRecoilState(selectedBikeColorAtom);
     const [selectedBike, setSelectedBike] = useRecoilState(selectedBikeIdAtom);
     const bikeCombobox = useCombobox();
-    const navigate = useNavigate();
 
     function selectBike(bikeId) {
         bikeCombobox.closeDropdown();
-        if (bikeId < 0) {
-            navigate("/bikes");
-            return;
-        }
         setSelectedBike(bikeId);
     }
 
@@ -88,9 +82,6 @@ export default function BikeSelect() {
                                 {bike.name}
                             </Combobox.Option>
                         ))}
-                        <Combobox.Option key={-1} value="-1">
-                            + Manage Bikes
-                        </Combobox.Option>
                     </Combobox.Options>
                 </Combobox.Dropdown>
             </Combobox>

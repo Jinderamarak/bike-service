@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Paper, Flex, Burger, Title } from "@mantine/core";
 import NavLinks from "./NavLinks.jsx";
-import BikeSelect from "./BikeSelect.jsx";
+import UserProfile from "./UserProfile.jsx";
 
 export default function Navigation() {
     const [open, setOpen] = useState(false);
@@ -24,7 +24,9 @@ export default function Navigation() {
                     />
                 </Flex>
                 <NavLinks open={open} onClose={() => setOpen(false)} />
-                <BikeSelect />
+                <Flex direction="row" justify="end">
+                    <UserProfile />
+                </Flex>
             </Flex>
         </Paper>
     );
