@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import Navigation from "./components/navigation/Navigation.jsx";
 import BikesPage from "./pages/bikes/BikesPage.jsx";
 import StatsPage from "./pages/stats/StatsPage.jsx";
@@ -11,8 +11,13 @@ function AppAuth() {
     const auth = useAuth();
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (!auth.authUserId) {
+            navigate("/login");
+        }
+    }, [auth]);
+
     if (!auth.authUserId) {
-        navigate("/login");
         return null;
     }
 

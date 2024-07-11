@@ -24,6 +24,10 @@ class ApiClient {
     /** @type {(() => void)[]} */
     #eventListeners = [];
 
+    constructor(authToken) {
+        this.authToken = authToken;
+    }
+
     /**
      * @param {() => void} callback
      */

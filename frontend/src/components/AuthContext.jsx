@@ -1,10 +1,4 @@
-import React, {
-    createContext,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-} from "react";
+import React, { createContext, useContext, useMemo, useState } from "react";
 import ApiClient from "../services/ApiClient.js";
 
 const AuthContext = createContext({
@@ -20,15 +14,13 @@ const authUserIdStorageKey = "authUserId";
 const localAuthUserId = localStorage.getItem(authUserIdStorageKey);
 
 export function AuthProvider({ children }) {
-    const [authToken, setAuthToken] = useState(localAuthToken || null);
     const [authUserId, setAuthUserId] = useState(
         localAuthUserId ? parseInt(localAuthUserId) : null
     );
 
     const apiClient = useMemo(() => {
-        const client = new ApiClient();
+        const client = new ApiClient(localAuthToken);
         client.onUnauthorized(() => {
-            setAuthToken(null);
             setAuthUserId(null);
         });
 
@@ -39,26 +31,17 @@ export function AuthProvider({ children }) {
      * @param {?import("../services/authService.js").SessionModel} session
      */
     function setSession(session) {
-        setAuthToken(session?.token);
+        apiClient.authToken = session?.token;
         setAuthUserId(session?.userId);
-    }
 
-    useEffect(() => {
-        apiClient.authToken = authToken;
-        if (authToken) {
-            localStorage.setItem(authTokenStorageKey, authToken);
+        if (session) {
+            localStorage.setItem(authTokenStorageKey, session.token);
+            localStorage.setItem(authUserIdStorageKey, `${session.userId}`);
         } else {
             localStorage.removeItem(authTokenStorageKey);
-        }
-    }, [authToken]);
-
-    useEffect(() => {
-        if (authUserId) {
-            localStorage.setItem(authUserIdStorageKey, `${authUserId}`);
-        } else {
             localStorage.removeItem(authUserIdStorageKey);
         }
-    }, [authUserId]);
+    }
 
     return (
         <AuthContext.Provider value={{ authUserId, setSession, apiClient }}>
