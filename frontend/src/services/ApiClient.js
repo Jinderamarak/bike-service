@@ -65,6 +65,10 @@ class ApiClient {
                 this.#eventListeners.forEach((cb) => cb());
             }
 
+            if (response.status === 204) {
+                return;
+            }
+
             if (response.ok) {
                 return await response.json();
             }
