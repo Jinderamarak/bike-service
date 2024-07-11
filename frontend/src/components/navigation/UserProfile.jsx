@@ -27,6 +27,10 @@ function UserProfile() {
         navigate("/bikes");
     }
 
+    function settings() {
+        navigate("/settings");
+    }
+
     function logout() {
         authService.logout().finally(() => auth.setSession(null));
     }
@@ -57,7 +61,10 @@ function UserProfile() {
                 >
                     Manage Bikes
                 </Menu.Item>
-                <Menu.Item leftSection={<IconSettings style={iconStyles} />}>
+                <Menu.Item
+                    onClick={settings}
+                    leftSection={<IconSettings style={iconStyles} />}
+                >
                     Settings
                 </Menu.Item>
                 <Menu.Item

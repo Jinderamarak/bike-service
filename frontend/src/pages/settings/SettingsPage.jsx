@@ -5,7 +5,7 @@ import ManageWorker from "./ManageWorker.jsx";
 import Versions from "./Versions.jsx";
 import Hostnames from "./Hostnames.jsx";
 
-export default function DataPage() {
+export default function SettingsPage() {
     return (
         <Container size="lg" style={{ style: "100%" }} p={0}>
             <Flex direction="row" wrap="wrap" gap="md">
