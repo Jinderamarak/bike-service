@@ -23,7 +23,16 @@ pub async fn auth_layer(
 ) -> AppResult<Response> {
     let header = req.headers().get(header::AUTHORIZATION);
     let token = if let Some(header) = header {
-        header.to_str().map_err(|_| AppError::Unauthorized)?
+        header
+            .to_str()
+            .map_err(|_| AppError::Unauthorized)?
+            .to_lowercase()
+    } else {
+        return Err(AppError::Unauthorized);
+    };
+
+    let token = if let Some(stripped) = token.strip_prefix("bearer ") {
+        stripped
     } else {
         return Err(AppError::Unauthorized);
     };
