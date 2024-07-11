@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useMemo, useState } from "react";
 import ApiClient from "../services/ApiClient.js";
+import { useRecoilState } from "recoil";
+import { selectedBikeIdAtom } from "../data/persistentAtoms.js";
 
 const AuthContext = createContext({
     authUserId: null,
@@ -14,6 +16,7 @@ const authUserIdStorageKey = "authUserId";
 const localAuthUserId = localStorage.getItem(authUserIdStorageKey);
 
 export function AuthProvider({ children }) {
+    const [_, setSelectedBikeId] = useRecoilState(selectedBikeIdAtom);
     const [authUserId, setAuthUserId] = useState(
         localAuthUserId ? parseInt(localAuthUserId) : null
     );
@@ -33,6 +36,7 @@ export function AuthProvider({ children }) {
     function setSession(session) {
         apiClient.authToken = session?.token;
         setAuthUserId(session?.userId);
+        setSelectedBikeId(null);
 
         if (session) {
             localStorage.setItem(authTokenStorageKey, session.token);
