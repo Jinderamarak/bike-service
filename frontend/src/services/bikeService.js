@@ -19,7 +19,7 @@ import { useApiClient } from "../components/AuthContext.jsx";
  * @property {?string} color
  */
 
-function useBikeService() {
+export default function useBikeService() {
     const client = useApiClient();
 
     /**
@@ -64,5 +64,3 @@ function useBikeService() {
 
     return { getAll, create, delete: deleteBike, get, update };
 }
-
-export default useBikeService;

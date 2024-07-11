@@ -1,7 +1,7 @@
 import React from "react";
 import { Form, useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
-import bikeForm, { bikeFormToBody } from "./bikeForm.js";
+import { bikeForm, bikeFormToBody } from "./bikeForm.js";
 import { Button, Drawer, Group, Stack, Text } from "@mantine/core";
 import BikeFormFields from "./BikeFormFields.jsx";
 import { modals } from "@mantine/modals";

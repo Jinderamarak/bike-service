@@ -3,7 +3,7 @@ import { createTheme, MantineProvider } from "@mantine/core";
 import { useRecoilState } from "recoil";
 import { selectedBikeColorAtom } from "./data/persistentAtoms.js";
 
-function AppTheme({ children }) {
+export default function AppTheme({ children }) {
     const [color, _] = useRecoilState(selectedBikeColorAtom);
 
     const theme = createTheme({
@@ -21,5 +21,3 @@ function AppTheme({ children }) {
         </MantineProvider>
     );
 }
-
-export default AppTheme;

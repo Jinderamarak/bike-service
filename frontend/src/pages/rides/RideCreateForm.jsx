@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import rideForm from "./rideForm.js";
+import { rideForm, rideFormToBody } from "./rideForm.js";
 import { Form, useForm } from "@mantine/form";
 import { useRecoilState } from "recoil";
 import { selectedBikeIdAtom } from "../../data/persistentAtoms.js";
@@ -15,12 +15,7 @@ export default function RideCreateForm({ onRideCreated }) {
 
     async function handleSubmit(values) {
         setLoading(true);
-        const body = {
-            date: values.date.toISOString().split("T")[0],
-            distance: values.distance,
-            description: values.description || null,
-        };
-
+        const body = rideFormToBody(values);
         rideService
             .create(body)
             .then((data) => {

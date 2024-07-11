@@ -7,7 +7,7 @@ import SettingsPage from "./pages/settings/SettingsPage.jsx";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth } from "./components/AuthContext.jsx";
 
-function AppAuth() {
+export default function AppAuth() {
     const auth = useAuth();
     const navigate = useNavigate();
 
@@ -33,5 +33,3 @@ function AppAuth() {
         </Fragment>
     );
 }
-
-export default AppAuth;

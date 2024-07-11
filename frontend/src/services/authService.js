@@ -12,7 +12,7 @@ import { useApiClient } from "../components/AuthContext.jsx";
  * @property {?string} revokedAt
  */
 
-function useAuthService() {
+export default function useAuthService() {
     const client = useApiClient();
 
     /**
@@ -47,5 +47,3 @@ function useAuthService() {
 
     return { login, whoami, logout, revoke };
 }
-
-export default useAuthService;

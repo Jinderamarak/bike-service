@@ -28,7 +28,7 @@ function Loading() {
     );
 }
 
-function AppEntry() {
+export default function AppEntry() {
     useLocalStorageSync();
     useNetworkStatusSync();
 
@@ -38,5 +38,3 @@ function AppEntry() {
         </Suspense>
     );
 }
-
-export default AppEntry;

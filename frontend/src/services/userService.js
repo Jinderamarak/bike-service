@@ -23,7 +23,7 @@ import { useApiClient } from "../components/AuthContext.jsx";
  * @property {string} username
  */
 
-function useUserService() {
+export default function useUserService() {
     const client = useApiClient();
 
     /**
@@ -51,5 +51,3 @@ function useUserService() {
 
     return { create, current, delete: deleteUser };
 }
-
-export default useUserService;

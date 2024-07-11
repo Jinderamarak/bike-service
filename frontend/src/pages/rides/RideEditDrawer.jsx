@@ -1,6 +1,6 @@
 import { Form, useForm } from "@mantine/form";
 import React, { useEffect, useState } from "react";
-import rideForm from "./rideForm.js";
+import { rideForm, rideFormToBody } from "./rideForm.js";
 import { Button, Drawer, Group, Stack, Text } from "@mantine/core";
 import RideFormFields from "./RideFormFields.jsx";
 import { modals } from "@mantine/modals";
@@ -25,12 +25,7 @@ export default function RideEditDrawer({
 
     async function updateRide(values) {
         setLoadingUpdate(true);
-        const body = {
-            date: values.date.toISOString().split("T")[0],
-            distance: values.distance,
-            description: values.description || null,
-        };
-
+        const body = rideFormToBody(values);
         rideService
             .update(id, body)
             .then(onRideEdited)

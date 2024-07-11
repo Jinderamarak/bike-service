@@ -16,7 +16,7 @@ const iconStyles = {
     height: rem(14),
 };
 
-function UserProfile() {
+export default function UserProfile() {
     const auth = useAuth();
     const userService = useUserService();
     const authService = useAuthService();
@@ -77,5 +77,3 @@ function UserProfile() {
         </Menu>
     );
 }
-
-export default UserProfile;

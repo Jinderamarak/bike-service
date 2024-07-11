@@ -5,7 +5,7 @@ import useAuthService from "../services/authService.js";
 import { useAuth } from "../components/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 
-function Login() {
+export default function Login() {
     const auth = useAuth();
     const authService = useAuthService();
     const navigate = useNavigate();
@@ -56,5 +56,3 @@ function Login() {
         </Center>
     );
 }
-
-export default Login;

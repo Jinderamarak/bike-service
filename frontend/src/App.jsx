@@ -4,7 +4,7 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Login from "./pages/Login.jsx";
 import AppAuth from "./AppAuth.jsx";
 
-function App() {
+export default function App() {
     const [transition, setTransition] = useState(false);
 
     useEffect(() => {
@@ -26,5 +26,3 @@ function App() {
         </BrowserRouter>
     );
 }
-
-export default App;

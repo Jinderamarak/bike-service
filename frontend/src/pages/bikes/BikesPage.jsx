@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Container, Flex, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import BikeCreateForm from "./BikeCreateForm.jsx";
 import BikeEntry from "./BikeEntry.jsx";

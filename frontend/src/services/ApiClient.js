@@ -17,7 +17,7 @@ export class ApiError extends Error {
     }
 }
 
-class ApiClient {
+export default class ApiClient {
     /** @type {string | null} */
     authToken = null;
 
@@ -130,5 +130,3 @@ class ApiClient {
         return this.#request(resource, { method: "HEAD" }, timeout);
     }
 }
-
-export default ApiClient;

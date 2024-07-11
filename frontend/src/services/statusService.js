@@ -7,7 +7,7 @@ import { useApiClient } from "../components/AuthContext.jsx";
  * @property {string[]} hostnames
  */
 
-function useStatusService() {
+export default function useStatusService() {
     const client = useApiClient();
 
     /**
@@ -19,5 +19,3 @@ function useStatusService() {
 
     return { get };
 }
-
-export default useStatusService;

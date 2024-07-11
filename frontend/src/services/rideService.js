@@ -31,7 +31,7 @@ import { useApiClient } from "../components/AuthContext.jsx";
 /**
  * @param {number} bikeId
  */
-function useRideService(bikeId) {
+export default function useRideService(bikeId) {
     const client = useApiClient();
 
     /**
@@ -109,5 +109,3 @@ function useRideService(bikeId) {
         update,
     };
 }
-
-export default useRideService;
