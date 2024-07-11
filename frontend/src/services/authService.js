@@ -1,12 +1,6 @@
 import { useApiClient } from "./AuthContext.jsx";
 
 /**
- * @typedef UserLogin
- * @type {object}
- * @property {string} username
- */
-
-/**
  * @typedef SessionModel
  * @type {object}
  * @property {string} id
@@ -22,7 +16,7 @@ function useAuthService() {
     const client = useApiClient();
 
     /**
-     * @param {UserLogin} data
+     * @param {import("./userService.js").UserLogin} data
      * @returns {Promise<SessionModel>}
      */
     function login(data) {
