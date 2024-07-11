@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Stack, Transition } from "@mantine/core";
-import Navigation from "./components/navigation/Navigation.jsx";
-import BikesPage from "./pages/bikes/BikesPage.jsx";
-import StatsPage from "./pages/stats/StatsPage.jsx";
-import RidesPage from "./pages/rides/RidesPage.jsx";
-import DataPage from "./pages/data/DataPage.jsx";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
+import Login from "./pages/Login.jsx";
+import AppAuth from "./AppAuth.jsx";
 
 function App() {
     const [transition, setTransition] = useState(false);
@@ -19,12 +16,9 @@ function App() {
             <Transition mounted={transition} transition="fade">
                 {(styles) => (
                     <Stack p="md" gap="md" style={{ ...styles }}>
-                        <Navigation />
                         <Routes>
-                            <Route index element={<RidesPage />} />
-                            <Route path="/bikes" element={<BikesPage />} />
-                            <Route path="/stats" element={<StatsPage />} />
-                            <Route path="/data" element={<DataPage />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="*" element={<AppAuth />} />
                         </Routes>
                     </Stack>
                 )}

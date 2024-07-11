@@ -10,6 +10,7 @@ import { Notifications } from "@mantine/notifications";
 import { ModalsProvider } from "@mantine/modals";
 import AppTheme from "./AppTheme.jsx";
 import AppEntry from "./AppEntry.jsx";
+import { AuthProvider } from "./services/AuthContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
@@ -17,8 +18,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <AppTheme>
                 <DatesProvider settings={{ timezone: "UTC" }}>
                     <ModalsProvider>
-                        <Notifications />
-                        <AppEntry />
+                        <AuthProvider>
+                            <Notifications />
+                            <AppEntry />
+                        </AuthProvider>
                     </ModalsProvider>
                 </DatesProvider>
             </AppTheme>
