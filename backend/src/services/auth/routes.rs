@@ -6,7 +6,7 @@ use chrono::Utc;
 
 use crate::services::users::models::{UserLogin, UserModel};
 use crate::services::users::repository::UserRepository;
-use crate::utility::error::AppResult;
+use crate::utility::error::{AppError, AppResult};
 use crate::utility::state::AppState;
 
 use super::models::SessionModel;
@@ -37,7 +37,8 @@ async fn login(
     headers: HeaderMap,
     Json(user): Json<UserLogin>,
 ) -> AppResult<Json<SessionModel>> {
-    let user = user_repo.get_by_username(&user.username).await?;
+    let user = user_repo.try_get_by_username(&user.username).await?;
+    let user = user.ok_or(AppError::NotFound("User not found".to_string()))?;
 
     let session = create_session(user.id, &headers);
     auth_repo.create(&session).await?;

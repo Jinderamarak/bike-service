@@ -22,8 +22,8 @@ async fn create_user(
     State(repo): State<UserRepository>,
     Json(payload): Json<UserPartial>,
 ) -> AppResult<(StatusCode, Json<UserModel>)> {
-    let user = repo.get_by_username(&payload.username).await;
-    if user.is_ok() {
+    let user = repo.try_get_by_username(&payload.username).await?;
+    if user.is_some() {
         return Err(AppError::Conflict("Username already exists".to_string()));
     }
 

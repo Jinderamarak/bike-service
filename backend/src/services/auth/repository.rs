@@ -34,7 +34,7 @@ impl AuthRepository {
         let model = sqlx::query_as!(SessionRaw, "SELECT * FROM sessions WHERE token = ?", token)
             .fetch_optional(&self.0)
             .await?
-            .map(|raw| raw.try_into())
+            .map(SessionModel::try_from)
             .transpose()?;
 
         Ok(model)

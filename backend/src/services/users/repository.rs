@@ -29,15 +29,16 @@ impl UserRepository {
         Ok(model)
     }
 
-    pub async fn get_by_username(&self, username: &str) -> AppResult<UserModel> {
+    pub async fn try_get_by_username(&self, username: &str) -> AppResult<Option<UserModel>> {
         let model = sqlx::query_as!(
             UserRaw,
             "SELECT * FROM users WHERE username = ? AND deleted_at IS NULL",
             username
         )
-        .fetch_one(&self.0)
+        .fetch_optional(&self.0)
         .await?
-        .try_into()?;
+        .map(UserModel::try_from)
+        .transpose()?;
 
         Ok(model)
     }
