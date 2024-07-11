@@ -28,7 +28,7 @@ impl BikeRepository {
 
         match something {
             Some(_) => Ok(()),
-            None => Err(AppError::NotAuthorized),
+            None => Err(AppError::Forbidden),
         }
     }
 

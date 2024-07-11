@@ -10,8 +10,8 @@ pub type AppResult<T> = Result<T, AppError>;
 pub enum AppError {
     NotFound(String),
     BadRequest(String),
-    NotAuthenticated,
-    NotAuthorized,
+    Unauthorized,
+    Forbidden,
     Conflict(String),
     #[cfg_attr(not(debug_assertions), allow(dead_code))]
     Database(sqlx::Error),
@@ -24,8 +24,8 @@ impl AppError {
         match self {
             AppError::NotFound(_) => StatusCode::NOT_FOUND,
             AppError::BadRequest(_) => StatusCode::BAD_REQUEST,
-            AppError::NotAuthenticated => StatusCode::BAD_REQUEST,
-            AppError::NotAuthorized => StatusCode::UNAUTHORIZED,
+            AppError::Unauthorized => StatusCode::UNAUTHORIZED,
+            AppError::Forbidden => StatusCode::FORBIDDEN,
             AppError::Conflict(_) => StatusCode::CONFLICT,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
@@ -36,8 +36,8 @@ impl AppError {
         match self {
             AppError::NotFound(e) => format!("Not Found: {e}"),
             AppError::BadRequest(e) => format!("Bad Request: {e}"),
-            AppError::NotAuthenticated => "Not Authenticated".to_string(),
-            AppError::NotAuthorized => "Not Authorized".to_string(),
+            AppError::Unauthorized => "Unauthorized".to_string(),
+            AppError::Forbidden => "Forbidden".to_string(),
             AppError::Conflict(e) => format!("Conflict: {e}"),
             AppError::Database(e) => format!("Database Error: {e}"),
             AppError::Other(e) => format!("Internal Server Error: {e}"),
@@ -49,8 +49,8 @@ impl AppError {
         match self {
             AppError::NotFound(e) => format!("Not Found: {e}"),
             AppError::BadRequest(e) => format!("Bad Request: {e}"),
-            AppError::NotAuthenticated => format!("Bad Request: Not Authenticated"),
-            AppError::NotAuthorized => format!("Unauthorized"),
+            AppError::Unauthorized => "Unauthorized".to_string(),
+            AppError::Forbidden => "Forbidden".to_string(),
             AppError::Conflict(e) => format!("Conflict: {e}"),
             _ => "Internal Server Error".to_string(),
         }

@@ -23,22 +23,27 @@ pub async fn auth_layer(
 ) -> AppResult<Response> {
     let header = req.headers().get(header::AUTHORIZATION);
     let token = if let Some(header) = header {
-        header.to_str().map_err(|_| AppError::NotAuthenticated)?
+        header.to_str().map_err(|_| AppError::Unauthorized)?
     } else {
-        return Err(AppError::NotAuthenticated);
+        return Err(AppError::Unauthorized);
     };
 
-    let mut session = auth_repo.get_by_token(token).await?;
+    let maybe_session = auth_repo.try_get_by_token(token).await?;
+    let mut session = if let Some(session) = maybe_session {
+        session
+    } else {
+        return Err(AppError::Unauthorized);
+    };
 
     let now = Utc::now().naive_utc();
     let diff = now - session.last_used_at;
     if diff.num_seconds() > config.session_max_inactivity {
-        return Err(AppError::NotAuthenticated);
+        return Err(AppError::Unauthorized);
     }
 
     if let Some(revoked) = session.revoked_at {
         if now > revoked {
-            return Err(AppError::NotAuthenticated);
+            return Err(AppError::Unauthorized);
         }
     }
 

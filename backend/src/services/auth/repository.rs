@@ -30,11 +30,12 @@ impl AuthRepository {
         Ok(())
     }
 
-    pub async fn get_by_token(&self, token: &str) -> AppResult<SessionModel> {
+    pub async fn try_get_by_token(&self, token: &str) -> AppResult<Option<SessionModel>> {
         let model = sqlx::query_as!(SessionRaw, "SELECT * FROM sessions WHERE token = ?", token)
-            .fetch_one(&self.0)
+            .fetch_optional(&self.0)
             .await?
-            .try_into()?;
+            .map(|raw| raw.try_into())
+            .transpose()?;
 
         Ok(model)
     }
