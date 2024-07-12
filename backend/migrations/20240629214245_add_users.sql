@@ -52,7 +52,7 @@ CREATE TABLE bikes
     owner_id    INTEGER NOT NULL REFERENCES users (id)
 );
 
-INSERT INTO bikes (id, name, description, deleted_at, owner_id) SELECT id, name, description, deleted_at, owner_id FROM bikes_backup;
+INSERT INTO bikes (id, name, description, deleted_at, color, owner_id) SELECT id, name, description, deleted_at, color, owner_id FROM bikes_backup;
 DROP TABLE bikes_backup;
 
 CREATE TABLE rides
