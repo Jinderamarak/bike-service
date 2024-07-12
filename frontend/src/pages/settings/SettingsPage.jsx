@@ -4,6 +4,7 @@ import ImportExport from "./ImportExport.jsx";
 import ManageWorker from "./ManageWorker.jsx";
 import Versions from "./Versions.jsx";
 import Hostnames from "./Hostnames.jsx";
+import User from "./User.jsx";
 
 export default function SettingsPage() {
     return (
@@ -13,6 +14,7 @@ export default function SettingsPage() {
                 <ManageWorker />
                 <Versions />
                 <Hostnames />
+                <User />
             </Flex>
         </Container>
     );

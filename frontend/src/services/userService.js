@@ -42,12 +42,19 @@ export default function useUserService() {
     }
 
     /**
-     * @param {number} userId
-     * @returns {Promise<void>}
+     * @param {UserPartial} data
+     * @returns {Promise<UserModel>}
      */
-    function deleteUser(userId) {
-        return client.delete(`/api/users/${userId}`);
+    function update(data) {
+        return client.put("/api/users", data);
     }
 
-    return { create, current, delete: deleteUser };
+    /**
+     * @returns {Promise<void>}
+     */
+    function deleteUser() {
+        return client.delete(`/api/users`);
+    }
+
+    return { create, current, update, delete: deleteUser };
 }
