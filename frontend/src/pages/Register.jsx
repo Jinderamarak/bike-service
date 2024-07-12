@@ -1,28 +1,37 @@
 import React, { useState } from "react";
 import { Center, Stack, Title, Button, Paper, TextInput } from "@mantine/core";
 import { Form, useForm } from "@mantine/form";
-import useAuthService from "../services/authService.js";
-import { useAuth } from "../components/AuthContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
+import useUserService from "../services/userService.js";
+import { notifications } from "@mantine/notifications";
 
-export default function Login() {
-    const auth = useAuth();
-    const authService = useAuthService();
+export default function Register() {
+    const userService = useUserService();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const loginForm = useForm({
+    const registerForm = useForm({
         mode: "controlled",
         initialValues: {
             username: "",
         },
     });
 
-    async function login(values) {
+    async function register(values) {
         setLoading(true);
+        const body = {
+            username: values.username,
+            monthlyGoal: null,
+        };
+
         try {
-            const session = await authService.login(values);
-            auth.setSession(session);
-            navigate("/");
+            const user = await userService.create(body);
+            notifications.show({
+                title: "User created",
+                message: `User ${user.username} created successfully`,
+                color: "green",
+                withBorder: true,
+            });
+            navigate("/login");
         } finally {
             setLoading(false);
         }
@@ -31,14 +40,15 @@ export default function Login() {
     return (
         <Center>
             <Stack>
-                <Title ta="center">Login</Title>
+                <Title ta="center">Register</Title>
                 <Paper withBorder p="md">
-                    <Form form={loginForm} onSubmit={login}>
+                    <Form form={registerForm} onSubmit={register}>
                         <Stack>
                             <TextInput
+                                withAsterisk
                                 label="Username"
-                                key={loginForm.key("username")}
-                                {...loginForm.getInputProps("username")}
+                                key={registerForm.key("username")}
+                                {...registerForm.getInputProps("username")}
                                 disabled={loading}
                             />
                             <Button
@@ -46,13 +56,13 @@ export default function Login() {
                                 variant="filled"
                                 type="submit"
                             >
-                                Login
+                                Register
                             </Button>
                         </Stack>
                     </Form>
                 </Paper>
-                <Link to="/register">
-                    <Center>Create a new account</Center>
+                <Link to="/login">
+                    <Center>Log in to an existing account</Center>
                 </Link>
             </Stack>
         </Center>
