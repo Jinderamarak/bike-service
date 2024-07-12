@@ -1,8 +1,15 @@
 import { getMultiFetcher } from "../lib/fetching.js";
 import AsyncMutex from "../lib/lock.js";
-import { postVersion, postStatus, postCheckHosts } from "./outbound.js";
+import {
+    postVersion,
+    postStatus,
+    postCheckHosts,
+    postUpdate,
+} from "./outbound.js";
 import syncRides from "../routes/rides/sync.js";
 import { WORKER_VERSION } from "../worker.js";
+import { FRONTEND_RESOURCES } from "../../src/constants.js";
+import { cacheResources } from "../cache.js";
 
 export async function onVersionMessage(event) {
     postVersion(WORKER_VERSION, event.source);
@@ -39,4 +46,9 @@ export async function onSyncMessage(_) {
 
         await syncRides();
     });
+}
+
+export async function onUpdateMessage(event) {
+    await cacheResources(FRONTEND_RESOURCES);
+    postUpdate(event.source);
 }

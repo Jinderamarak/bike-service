@@ -5,8 +5,7 @@
 import { cacheResources } from "./cache.js";
 import ridesDb from "./routes/rides/db.js";
 import handleRequest from "./routes/index.js";
-import AsyncMutex from "./lib/lock.js";
-import { onVersionMessage } from "./messages/index.js";
+import { onUpdateMessage, onVersionMessage } from "./messages/index.js";
 import { onCheckHostsMessage } from "./messages/index.js";
 import { onStatusMessage } from "./messages/index.js";
 import { onSyncMessage } from "./messages/index.js";
@@ -21,8 +20,6 @@ export const sw = /** @type {ServiceWorkerGlobalScope & typeof globalThis} */ (
 export const WORKER_VERSION = APP_VERSION;
 
 export const OfflineResponse = new Response("Offline", { status: 408 });
-
-const syncLock = new AsyncMutex();
 
 /**
  * @param {ExtendableEvent} event
@@ -63,6 +60,9 @@ function onMessage(event) {
     }
     if (event.data.type === "sync") {
         event.waitUntil(onSyncMessage(event));
+    }
+    if (event.data.type === "update") {
+        event.waitUntil(onUpdateMessage(event));
     }
 }
 
