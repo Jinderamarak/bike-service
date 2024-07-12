@@ -7,4 +7,5 @@ export const FRONTEND_RESOURCES = [
     "/worker.js",
     "/assets/index.css",
     "/assets/index.js",
+    "/assets/App.js",
 ];

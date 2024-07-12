@@ -15,6 +15,7 @@ export default function Versions() {
 
     async function updateFrontend() {
         setLoading(true);
+        updateFrontendWorker();
         try {
             for (const resource of FRONTEND_RESOURCES) {
                 try {
@@ -46,6 +47,14 @@ export default function Versions() {
         } finally {
             setLoading(false);
         }
+    }
+
+    function updateFrontendWorker() {
+        try {
+            navigator.serviceWorker?.ready?.then((registration) => {
+                registration.active.postMessage({ type: "update" });
+            });
+        } catch (e) {}
     }
 
     function handleOnMessage(event) {

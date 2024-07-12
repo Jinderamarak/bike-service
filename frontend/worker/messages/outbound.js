@@ -94,3 +94,11 @@ export async function postStatus(isOnline, client = undefined) {
 export async function postCheckHosts(results, client = undefined) {
     return postMessage({ type: "checkHosts", results }, client);
 }
+
+/**
+ * @param {Client | undefined} client
+ * @returns {Promise<void>}
+ */
+export async function postUpdate(client = undefined) {
+    return postMessage({ type: "update" }, client);
+}
