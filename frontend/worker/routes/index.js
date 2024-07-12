@@ -1,8 +1,8 @@
-import { openCache } from "../cache";
-import { multiFetch } from "../lib/fetching";
-import { Router } from "../lib/router";
-import { OfflineResponse, sw } from "../worker";
-import { rideRoutes } from "./rides/routes";
+import { openCache } from "../cache.js";
+import { multiFetch } from "../lib/fetching.js";
+import { Router } from "../lib/router.js";
+import { OfflineResponse, sw } from "../worker.js";
+import { rideRoutes } from "./rides/routes.js";
 
 const ApiRouter = Router([...rideRoutes]);
 

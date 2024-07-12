@@ -1,0 +1,28 @@
+name: Build and Test Backend
+
+on:
+  pull_request:
+    paths:
+      - "backend/**"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Build
+        run: cargo build
+        working-directory: ./backend
+
+      - name: Run tests
+        run: cargo test
+        working-directory: ./backend

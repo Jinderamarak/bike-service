@@ -1,4 +1,4 @@
-import AsyncDB from "../../lib/db";
+import AsyncDB from "../../lib/db.js";
 
 function mapId(id) {
     return -id;
@@ -23,7 +23,7 @@ class RidesDB {
         this.#db = new AsyncDB("rides", 1, this.#initializeDb);
     }
 
-    /** @type {import("../../lib/db").OnUpgradeNeeded} */
+    /** @type {import("../../lib/db.js").OnUpgradeNeeded} */
     #initializeDb(db, prev, next) {
         const store = db.createObjectStore("rides", {
             keyPath: "id",

@@ -1,8 +1,9 @@
 import { notifications } from "@mantine/notifications";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { selectedBikeIdAtom } from "./persistentAtoms";
-import { networkStatusAtom } from "./useNetworkStatus";
+import { selectedBikeIdAtom } from "./persistentAtoms.js";
+import { networkStatusAtom } from "./useNetworkStatus.jsx";
+import useRideService from "../services/rideService.js";
 
 function mergeRideMonths(first, second) {
     if (first.rides == null) return second;
@@ -49,6 +50,7 @@ export default function useRides(year) {
     const [selectedBike, __] = useRecoilState(selectedBikeIdAtom);
     const [rides, setRides] = useState(createDefault(year));
     const [loading, setLoading] = useState(Array(12).fill(true));
+    const rideService = useRideService(selectedBike);
 
     async function fetchRides(signal) {
         setRides(createDefault(year));
@@ -58,11 +60,7 @@ export default function useRides(year) {
             if (signal.aborted) return;
 
             try {
-                const res = await fetch(
-                    `/api/bikes/${selectedBike}/rides/${year}/${month}`,
-                    { signal }
-                );
-                const data = await res.json();
+                const data = await rideService.getMonth(year, month);
                 setRides((current) => {
                     return current.map((group) => {
                         if (group.month === month) {

@@ -1,4 +1,4 @@
-import { sw } from "../worker";
+import { sw } from "../worker.js";
 
 async function postMessage(message, client = undefined) {
     if (client) {

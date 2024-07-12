@@ -1,10 +1,10 @@
-import { multiFetch } from "../../lib/fetching";
+import { multiFetch } from "../../lib/fetching.js";
 import {
     postSyncCompleted,
     postSyncFailed,
     postSyncStarted,
-} from "../../messages/outbound";
-import ridesDb from "./db";
+} from "../../messages/outbound.js";
+import ridesDb from "./db.js";
 
 async function syncRides() {
     console.log("SYNC", "Checking syncing rides");

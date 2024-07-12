@@ -1,8 +1,8 @@
-import { getMultiFetcher } from "../lib/fetching";
-import AsyncMutex from "../lib/lock";
-import { postVersion, postStatus, postCheckHosts } from "./outbound";
-import syncRides from "../routes/rides/sync";
-import { WORKER_VERSION } from "../worker";
+import { getMultiFetcher } from "../lib/fetching.js";
+import AsyncMutex from "../lib/lock.js";
+import { postVersion, postStatus, postCheckHosts } from "./outbound.js";
+import syncRides from "../routes/rides/sync.js";
+import { WORKER_VERSION } from "../worker.js";
 
 export async function onVersionMessage(event) {
     postVersion(WORKER_VERSION, event.source);

@@ -6,7 +6,7 @@ function nameValidator(value) {
 }
 
 /** @type {any} */
-const bikeForm = {
+export const bikeForm = {
     mode: "controlled",
     initialValues: {
         name: "",
@@ -26,5 +26,3 @@ export function bikeFormToBody(values) {
         color: values.hasColor ? values.color : null,
     };
 }
-
-export default bikeForm;

@@ -8,14 +8,14 @@ import {
     Skeleton,
 } from "@mantine/core";
 import { useMemo, useState } from "react";
-import RideCreateForm from "./RideCreateForm";
+import RideCreateForm from "./RideCreateForm.jsx";
 import React from "react";
-import RideMonth from "./RideMonth";
-import RideEditDrawer from "./RideEditDrawer";
-import RideYearGroup from "../../components/RideYearGroup";
-import WithSelectedBike from "../../components/WithSelectedBike";
-import useRides from "../../data/useRides";
-import { WhenOffline } from "../../components/WhenNetwork";
+import RideMonth from "./RideMonth.jsx";
+import RideEditDrawer from "./RideEditDrawer.jsx";
+import RideYearGroup from "../../components/RideYearGroup.jsx";
+import WithSelectedBike from "../../components/WithSelectedBike.jsx";
+import useRides from "../../data/useRides.js";
+import { WhenOffline } from "../../components/WhenNetwork.jsx";
 
 export default function RidesPage() {
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());

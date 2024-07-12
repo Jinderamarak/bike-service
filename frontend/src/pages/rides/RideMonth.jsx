@@ -1,6 +1,6 @@
 import React from "react";
 import { Divider, Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
-import RideEntry from "./RideEntry";
+import RideEntry from "./RideEntry.jsx";
 
 export default function RideMonth({
     year,

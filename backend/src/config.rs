@@ -10,7 +10,13 @@ const IPV4_ALL: IpAddr = IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0));
 #[derive(Debug, Clone, Parser)]
 #[command(author, version, about)]
 pub struct Configuration {
-    #[arg(short, long, env = "BIKE_ADDRESS", default_value_t = IPV4_ALL, help = "IP address for the server to listen on")]
+    #[arg(
+        short,
+        long,
+        env = "BIKE_ADDRESS",
+        default_value_t = IPV4_ALL,
+        help = "IP address for the server to listen on"
+    )]
     pub address: IpAddr,
     #[arg(
         short,
@@ -43,6 +49,13 @@ pub struct Configuration {
         value_delimiter = ','
     )]
     pub hostnames: Vec<String>,
+    #[arg(
+        long,
+        env = "BIKE_SESSION_MAX_INACTIVITY",
+        default_value_t = 60 * 60 * 24 * 7 * 4, // 4 weeks
+        help = "Maximum time in seconds for a session to be inactive before it is expired"
+    )]
+    pub session_max_inactivity: i64,
 }
 
 impl Configuration {

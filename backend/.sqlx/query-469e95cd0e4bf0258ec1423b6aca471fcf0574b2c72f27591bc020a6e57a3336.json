@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO bikes (name, description, color, owner_id) VALUES (?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "469e95cd0e4bf0258ec1423b6aca471fcf0574b2c72f27591bc020a6e57a3336"
+}

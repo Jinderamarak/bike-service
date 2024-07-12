@@ -13,7 +13,7 @@ export const selectedBikeColorAtom = atom({
     default: localSelectedBikeColor || null,
 });
 
-export function syncLocalStorate() {
+export function useLocalStorageSync() {
     const [selectedBikeId, _] = useRecoilState(selectedBikeIdAtom);
     const [selectedBikeColor, __] = useRecoilState(selectedBikeColorAtom);
 

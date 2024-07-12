@@ -8,7 +8,7 @@ import {
     Text,
 } from "@mantine/core";
 import { IconPencil } from "@tabler/icons-react";
-import { WhenOnline } from "../../components/WhenNetwork";
+import { WhenOnline } from "../../components/WhenNetwork.jsx";
 
 export default function BikeEntry({
     id,

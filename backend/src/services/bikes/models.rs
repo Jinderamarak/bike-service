@@ -13,6 +13,7 @@ pub struct BikeRaw {
     pub description: Option<String>,
     pub deleted_at: Option<String>,
     pub color: Option<String>,
+    pub owner_id: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -23,6 +24,7 @@ pub struct BikeModel {
     pub description: Option<String>,
     pub deleted_at: Option<NaiveDateTime>,
     pub color: Option<String>,
+    pub owner_id: i64,
 }
 
 impl Model<BikeRaw> for BikeModel {}
@@ -37,6 +39,7 @@ impl TryFrom<BikeRaw> for BikeModel {
             description: raw.description,
             deleted_at,
             color: raw.color,
+            owner_id: raw.owner_id,
         })
     }
 }
@@ -50,6 +53,7 @@ impl From<BikeModel> for BikeRaw {
             description: model.description,
             deleted_at,
             color: model.color,
+            owner_id: model.owner_id,
         }
     }
 }

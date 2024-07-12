@@ -1,48 +1,28 @@
 import React, { useState } from "react";
-import rideForm from "./rideForm";
+import { rideForm, rideFormToBody } from "./rideForm.js";
 import { Form, useForm } from "@mantine/form";
 import { useRecoilState } from "recoil";
-import { selectedBikeIdAtom } from "../../data/persistentAtoms";
-import { notifications } from "@mantine/notifications";
-import RideFormFieds from "./RideFormFields";
+import { selectedBikeIdAtom } from "../../data/persistentAtoms.js";
+import RideFormFieds from "./RideFormFields.jsx";
 import { Stack, Paper, Button } from "@mantine/core";
+import useRideService from "../../services/rideService.js";
 
 export default function RideCreateForm({ onRideCreated }) {
     const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
     const [loading, setLoading] = useState(false);
+    const rideService = useRideService(selectedBike);
     const newForm = useForm(rideForm);
 
     async function handleSubmit(values) {
         setLoading(true);
-        const body = {
-            date: values.date.toISOString().split("T")[0],
-            distance: values.distance,
-            description: values.description || null,
-        };
-
-        try {
-            const response = await fetch(`/api/bikes/${selectedBike}/rides`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(body),
-            });
-
-            const data = await response.json();
-            newForm.reset();
-            onRideCreated(data);
-        } catch (error) {
-            console.error(error);
-            notifications.show({
-                title: "Failed to create ride",
-                message: error.message,
-                color: "red",
-                withBorder: true,
-            });
-        } finally {
-            setLoading(false);
-        }
+        const body = rideFormToBody(values);
+        rideService
+            .create(body)
+            .then((data) => {
+                newForm.reset();
+                onRideCreated(data);
+            })
+            .finally(() => setLoading(false));
     }
 
     return (

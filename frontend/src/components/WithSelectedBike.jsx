@@ -1,6 +1,6 @@
 import React from "react";
 import { useRecoilState } from "recoil";
-import { selectedBikeIdAtom } from "../data/persistentAtoms";
+import { selectedBikeIdAtom } from "../data/persistentAtoms.js";
 import { Text } from "@mantine/core";
 
 export default function WithSelectedBike({ children }) {

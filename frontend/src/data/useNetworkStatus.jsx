@@ -9,7 +9,7 @@ export const networkStatusAtom = atom({
     default: navigator.onLine,
 });
 
-export function syncNetworkStatus() {
+export function useNetworkStatusSync() {
     const [_, setNetworkStatus] = useRecoilState(networkStatusAtom);
 
     function handleWorkerMessage(event) {

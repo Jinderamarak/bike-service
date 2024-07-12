@@ -25,11 +25,6 @@ export default function NavLinks({ open, onClose }) {
         onClose();
     }
 
-    function goToData() {
-        navigate("/data");
-        onClose();
-    }
-
     const currentPage = useMemo(() => {
         if (location.pathname === "/") return "rides";
         if (location.pathname === "/stats") return "stats";
@@ -56,12 +51,6 @@ export default function NavLinks({ open, onClose }) {
                     variant={linkVariant(currentPage, "stats")}
                 >
                     Stats
-                </Button>
-                <Button
-                    onClick={goToData}
-                    variant={linkVariant(currentPage, "data")}
-                >
-                    Data
                 </Button>
             </Flex>
         </Collapse>

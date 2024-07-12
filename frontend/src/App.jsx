@@ -1,29 +1,30 @@
-import React from "react";
-import { Stack } from "@mantine/core";
-import Navigation from "./components/navigation/Navigation";
-import BikesPage from "./pages/bikes/BikesPage";
-import StatsPage from "./pages/stats/StatsPage";
-import RidesPage from "./pages/rides/RidesPage";
-import DataPage from "./pages/data/DataPage";
-import { Routes, Route } from "react-router-dom";
-import { syncLocalStorate as syncLocalStorage } from "./data/persistentAtoms";
-import { syncNetworkStatus } from "./data/useNetworkStatus";
+import React, { useEffect, useState } from "react";
+import { Stack, Transition } from "@mantine/core";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+import Login from "./pages/Login.jsx";
+import AppAuth from "./AppAuth.jsx";
+import Register from "./pages/Register.jsx";
 
-function App() {
-    syncLocalStorage();
-    syncNetworkStatus();
+export default function App() {
+    const [transition, setTransition] = useState(false);
+
+    useEffect(() => {
+        setTransition(true);
+    }, []);
 
     return (
-        <Stack p="md" gap="md">
-            <Navigation />
-            <Routes>
-                <Route index element={<RidesPage />} />
-                <Route path="/bikes" element={<BikesPage />} />
-                <Route path="/stats" element={<StatsPage />} />
-                <Route path="/data" element={<DataPage />} />
-            </Routes>
-        </Stack>
+        <BrowserRouter>
+            <Transition mounted={transition} transition="fade">
+                {(styles) => (
+                    <Stack p="md" gap="md" style={{ ...styles }}>
+                        <Routes>
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route path="*" element={<AppAuth />} />
+                        </Routes>
+                    </Stack>
+                )}
+            </Transition>
+        </BrowserRouter>
     );
 }
-
-export default App;

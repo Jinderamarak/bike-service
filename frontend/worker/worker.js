@@ -2,15 +2,15 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
-import { cacheResources } from "./cache";
-import ridesDb from "./routes/rides/db";
-import handleRequest from "./routes";
-import AsyncMutex from "./lib/lock";
-import { onVersionMessage } from "./messages";
-import { onCheckHostsMessage } from "./messages";
-import { onStatusMessage } from "./messages";
-import { onSyncMessage } from "./messages";
-import { FRONTEND_RESOURCES } from "../src/constants";
+import { cacheResources } from "./cache.js";
+import ridesDb from "./routes/rides/db.js";
+import handleRequest from "./routes/index.js";
+import AsyncMutex from "./lib/lock.js";
+import { onVersionMessage } from "./messages/index.js";
+import { onCheckHostsMessage } from "./messages/index.js";
+import { onStatusMessage } from "./messages/index.js";
+import { onSyncMessage } from "./messages/index.js";
+import { FRONTEND_RESOURCES } from "../src/constants.js";
 
 export const sw = /** @type {ServiceWorkerGlobalScope & typeof globalThis} */ (
     globalThis
