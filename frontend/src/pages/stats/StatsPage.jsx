@@ -8,12 +8,26 @@ import WithSelectedBike from "../../components/WithSelectedBike.jsx";
 import { mapStatsData } from "./data.js";
 import WithNetwork from "../../components/WithNetwork.jsx";
 import useRideService from "../../services/rideService.js";
+import useUserService from "../../services/userService.js";
+
+function goalLine(goal) {
+    if (goal === null) return [];
+    return [
+        {
+            y: goal,
+            label: "Monthly goal",
+            color: "red",
+        },
+    ];
+}
 
 export default function StatsPage() {
     const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [stats, setStats] = useState(null);
+    const [monthlyGoal, setMonthlyGoal] = useState(null);
     const rideService = useRideService(selectedBike);
+    const userService = useUserService();
 
     useEffect(() => {
         if (selectedBike === null) return;
@@ -23,6 +37,10 @@ export default function StatsPage() {
             setStats(mapStatsData(data));
         });
     }, [selectedBike, selectedYear]);
+
+    useEffect(() => {
+        userService.current().then((user) => setMonthlyGoal(user.monthlyGoal));
+    }, []);
 
     return (
         <Container size="lg" p={0} style={{ width: "100%" }}>
@@ -45,13 +63,7 @@ export default function StatsPage() {
                                 tickLine="xy"
                                 withLegend
                                 unit=" km"
-                                referenceLines={[
-                                    {
-                                        y: 100,
-                                        label: "Monthly goal",
-                                        color: "red",
-                                    },
-                                ]}
+                                referenceLines={goalLine(monthlyGoal)}
                                 withXAxis={false}
                                 valueFormatter={(v) => v.toFixed(2)}
                                 connectNulls={false}

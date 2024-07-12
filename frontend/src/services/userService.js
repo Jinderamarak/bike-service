@@ -35,7 +35,7 @@ export default function useUserService() {
     }
 
     /**
-     * @returns {Promise<UserModel[]>}
+     * @returns {Promise<UserModel>}
      */
     function current() {
         return client.get("/api/users");
