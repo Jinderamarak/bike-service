@@ -67,6 +67,26 @@ impl UserRepository {
         Ok(model)
     }
 
+    pub async fn update(&self, user_id: i64, update: &UserPartial) -> AppResult<UserModel> {
+        let affected = sqlx::query!(
+            "UPDATE users SET username = ?, monthly_goal = ? WHERE id = ? AND deleted_at IS NULL",
+            update.username,
+            update.monthly_goal,
+            user_id
+        )
+        .execute(&self.0)
+        .await?
+        .rows_affected();
+
+        if affected == 0 {
+            return Err(AppError::NotFound(format!(
+                "No user found with id {user_id}",
+            )));
+        }
+
+        self.get_by_id(user_id).await
+    }
+
     pub async fn delete(&self, user_id: i64) -> AppResult<()> {
         let now = format_date_time(&Utc::now().naive_utc());
         let affected = sqlx::query!(

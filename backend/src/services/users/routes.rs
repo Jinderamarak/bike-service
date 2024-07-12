@@ -1,6 +1,6 @@
 use axum::extract::State;
 use axum::http::StatusCode;
-use axum::routing::{delete, get, post};
+use axum::routing::{delete, get, post, put};
 use axum::{Extension, Json, Router};
 
 use crate::services::auth::models::SessionModel;
@@ -17,6 +17,7 @@ pub fn router() -> Router<AppState> {
 pub fn router_with_auth() -> Router<AppState> {
     Router::new()
         .route("/", get(current_user))
+        .route("/", put(update_user))
         .route("/", delete(delete_user))
 }
 
@@ -35,6 +36,15 @@ async fn create_user(
 
 async fn current_user(Extension(user): Extension<UserModel>) -> AppResult<Json<UserModel>> {
     Ok(Json(user))
+}
+
+async fn update_user(
+    State(user_repo): State<UserRepository>,
+    Extension(user): Extension<UserModel>,
+    Json(update): Json<UserPartial>,
+) -> AppResult<Json<UserModel>> {
+    let model = user_repo.update(user.id, &update).await?;
+    Ok(Json(model))
 }
 
 async fn delete_user(
