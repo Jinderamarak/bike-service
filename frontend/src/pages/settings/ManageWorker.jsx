@@ -5,8 +5,8 @@ import { notifications } from "@mantine/notifications";
 export default function ManageWorker() {
     async function registerWorker() {
         notifications.show({
-            message: `Registering service worker: ${""}`,
-            color: "green",
+            message: "Registering service worker",
+            color: "blue",
             withBorder: true,
         });
 
@@ -30,7 +30,7 @@ export default function ManageWorker() {
             if (registration.waiting) {
                 notifications.show({
                     message: "Service worker waiting",
-                    color: "green",
+                    color: "yellow",
                     withBorder: true,
                 });
             }
@@ -54,7 +54,7 @@ export default function ManageWorker() {
     async function unregisterWorker() {
         notifications.show({
             message: "Unregistering service worker",
-            color: "green",
+            color: "blue",
             withBorder: true,
         });
 
