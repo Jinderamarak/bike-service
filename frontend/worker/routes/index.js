@@ -1,15 +1,22 @@
 import { openCache } from "../cache.js";
 import { multiFetch } from "../lib/fetching.js";
-import { Router } from "../lib/router.js";
+import { httpRouter } from "../lib/router.js";
 import { OfflineResponse } from "../worker.js";
 import { rideRoutes } from "./rides/routes.js";
 
-const ApiRouter = Router([...rideRoutes]);
+const ApiRouter = httpRouter([...rideRoutes]);
 
 async function handleSpaRequest(request) {
-    const cached = await caches.match(request);
+    const cache = await openCache();
+    const cached = await cache.match(request);
     if (cached) {
         return cached;
+    }
+
+    const response = await multiFetch(request);
+    if (response) {
+        cache.put(request, response.clone());
+        return response;
     }
 
     return await caches.match("/index.html");
