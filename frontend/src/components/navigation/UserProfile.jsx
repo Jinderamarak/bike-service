@@ -10,6 +10,8 @@ import useAuthService from "../../services/authService.js";
 import { useAuth } from "../AuthContext.jsx";
 import BikeSelect from "./BikeSelect.jsx";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { networkStatusAtom } from "../../data/useNetworkStatus.jsx";
 
 const iconStyles = {
     width: rem(14),
@@ -21,6 +23,7 @@ export default function UserProfile() {
     const userService = useUserService();
     const authService = useAuthService();
     const navigate = useNavigate();
+    const [isOnline, _] = useRecoilState(networkStatusAtom);
     const [user, setUser] = useState(null);
 
     function manageBikes() {
@@ -36,8 +39,10 @@ export default function UserProfile() {
     }
 
     useEffect(() => {
-        userService.current().then(setUser);
-    }, []);
+        if (isOnline) {
+            userService.current().then(setUser);
+        }
+    }, [isOnline]);
 
     return (
         <Menu position="bottom-end">
@@ -70,6 +75,7 @@ export default function UserProfile() {
                 <Menu.Item
                     onClick={logout}
                     leftSection={<IconLogout style={iconStyles} />}
+                    disabled={!isOnline}
                 >
                     Logout
                 </Menu.Item>

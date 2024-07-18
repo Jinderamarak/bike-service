@@ -13,9 +13,12 @@ async function handleSpaRequest(request) {
         return cached;
     }
 
-    const response = await multiFetch(request);
+    const response = await fetch(request);
     if (response) {
-        cache.put(request, response.clone());
+        if (response.ok) {
+            cache.put(request, response.clone());
+        }
+
         return response;
     }
 

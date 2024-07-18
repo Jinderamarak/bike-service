@@ -3,6 +3,8 @@ import { Button, Skeleton, Stack, Text } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { FRONTEND_RESOURCES } from "../../constants.js";
 import useStatusService from "../../services/statusService.js";
+import { WhenOnline } from "../../components/WhenNetwork.jsx";
+import { workerCall } from "../../lib/WorkerCom.js";
 
 // @ts-ignore
 const FRONTEND_VERSION = APP_VERSION;
@@ -11,11 +13,13 @@ export default function Versions() {
     const statusService = useStatusService();
     const [loading, setLoading] = useState(false);
     const [serverStatus, setServerStatus] = useState(null);
-    const [workerVersions, setWorkerVersions] = useState([]);
+    const [workerVersion, setWorkerVersion] = useState(null);
 
     async function updateFrontend() {
         setLoading(true);
-        updateFrontendWorker();
+
+        await workerCall("update");
+
         try {
             for (const resource of FRONTEND_RESOURCES) {
                 try {
@@ -49,36 +53,11 @@ export default function Versions() {
         }
     }
 
-    function updateFrontendWorker() {
-        try {
-            navigator.serviceWorker?.ready?.then((registration) => {
-                registration.active.postMessage({ type: "update" });
-            });
-        } catch (e) {}
-    }
-
-    function handleOnMessage(event) {
-        if (event.data.type === "version") {
-            setWorkerVersions((current) => [...current, event.data.version]);
-        }
-    }
-
     useEffect(() => {
         statusService.get().then(setServerStatus);
-
-        setWorkerVersions([]);
-
-        navigator.serviceWorker?.addEventListener("message", handleOnMessage);
-        navigator.serviceWorker?.ready?.then((registration) => {
-            registration.active.postMessage({ type: "version" });
+        workerCall("version").then((data) => {
+            setWorkerVersion(data?.version ?? "None");
         });
-
-        return () => {
-            navigator.serviceWorker?.removeEventListener(
-                "message",
-                handleOnMessage
-            );
-        };
     }, []);
 
     return (
@@ -87,10 +66,18 @@ export default function Versions() {
                 <Text>Backend: {serverStatus?.version}</Text>
             </Skeleton>
             <Text>Frontend: {FRONTEND_VERSION}</Text>
-            <Text>Worker: {workerVersions.join(", ")}</Text>
-            <Button variant="filled" onClick={updateFrontend} loading={loading}>
-                Update
-            </Button>
+            <Skeleton visible={workerVersion == null}>
+                <Text>Worker: {workerVersion}</Text>
+            </Skeleton>
+            <WhenOnline>
+                <Button
+                    variant="filled"
+                    onClick={updateFrontend}
+                    loading={loading}
+                >
+                    Update
+                </Button>
+            </WhenOnline>
         </Stack>
     );
 }
