@@ -5,11 +5,8 @@
 import { cacheResources } from "./cache.js";
 import ridesDb from "./routes/rides/db.js";
 import handleRequest from "./routes/index.js";
-import { onUpdateMessage, onVersionMessage } from "./messages/index.js";
-import { onCheckHostsMessage } from "./messages/index.js";
-import { onStatusMessage } from "./messages/index.js";
-import { onSyncMessage } from "./messages/index.js";
 import { FRONTEND_RESOURCES } from "../src/constants.js";
+import CallRouter from "./calls/index.js";
 
 export const sw = /** @type {ServiceWorkerGlobalScope & typeof globalThis} */ (
     globalThis
@@ -29,11 +26,7 @@ function onInstall(event) {
         (async () => {
             // Open the database to upgrade it
             await ridesDb.initialize();
-            await cacheResources([
-                ...FRONTEND_RESOURCES,
-                "/api/bikes",
-                "/api/status",
-            ]);
+            await cacheResources([...FRONTEND_RESOURCES, "/api/status"]);
         })()
     );
 }
@@ -49,21 +42,7 @@ function onFetch(event) {
  * @param {MessageEvent & ExtendableMessageEvent} event
  */
 function onMessage(event) {
-    if (event.data.type === "version") {
-        event.waitUntil(onVersionMessage(event));
-    }
-    if (event.data.type === "checkHosts") {
-        event.waitUntil(onCheckHostsMessage(event));
-    }
-    if (event.data.type === "status") {
-        event.waitUntil(onStatusMessage(event));
-    }
-    if (event.data.type === "sync") {
-        event.waitUntil(onSyncMessage(event));
-    }
-    if (event.data.type === "update") {
-        event.waitUntil(onUpdateMessage(event));
-    }
+    CallRouter(event);
 }
 
 sw.oninstall = onInstall;

@@ -1,5 +1,4 @@
 import { openCache } from "../cache.js";
-import { postNetworkChanged } from "../messages/outbound.js";
 import { sw } from "../worker.js";
 import AsyncMutex from "./lock.js";
 
@@ -122,7 +121,7 @@ class MultiFetcher {
         if (!fastest.available) {
             if (this.#current) {
                 this.#current = null;
-                await postNetworkChanged(false, null);
+                //await postNetworkChanged(false, null);
             }
             return false;
         }
@@ -132,7 +131,7 @@ class MultiFetcher {
         }
 
         this.#current = fastest.host;
-        await postNetworkChanged(true, this.#current);
+        //await postNetworkChanged(true, this.#current);
         return true;
     }
 

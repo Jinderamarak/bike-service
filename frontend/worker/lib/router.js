@@ -1,7 +1,7 @@
 /**
  * Individual function responsible for handling given request and returning
  * a response or null in case the request is unhandled.
- * @callback RouteHandler
+ * @callback HttpRouteHandler
  * @param {Request} request HTTP Request
  * @param {(string | number)[]} params Captured groups from the path
  * @returns {Promise<Response | null>} Response or null if the request is unhandled
@@ -10,26 +10,26 @@
 /**
  * Tests the given path against a regexp of the route path and calls a handler
  * if the method matches and the path matches the regexp.
- * @callback Route
+ * @callback HttpRoute
  * @param {string} path HTTP Request path
  * @param {Request} request HTTP Request
  * @returns {Promise<Response | null>} Response or null if the request is unhandled
  */
 
 /**
- * Tests the given request against given routes (see {@link Route}) and returns
+ * Tests the given request against given routes (see {@link HttpRoute}) and returns
  * the response of the first matching route or null if no route matches.
- * @callback Router
+ * @callback HttpRouter
  * @param {Request} request HTTP Request
  * @returns {Promise<Response | null>} Response or null if the request is unhandled
  */
 
 /**
- * Creates a route (see {@link Route}) for a given HTTP method and path regexp.
+ * Creates a route (see {@link HttpRoute}) for a given HTTP method and path regexp.
  * @param {string} method HTTP Method
  * @param {RegExp} regexp Global RegExp for the path with capture groups for parameters
- * @param {RouteHandler} handler Route handler
- * @returns {Route} New route
+ * @param {HttpRouteHandler} handler Route handler
+ * @returns {HttpRoute} New route
  */
 function anyRoute(method, regexp, handler) {
     if (!regexp.global) {
@@ -70,8 +70,8 @@ function transformParam(param) {
 /**
  * Creates a HTTP GET route.
  * @param {RegExp} regexp Global RegExp for the path with capture groups for parameters
- * @param {RouteHandler} handler Route handler
- * @returns {Route} New route
+ * @param {HttpRouteHandler} handler Route handler
+ * @returns {HttpRoute} New route
  */
 export function get(regexp, handler) {
     return anyRoute("GET", regexp, handler);
@@ -80,8 +80,8 @@ export function get(regexp, handler) {
 /**
  * Creates a HTTP POST route.
  * @param {RegExp} regexp Global RegExp for the path with capture groups for parameters
- * @param {RouteHandler} handler Route handler
- * @returns {Route} New route
+ * @param {HttpRouteHandler} handler Route handler
+ * @returns {HttpRoute} New route
  */
 export function pot(regexp, handler) {
     return anyRoute("POST", regexp, handler);
@@ -90,8 +90,8 @@ export function pot(regexp, handler) {
 /**
  * Creates a HTTP PUT route.
  * @param {RegExp} regexp Global RegExp for the path with capture groups for parameters
- * @param {RouteHandler} handler Route handler
- * @returns {Route} New route
+ * @param {HttpRouteHandler} handler Route handler
+ * @returns {HttpRoute} New route
  */
 export function put(regexp, handler) {
     return anyRoute("PUT", regexp, handler);
@@ -100,19 +100,19 @@ export function put(regexp, handler) {
 /**
  * Creates a HTTP DELETE route.
  * @param {RegExp} regexp Global RegExp for the path with capture groups for parameters
- * @param {RouteHandler} handler Route handler
- * @returns {Route} New route
+ * @param {HttpRouteHandler} handler Route handler
+ * @returns {HttpRoute} New route
  */
 export function del(regexp, handler) {
     return anyRoute("DELETE", regexp, handler);
 }
 
 /**
- * Creates a router (see {@link Router}) for given routes (see {@link Route}).
- * @param {Route[]} routes List of routes
- * @returns {Router} New router
+ * Creates a router (see {@link HttpRouter}) for given routes (see {@link HttpRoute}).
+ * @param {HttpRoute[]} routes List of routes
+ * @returns {HttpRouter} New router
  */
-export function Router(routes) {
+export function httpRouter(routes) {
     return async (request) => {
         const url = new URL(request.url);
         const path = url.pathname;

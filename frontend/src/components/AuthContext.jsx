@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useMemo, useState } from "react";
-import ApiClient from "../services/ApiClient.js";
+import ApiClient from "../lib/ApiClient.js";
 import { useRecoilState } from "recoil";
 import { selectedBikeIdAtom } from "../data/persistentAtoms.js";
+import { workerCall } from "../lib/WorkerCom.js";
 
 const AuthContext = createContext({
     authUserId: null,
@@ -15,6 +16,10 @@ const localAuthToken = localStorage.getItem(authTokenStorageKey);
 const authUserIdStorageKey = "authUserId";
 const localAuthUserId = localStorage.getItem(authUserIdStorageKey);
 
+async function syncWorkerAuth(token) {
+    return workerCall("authInit", { token });
+}
+
 export function AuthProvider({ children }) {
     const [_, setSelectedBikeId] = useRecoilState(selectedBikeIdAtom);
     const [authUserId, setAuthUserId] = useState(
@@ -27,6 +32,7 @@ export function AuthProvider({ children }) {
             setAuthUserId(null);
         });
 
+        syncWorkerAuth(localAuthToken);
         return client;
     }, []);
 
@@ -37,6 +43,7 @@ export function AuthProvider({ children }) {
         apiClient.authToken = session?.token;
         setAuthUserId(session?.userId);
         setSelectedBikeId(null);
+        syncWorkerAuth(session?.token);
 
         if (session) {
             localStorage.setItem(authTokenStorageKey, session.token);
@@ -54,6 +61,9 @@ export function AuthProvider({ children }) {
     );
 }
 
+/**
+ * @returns {ApiClient}
+ */
 export function useApiClient() {
     return useContext(AuthContext).apiClient;
 }
