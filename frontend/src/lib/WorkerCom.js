@@ -8,7 +8,7 @@ export function isWorkerAvailable() {
  * @param {number} timeout
  * @returns {Promise<object | null>}
  */
-export async function workerCall(variant, payload, timeout = 5000) {
+export async function workerCall(variant, payload = {}, timeout = 5000) {
     if (!isWorkerAvailable()) {
         return null;
     }

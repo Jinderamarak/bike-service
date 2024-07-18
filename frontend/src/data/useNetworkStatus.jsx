@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { rem } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconAntenna, IconAntennaOff } from "@tabler/icons-react";
@@ -12,19 +12,15 @@ export const networkStatusAtom = atom({
 
 export function useNetworkStatusSync() {
     const [_, setNetworkStatus] = useRecoilState(networkStatusAtom);
+    const previous = useRef(false);
 
-    function handleOnline() {
-        setNetworkStatus(true);
-    }
+    function showNotification(isOnline) {
+        if (previous.current === isOnline) {
+            return;
+        }
 
-    function handleOffline() {
-        setNetworkStatus(false);
-    }
-
-    async function periodicCheck() {
-        const status = await workerCall("status", {});
-        setNetworkStatus(status.isOnline);
-        if (status.isOnline) {
+        previous.current = isOnline;
+        if (isOnline) {
             notifications.show({
                 title: "Online",
                 message: `Connected`,
@@ -49,20 +45,36 @@ export function useNetworkStatusSync() {
         }
     }
 
+    function handleOnline() {
+        setNetworkStatus(true);
+        showNotification(true);
+    }
+
+    function handleOffline() {
+        setNetworkStatus(false);
+        showNotification(false);
+    }
+
+    async function periodicCheck() {
+        const status = await workerCall("status", {});
+        setNetworkStatus(status.isOnline);
+        showNotification(status.isOnline);
+    }
+
     async function registerEvents() {
         if (isWorkerAvailable()) {
             const interval = setInterval(periodicCheck, 5000);
             return () => {
                 clearInterval(interval);
             };
-        } else {
-            window.addEventListener("online", handleOnline);
-            window.addEventListener("offline", handleOffline);
-            return () => {
-                window.removeEventListener("online", handleOnline);
-                window.removeEventListener("offline", handleOffline);
-            };
         }
+
+        window.addEventListener("online", handleOnline);
+        window.addEventListener("offline", handleOffline);
+        return () => {
+            window.removeEventListener("online", handleOnline);
+            window.removeEventListener("offline", handleOffline);
+        };
     }
 
     useEffect(() => {

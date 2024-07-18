@@ -3,8 +3,11 @@ import { Stack, Button, TextInput, Checkbox, NumberInput } from "@mantine/core";
 import useUserService from "../../services/userService.js";
 import { Form, useForm } from "@mantine/form";
 import { useAuth } from "../../components/AuthContext.jsx";
+import { useRecoilState } from "recoil";
+import { networkStatusAtom } from "../../data/useNetworkStatus.jsx";
 
 export default function User() {
+    const [isOnline, _] = useRecoilState(networkStatusAtom);
     const [loadingUpdate, setLoadingUpdate] = useState(false);
     const [loadingDelete, setLoadingDelete] = useState(false);
     const auth = useAuth();
@@ -77,7 +80,7 @@ export default function User() {
                         type="submit"
                         variant="filled"
                         loading={loadingUpdate}
-                        disabled={loadingDelete}
+                        disabled={loadingDelete || !isOnline}
                     >
                         Update User
                     </Button>
@@ -86,7 +89,7 @@ export default function User() {
             <Button
                 variant="light"
                 loading={loadingDelete}
-                disabled={loadingUpdate}
+                disabled={loadingUpdate || !isOnline}
                 onClick={deleteUser}
             >
                 Delete User

@@ -1,11 +1,9 @@
-import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Center, Group, Loader, Stack, Title, Transition } from "@mantine/core";
 import { useLocalStorageSync } from "./data/persistentAtoms.js";
 import { useNetworkStatusSync } from "./data/useNetworkStatus.jsx";
 import { useDataSync } from "./data/useDataSync.js";
 import { workerCall } from "./lib/WorkerCom.js";
-
-const LazyApp = lazy(() => import("./App.jsx"));
 
 function Loading() {
     const [transition, setTransition] = useState(false);
@@ -42,8 +40,10 @@ export default function AppEntry() {
      * @param {AbortSignal} signal
      */
     async function initialize(signal) {
-        const status = await workerCall("status", {});
-        const mod = await import("./App.jsx");
+        const [_, mod] = await Promise.all([
+            workerCall("status", {}),
+            import("./App.jsx"),
+        ]);
 
         if (!signal.aborted) {
             app.current = mod.default;
