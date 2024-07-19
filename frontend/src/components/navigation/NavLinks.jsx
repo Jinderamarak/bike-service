@@ -25,10 +25,15 @@ export default function NavLinks({ open, onClose }) {
         onClose();
     }
 
+    function goToServicing() {
+        navigate("/servicing");
+        onClose();
+    }
+
     const currentPage = useMemo(() => {
         if (location.pathname === "/") return "rides";
         if (location.pathname === "/stats") return "stats";
-        if (location.pathname === "/data") return "data";
+        if (location.pathname === "/servicing") return "servicing";
         return null;
     }, [location]);
 
@@ -51,6 +56,12 @@ export default function NavLinks({ open, onClose }) {
                     variant={linkVariant(currentPage, "stats")}
                 >
                     Stats
+                </Button>
+                <Button
+                    onClick={goToServicing}
+                    variant={linkVariant(currentPage, "servicing")}
+                >
+                    Servicing
                 </Button>
             </Flex>
         </Collapse>

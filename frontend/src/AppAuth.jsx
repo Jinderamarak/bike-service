@@ -6,6 +6,7 @@ import RidesPage from "./pages/rides/RidesPage.jsx";
 import SettingsPage from "./pages/settings/SettingsPage.jsx";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth } from "./components/AuthContext.jsx";
+import ServicingPage from "./pages/servicing/ServicingPage.jsx";
 
 export default function AppAuth() {
     const auth = useAuth();
@@ -28,6 +29,7 @@ export default function AppAuth() {
                 <Route index element={<RidesPage />} />
                 <Route path="/bikes" element={<BikesPage />} />
                 <Route path="/stats" element={<StatsPage />} />
+                <Route path="/servicing" element={<ServicingPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
             </Routes>
         </Fragment>
