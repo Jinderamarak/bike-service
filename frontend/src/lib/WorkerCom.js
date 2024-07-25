@@ -1,5 +1,5 @@
 export function isWorkerAvailable() {
-    return navigator.serviceWorker?.controller !== null;
+    return Boolean(navigator.serviceWorker?.controller);
 }
 
 /**
