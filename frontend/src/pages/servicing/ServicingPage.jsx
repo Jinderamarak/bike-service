@@ -1,18 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import {
     AspectRatio,
     Container,
     Flex,
     Image,
     Paper,
-    Popover,
-    useMantineTheme,
     Text,
-    Indicator,
 } from "@mantine/core";
 import WithSelectedBike from "../../components/WithSelectedBike.jsx";
-import { useDisclosure } from "@mantine/hooks";
-import useDrag from "../../lib/useDrag.js";
+import ComponentPoint from "./ComponentPoint.jsx";
 
 /**
  * @typedef {"ok" | "warn" | "fail"} EventVariant
@@ -24,46 +20,117 @@ import useDrag from "../../lib/useDrag.js";
  * @property {number} x
  * @property {number} y
  * @property {string} name
- * @property {string} product
- * @property {ComponentEvent} lastEvent
+ * @property {ComponentEvent | null} lastEvent
+ */
+
+/**
+ * @typedef ComponentProduct
+ * @property {number} id
+ * @property {string} name
+ * @property {number} distance
+ * @property {number} days
  */
 
 /**
  * @typedef ComponentDetail
  * @property {number} id
  * @property {string} name
- * @property {string} product
- * @property {number} distance
- * @property {number} days
+ * @property {ComponentProduct} product
+ * @property {ComponentEvent[]} events
+ * @property {ServiceInterval[]} intervals
  */
 
 /**
  * @typedef ComponentEvent
  * @property {number} id
  * @property {number} componentId
+ * @property {number | null} intervalId
  * @property {EventVariant} variant
  * @property {string} description
  */
 
+/**
+ * @typedef ServiceInterval
+ * @property {number} id
+ * @property {number} componentId
+ * @property {number} interval
+ * @property {"kilometer" | "day"} unit
+ * @property {string} description
+ */
+
+/** @type {ComponentPoint[]} */
 const defaultPoints = [
-    { id: 0, x: 0.5, y: 0.5 },
-    { id: 1, x: 0.1, y: 0.1 },
-    { id: 2, x: 0.9, y: 0.1 },
-    { id: 3, x: 0.1, y: 0.9 },
-    { id: 4, x: 0.9, y: 0.9 },
+    {
+        id: 1,
+        x: 0.9,
+        y: 0.9,
+        name: "Front Tire",
+        lastEvent: {
+            id: 1,
+            componentId: 1,
+            intervalId: null,
+            variant: "ok",
+            description: "Installation",
+        },
+    },
+    {
+        id: 2,
+        x: 0.1,
+        y: 0.9,
+        name: "Rear Tire",
+        lastEvent: {
+            id: 2,
+            componentId: 2,
+            intervalId: null,
+            variant: "fail",
+            description: "Puncture",
+        },
+    },
+    {
+        id: 3,
+        x: 0.85,
+        y: 0.6,
+        name: "Front Brake",
+        lastEvent: {
+            id: 3,
+            componentId: 3,
+            intervalId: null,
+            variant: "ok",
+            description: "Installation",
+        },
+    },
+    {
+        id: 4,
+        x: 0.15,
+        y: 0.55,
+        name: "Rear Brake",
+        lastEvent: {
+            id: 4,
+            componentId: 4,
+            intervalId: 1,
+            variant: "warn",
+            description: "Brake pad wear",
+        },
+    },
+    {
+        id: 5,
+        x: 0.4,
+        y: 0.07,
+        name: "Seat",
+        lastEvent: {
+            id: 5,
+            componentId: 5,
+            intervalId: null,
+            variant: "ok",
+            description: "Installation",
+        },
+    },
 ];
 
 export default function ServicingPage() {
-    const [points, setPoints] = useState(defaultPoints);
+    //const [points, setPoints] = useState(defaultPoints);
+    const points = defaultPoints;
     const container = useRef(null);
-
-    function onPointUpdate(id, x, y) {
-        setPoints((points) =>
-            points.map((point) =>
-                point.id === id ? { ...point, x, y } : point
-            )
-        );
-    }
 
     return (
         <Container size="lg" p={0} style={{ width: "100%" }}>
@@ -81,70 +148,12 @@ export default function ServicingPage() {
                                 fit="contain"
                             />
                             {points.map((point) => (
-                                <BikeItem
-                                    key={point.id}
-                                    {...point}
-                                    onPointUpdate={onPointUpdate}
-                                    container={container}
-                                />
+                                <ComponentPoint key={point.id} {...point} />
                             ))}
                         </AspectRatio>
                     </Paper>
                 </Flex>
             </WithSelectedBike>
         </Container>
-    );
-}
-
-function clamp(x) {
-    return Math.max(0, Math.min(1, x));
-}
-
-function BikeItem({ id, x, y, onPointUpdate, container }) {
-    const theme = useMantineTheme();
-
-    function onMove(x, y) {
-        const rect = container.current.getBoundingClientRect();
-        const nx = clamp((x - rect.left) / rect.width);
-        const ny = clamp((y - rect.top) / rect.height);
-        onPointUpdate(id, nx, ny);
-    }
-
-    const hole = () => {};
-    const ref = useDrag(hole, onMove, hole);
-
-    const primary = theme.colors[theme.primaryColor][0];
-    const [opened, { close, open }] = useDisclosure();
-    return (
-        <div
-            style={{
-                position: "absolute",
-                left: `${x * 100}%`,
-                top: `${y * 100}%`,
-                width: "2rem",
-                height: "2rem",
-                cursor: "crosshair",
-                transform: "translate(-50%, -50%)",
-            }}
-            ref={ref}
-        >
-            <Popover position="bottom" opened={opened}>
-                <Popover.Target>
-                    <Indicator processing offset={2}>
-                        <svg
-                            viewBox="0 0 10 10"
-                            onMouseEnter={open}
-                            onMouseLeave={close}
-                        >
-                            <circle cx="5" cy="5" r="5" fill={theme.white} />
-                            <circle cx="5" cy="5" r="3" fill={primary} />
-                        </svg>
-                    </Indicator>
-                </Popover.Target>
-                <Popover.Dropdown>
-                    <Text size="sm">{id}</Text>
-                </Popover.Dropdown>
-            </Popover>
-        </div>
     );
 }
