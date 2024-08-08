@@ -6,6 +6,7 @@ use crate::{
     services::{
         auth::repository::AuthRepository,
         bikes::{repository::BikeRepository, rides::repository::RideRepository},
+        strava::repository::StravaRepository,
         users::repository::UserRepository,
     },
 };
@@ -18,6 +19,7 @@ pub struct AppState {
     bikes: BikeRepository,
     users: UserRepository,
     auth: AuthRepository,
+    strava: StravaRepository,
 }
 
 impl AppState {
@@ -26,6 +28,7 @@ impl AppState {
         let bikes = BikeRepository::new(pool.clone());
         let users = UserRepository::new(pool.clone());
         let auth = AuthRepository::new(pool.clone());
+        let strava = StravaRepository::new(pool.clone());
         Self {
             config,
             pool,
@@ -33,6 +36,7 @@ impl AppState {
             bikes,
             users,
             auth,
+            strava,
         }
     }
 }
@@ -70,5 +74,11 @@ impl FromRef<AppState> for UserRepository {
 impl FromRef<AppState> for AuthRepository {
     fn from_ref(state: &AppState) -> Self {
         state.auth.clone()
+    }
+}
+
+impl FromRef<AppState> for StravaRepository {
+    fn from_ref(state: &AppState) -> Self {
+        state.strava.clone()
     }
 }

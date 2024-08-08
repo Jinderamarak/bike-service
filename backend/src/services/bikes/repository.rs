@@ -60,10 +60,11 @@ impl BikeRepository {
 
     pub async fn create(&self, owner_id: i64, new: &BikePartial) -> AppResult<BikeModel> {
         let id = sqlx::query!(
-            "INSERT INTO bikes (name, description, color, owner_id) VALUES (?, ?, ?, ?)",
+            "INSERT INTO bikes (name, description, color, strava_gear, owner_id) VALUES (?, ?, ?, ?, ?)",
             new.name,
             new.description,
             new.color,
+            new.strava_gear,
             owner_id
         )
         .execute(&self.0)
@@ -77,6 +78,7 @@ impl BikeRepository {
             deleted_at: None,
             color: new.color.clone(),
             owner_id,
+            strava_gear: new.strava_gear.clone(),
         };
 
         Ok(model)
@@ -89,10 +91,11 @@ impl BikeRepository {
         update: &BikePartial,
     ) -> AppResult<BikeModel> {
         let affected = sqlx::query!(
-            "UPDATE bikes SET name = ?, description = ?, color = ? WHERE id = ? AND deleted_at IS NULL",
+            "UPDATE bikes SET name = ?, description = ?, color = ?, strava_gear = ? WHERE id = ? AND deleted_at IS NULL",
             update.name,
             update.description,
             update.color,
+            update.strava_gear,
             bike_id
         )
         .execute(&self.0)
@@ -112,6 +115,7 @@ impl BikeRepository {
             deleted_at: None,
             color: update.color.clone(),
             owner_id,
+            strava_gear: update.strava_gear.clone(),
         };
 
         Ok(model)

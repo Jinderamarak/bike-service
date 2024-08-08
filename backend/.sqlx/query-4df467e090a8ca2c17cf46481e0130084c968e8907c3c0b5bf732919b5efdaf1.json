@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE bikes SET name = ?, description = ?, color = ?, strava_gear = ? WHERE id = ? AND deleted_at IS NULL",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "4df467e090a8ca2c17cf46481e0130084c968e8907c3c0b5bf732919b5efdaf1"
+}

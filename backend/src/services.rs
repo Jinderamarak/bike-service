@@ -13,6 +13,7 @@ pub mod auth;
 pub mod bikes;
 pub mod data;
 pub mod status;
+pub mod strava;
 pub mod users;
 
 pub fn api_router(state: AppState) -> Router<AppState> {

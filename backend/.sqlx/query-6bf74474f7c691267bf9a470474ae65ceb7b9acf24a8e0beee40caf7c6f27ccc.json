@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE strava SET last_sync = ?, access_token = ?, refresh_token = ?, expires_at = ? WHERE user_id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "6bf74474f7c691267bf9a470474ae65ceb7b9acf24a8e0beee40caf7c6f27ccc"
+}

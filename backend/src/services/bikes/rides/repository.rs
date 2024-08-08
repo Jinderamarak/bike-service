@@ -94,6 +94,7 @@ impl RideRepository {
             description: new.description.clone(),
             deleted_at: None,
             bike_id,
+            strava_ride: None,
         };
 
         Ok(model)

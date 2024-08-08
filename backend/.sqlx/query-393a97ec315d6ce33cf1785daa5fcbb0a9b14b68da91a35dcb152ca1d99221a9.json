@@ -32,6 +32,11 @@
         "name": "bike_id",
         "ordinal": 5,
         "type_info": "Int64"
+      },
+      {
+        "name": "strava_ride",
+        "ordinal": 6,
+        "type_info": "Int64"
       }
     ],
     "parameters": {
@@ -43,7 +48,8 @@
       false,
       true,
       true,
-      false
+      false,
+      true
     ]
   },
   "hash": "393a97ec315d6ce33cf1785daa5fcbb0a9b14b68da91a35dcb152ca1d99221a9"
