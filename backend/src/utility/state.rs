@@ -6,7 +6,7 @@ use crate::{
     services::{
         auth::repository::AuthRepository,
         bikes::{repository::BikeRepository, rides::repository::RideRepository},
-        strava::repository::StravaRepository,
+        strava::{api::no_auth::StravaApiNoAuth, repository::StravaRepository},
         users::repository::UserRepository,
     },
 };
@@ -20,6 +20,7 @@ pub struct AppState {
     users: UserRepository,
     auth: AuthRepository,
     strava: StravaRepository,
+    strava_api: Option<StravaApiNoAuth>,
 }
 
 impl AppState {
@@ -29,6 +30,7 @@ impl AppState {
         let users = UserRepository::new(pool.clone());
         let auth = AuthRepository::new(pool.clone());
         let strava = StravaRepository::new(pool.clone());
+        let strava_api = config.strava_config().map(StravaApiNoAuth::new);
         Self {
             config,
             pool,
@@ -37,6 +39,7 @@ impl AppState {
             users,
             auth,
             strava,
+            strava_api,
         }
     }
 }
@@ -80,5 +83,11 @@ impl FromRef<AppState> for AuthRepository {
 impl FromRef<AppState> for StravaRepository {
     fn from_ref(state: &AppState) -> Self {
         state.strava.clone()
+    }
+}
+
+impl FromRef<AppState> for Option<StravaApiNoAuth> {
+    fn from_ref(state: &AppState) -> Self {
+        state.strava_api.clone()
     }
 }
