@@ -10,6 +10,7 @@ use crate::utility::{
 pub struct StravaRaw {
     pub user_id: i64,
     pub strava_id: i64,
+    pub strava_name: String,
     pub last_sync: String,
     pub access_token: String,
     pub refresh_token: String,
@@ -21,6 +22,7 @@ pub struct StravaRaw {
 pub struct StravaModel {
     pub user_id: i64,
     pub strava_id: i64,
+    pub strava_name: String,
     pub last_sync: NaiveDateTime,
     pub access_token: String,
     pub refresh_token: String,
@@ -37,6 +39,7 @@ impl TryFrom<StravaRaw> for StravaModel {
         Ok(StravaModel {
             user_id: raw.user_id,
             strava_id: raw.strava_id,
+            strava_name: raw.strava_name,
             last_sync,
             access_token: raw.access_token,
             refresh_token: raw.refresh_token,
@@ -52,10 +55,28 @@ impl From<StravaModel> for StravaRaw {
         StravaRaw {
             user_id: model.user_id,
             strava_id: model.strava_id,
+            strava_name: model.strava_name,
             last_sync,
             access_token: model.access_token,
             refresh_token: model.refresh_token,
             expires_at,
+        }
+    }
+}
+
+#[derive(Serialize)]
+pub struct StravaLink {
+    pub user_id: i64,
+    pub strava_id: i64,
+    pub strava_name: String,
+}
+
+impl From<StravaModel> for StravaLink {
+    fn from(model: StravaModel) -> Self {
+        StravaLink {
+            user_id: model.user_id,
+            strava_id: model.strava_id,
+            strava_name: model.strava_name,
         }
     }
 }

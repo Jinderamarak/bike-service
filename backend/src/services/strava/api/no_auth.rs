@@ -49,6 +49,10 @@ impl StravaApiNoAuth {
         Ok(StravaModel {
             user_id: user_id.into(),
             strava_id: response.athlete.id,
+            strava_name: format!(
+                "{} {}",
+                response.athlete.firstname, response.athlete.lastname
+            ),
             last_sync: Utc::now().naive_utc(),
             access_token: response.access_token,
             refresh_token: response.refresh_token,
@@ -74,6 +78,7 @@ impl StravaApiNoAuth {
         Ok(StravaModel {
             user_id: model.user_id,
             strava_id: model.strava_id,
+            strava_name: model.strava_name,
             last_sync: model.last_sync,
             access_token: response.access_token,
             refresh_token: response.refresh_token,

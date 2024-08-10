@@ -27,9 +27,10 @@ impl StravaRepository {
     pub async fn create(&self, model: StravaModel) -> AppResult<()> {
         let raw = StravaRaw::from(model);
         sqlx::query!(
-            "INSERT INTO strava (user_id, strava_id, last_sync, access_token, refresh_token, expires_at) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO strava (user_id, strava_id, strava_name, last_sync, access_token, refresh_token, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
             raw.user_id,
             raw.strava_id,
+            raw.strava_name,
             raw.last_sync,
             raw.access_token,
             raw.refresh_token,

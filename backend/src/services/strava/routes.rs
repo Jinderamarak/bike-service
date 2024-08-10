@@ -4,8 +4,8 @@ use anyhow::anyhow;
 use axum::{
     extract::{Query, State},
     http::HeaderMap,
-    routing::get,
-    Extension, Router,
+    routing::{delete, get},
+    Extension, Json, Router,
 };
 use chrono::{NaiveDateTime, Utc};
 use reqwest::StatusCode;
@@ -21,7 +21,7 @@ use crate::{
     },
 };
 
-use super::{extractor::Strava, repository::StravaRepository};
+use super::{extractor::Strava, models::StravaLink, repository::StravaRepository};
 
 const SCOPES: &[&str] = &["read_all", "activity:read_all"];
 const TIMEOUT_SECONDS: i64 = 10 * 60;
@@ -63,7 +63,10 @@ pub fn router() -> Router<AppState> {
 }
 
 pub fn router_with_auth() -> Router<AppState> {
-    Router::new().route("/oauth", get(oauth))
+    Router::new()
+        .route("/link", get(oauth))
+        .route("/", delete(unlink))
+        .route("/", get(get_link))
 }
 
 async fn oauth(
@@ -119,4 +122,23 @@ async fn redirect(
     headers.insert("Location", "/integrate/strava".parse().unwrap());
 
     Ok((StatusCode::TEMPORARY_REDIRECT, headers))
+}
+
+async fn unlink(
+    Extension(session): Extension<SessionModel>,
+    State(repo): State<StravaRepository>,
+) -> AppResult<StatusCode> {
+    repo.delete(session.user_id).await?;
+    Ok(StatusCode::NO_CONTENT)
+}
+
+async fn get_link(
+    Extension(session): Extension<SessionModel>,
+    State(repo): State<StravaRepository>,
+) -> AppResult<Json<StravaLink>> {
+    let model = repo.try_get(session.user_id).await?;
+    model
+        .map(StravaLink::from)
+        .map(Json)
+        .ok_or_else(|| AppError::NotFound("Strava account not linked".to_string()))
 }

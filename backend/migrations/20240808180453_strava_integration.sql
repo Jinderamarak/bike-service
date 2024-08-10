@@ -3,6 +3,7 @@ CREATE TABLE strava
 (
     user_id       INTEGER PRIMARY KEY NOT NULL REFERENCES users (id),
     strava_id     INTEGER NOT NULL UNIQUE,
+    strava_name   TEXT    NOT NULL,
     last_sync     TEXT    NOT NULL,
     access_token  TEXT    NOT NULL,
     refresh_token TEXT    NOT NULL,

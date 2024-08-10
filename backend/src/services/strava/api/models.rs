@@ -4,11 +4,15 @@ use serde::Deserialize;
 #[derive(Deserialize)]
 pub struct SummaryAthlete {
     pub id: i64,
+    pub firstname: String,
+    pub lastname: String,
 }
 
 #[derive(Deserialize)]
 pub struct DetailedAthlete {
     pub id: i64,
+    pub firstname: String,
+    pub lastname: String,
     pub bikes: Vec<SummaryGear>,
 }
 
