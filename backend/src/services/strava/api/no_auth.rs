@@ -27,17 +27,19 @@ impl StravaApiNoAuth {
 
     pub async fn issue_token(
         &self,
-        code: impl AsRef<str>,
+        code: impl ToString,
         user_id: impl Into<i64>,
     ) -> anyhow::Result<StravaModel> {
         let path = format!("{STRAVA_API_URL}/oauth/token");
         let response = self
             .client
             .post(&path)
-            .query(&("client_id", self.config.client_id()))
-            .query(&("client_secret", self.config.client_secret()))
-            .query(&("code", code.as_ref()))
-            .query(&("grant_type", "authorization_code"))
+            .query(&[
+                ("client_id", self.config.client_id.clone()),
+                ("client_secret", self.config.client_secret.clone()),
+                ("code", code.to_string()),
+                ("grant_type", "authorization_code".to_string()),
+            ])
             .send()
             .await?
             .json::<IssueTokenResponse>()
@@ -59,8 +61,8 @@ impl StravaApiNoAuth {
         let response = self
             .client
             .post(&path)
-            .query(&("client_id", self.config.client_id()))
-            .query(&("client_secret", self.config.client_secret()))
+            .query(&("client_id", &self.config.client_id))
+            .query(&("client_secret", &self.config.client_secret))
             .query(&("refresh_token", model.refresh_token))
             .query(&("grant_type", "refresh_token"))
             .send()

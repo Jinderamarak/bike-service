@@ -5,7 +5,7 @@ use crate::{services::strava::models::StravaRaw, utility::error::AppResult};
 use super::models::StravaModel;
 
 #[derive(Clone)]
-pub struct StravaRepository(pub SqlitePool);
+pub struct StravaRepository(SqlitePool);
 
 impl StravaRepository {
     pub fn new(pool: SqlitePool) -> Self {
@@ -53,6 +53,14 @@ impl StravaRepository {
         )
         .execute(&self.0)
         .await?;
+
+        Ok(())
+    }
+
+    pub async fn delete(&self, user_id: i64) -> AppResult<()> {
+        sqlx::query!("DELETE FROM strava WHERE user_id = ?", user_id)
+            .execute(&self.0)
+            .await?;
 
         Ok(())
     }

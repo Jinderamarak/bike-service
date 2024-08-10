@@ -106,9 +106,9 @@ impl Configuration {
 
 #[derive(Clone)]
 pub struct StravaConfig {
-    client_id: String,
-    client_secret: String,
-    redirect_origin: String,
+    pub client_id: String,
+    pub client_secret: String,
+    pub redirect_origin: String,
 }
 
 impl StravaConfig {
@@ -125,13 +125,5 @@ impl StravaConfig {
             scope.as_ref(),
             state.as_ref(),
         )
-    }
-
-    pub fn client_id(&self) -> &str {
-        &self.client_id
-    }
-
-    pub fn client_secret(&self) -> &str {
-        &self.client_secret
     }
 }

@@ -42,14 +42,21 @@ impl StravaApiWithAuth {
         &self,
         filter: ActivityFilter,
     ) -> anyhow::Result<Vec<SummaryActivity>> {
+        let query = [
+            ("before", filter.before.map(|x| x.timestamp().to_string())),
+            ("after", filter.after.map(|x| x.timestamp().to_string())),
+            ("page", Some(filter.page.to_string())),
+            ("per_page", Some(filter.per_page.to_string())),
+        ]
+        .into_iter()
+        .filter_map(|(k, v)| v.map(|v| (k, v)))
+        .collect::<Vec<_>>();
+
         let path = format!("{STRAVA_API_URL}/athlete/activities");
         let response = self
             .client
             .get(&path)
-            .query(&("before", filter.before))
-            .query(&("after", filter.after))
-            .query(&("page", filter.page))
-            .query(&("per_page", filter.per_page))
+            .query(&query)
             .send()
             .await?
             .json::<Vec<SummaryActivity>>()
