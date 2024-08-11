@@ -1,5 +1,5 @@
 use chrono::NaiveDateTime;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
 pub struct SummaryAthlete {
@@ -16,7 +16,7 @@ pub struct DetailedAthlete {
     pub bikes: Vec<SummaryGear>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct SummaryGear {
     pub id: String,
     pub name: String,

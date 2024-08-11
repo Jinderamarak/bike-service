@@ -21,9 +21,11 @@ use crate::{
     },
 };
 
-use super::{extractor::Strava, models::StravaLink, repository::StravaRepository};
+use super::{
+    api::models::SummaryGear, extractor::Strava, models::StravaLink, repository::StravaRepository,
+};
 
-const SCOPES: &[&str] = &["read_all", "activity:read_all"];
+const SCOPES: &[&str] = &["read_all", "profile:read_all", "activity:read_all"];
 const TIMEOUT_SECONDS: i64 = 10 * 60;
 
 static STATES: LazyLock<Mutex<HashMap<Uuid, (i64, NaiveDateTime)>>> =
@@ -67,6 +69,7 @@ pub fn router_with_auth() -> Router<AppState> {
         .route("/link", get(oauth))
         .route("/", delete(unlink))
         .route("/", get(get_link))
+        .route("/bikes", get(bikes))
 }
 
 async fn oauth(
@@ -141,4 +144,20 @@ async fn get_link(
         .map(StravaLink::from)
         .map(Json)
         .ok_or_else(|| AppError::NotFound("Strava account not linked".to_string()))
+}
+
+async fn bikes(
+    Extension(session): Extension<SessionModel>,
+    State(repo): State<StravaRepository>,
+    Strava(_, api): Strava,
+) -> AppResult<Json<Vec<SummaryGear>>> {
+    let link = repo
+        .try_get(session.user_id)
+        .await?
+        .ok_or_else(|| AppError::NotFound("Strava account not linked".to_string()))?;
+
+    let api = api.with_auth(&link)?;
+    let athlete = api.get_athlete().await?;
+
+    Ok(Json(athlete.bikes))
 }
