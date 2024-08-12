@@ -5,6 +5,7 @@ import ManageWorker from "./ManageWorker.jsx";
 import Versions from "./Versions.jsx";
 import Hostnames from "./Hostnames.jsx";
 import User from "./User.jsx";
+import Strava from "./Strava.jsx";
 
 export default function SettingsPage() {
     return (
@@ -15,6 +16,7 @@ export default function SettingsPage() {
                 <Versions />
                 <Hostnames />
                 <User />
+                <Strava />
             </Flex>
         </Container>
     );
