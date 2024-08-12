@@ -12,6 +12,7 @@ export const rideForm = {
         date: new Date(),
         distance: "",
         description: "",
+        stravaRide: null,
     },
     validate: {
         distance: distanceValidator,
@@ -23,5 +24,6 @@ export function rideFormToBody(values) {
         date: values.date.toISOString().split("T")[0],
         distance: values.distance,
         description: values.description || null,
+        stravaRide: values.stravaRide || null,
     };
 }
