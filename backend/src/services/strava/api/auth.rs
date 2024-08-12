@@ -40,7 +40,7 @@ impl StravaApiWithAuth {
 
     pub async fn get_activities(
         &self,
-        filter: ActivityFilter,
+        filter: &ActivityFilter,
     ) -> anyhow::Result<Vec<SummaryActivity>> {
         let query = [
             ("before", filter.before.map(|x| x.timestamp().to_string())),

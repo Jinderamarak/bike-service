@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
@@ -75,11 +75,11 @@ impl From<String> for SportType {
 
 #[derive(Deserialize)]
 pub struct SummaryActivity {
-    id: i64,
-    name: String,
+    pub id: i64,
+    pub name: String,
     #[serde(rename = "distance")]
-    distance_meters: f64,
-    sport_type: SportType,
-    start_date_local: NaiveDateTime,
-    gear_id: String,
+    pub distance_meters: f64,
+    pub sport_type: SportType,
+    pub start_date_local: DateTime<Utc>,
+    pub gear_id: String,
 }

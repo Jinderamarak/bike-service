@@ -70,6 +70,7 @@ pub struct RidePartial {
     pub date: NaiveDate,
     pub distance: f64,
     pub description: Option<String>,
+    pub strava_ride: Option<i64>,
 }
 
 #[derive(Debug, Serialize, Default)]

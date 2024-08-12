@@ -4,7 +4,7 @@ use anyhow::anyhow;
 use axum::{
     extract::{Query, State},
     http::HeaderMap,
-    routing::{delete, get},
+    routing::{delete, get, post},
     Extension, Json, Router,
 };
 use chrono::{NaiveDateTime, Utc};
@@ -14,7 +14,13 @@ use tokio::sync::Mutex;
 use uuid::Uuid;
 
 use crate::{
-    services::auth::models::SessionModel,
+    services::{
+        auth::models::SessionModel,
+        bikes::{
+            repository::BikeRepository,
+            rides::{models::RidePartial, repository::RideRepository},
+        },
+    },
     utility::{
         error::{AppError, AppResult},
         state::AppState,
@@ -22,7 +28,10 @@ use crate::{
 };
 
 use super::{
-    api::models::SummaryGear, extractor::Strava, models::StravaLink, repository::StravaRepository,
+    api::models::{ActivityFilter, SummaryGear},
+    extractor::Strava,
+    models::{StravaLink, StravaModel},
+    repository::StravaRepository,
 };
 
 const SCOPES: &[&str] = &["read_all", "profile:read_all", "activity:read_all"];
@@ -67,9 +76,10 @@ pub fn router() -> Router<AppState> {
 pub fn router_with_auth() -> Router<AppState> {
     Router::new()
         .route("/link", get(oauth))
-        .route("/", delete(unlink))
+        .route("/link", delete(unlink))
         .route("/", get(get_link))
         .route("/bikes", get(bikes))
+        .route("/", post(sync))
 }
 
 async fn oauth(
@@ -160,4 +170,72 @@ async fn bikes(
     let athlete = api.get_athlete().await?;
 
     Ok(Json(athlete.bikes))
+}
+
+async fn sync(
+    Extension(session): Extension<SessionModel>,
+    State(repo): State<StravaRepository>,
+    State(rides): State<RideRepository>,
+    State(bikes): State<BikeRepository>,
+    Strava(_, api): Strava,
+) -> AppResult<StatusCode> {
+    let link = repo
+        .try_get(session.user_id)
+        .await?
+        .ok_or_else(|| AppError::NotFound("Strava account not linked".to_string()))?;
+
+    let api = api.with_auth(&link)?;
+
+    let mut bike_cache = HashMap::new();
+    let mut filter = ActivityFilter {
+        after: Some(link.last_sync.clone()),
+        ..Default::default()
+    };
+    let mut strava_rides = api.get_activities(&filter).await?;
+    while strava_rides.len() > 0 {
+        for ride in strava_rides {
+            let bike_id = match bike_cache.get(&ride.gear_id) {
+                Some(id) => *id,
+                None => {
+                    let bike = bikes
+                        .try_get_by_strava_gear(session.user_id, &ride.gear_id)
+                        .await?;
+                    let bike = match bike {
+                        Some(bike) => bike,
+                        None => continue,
+                    };
+
+                    bike_cache.insert(ride.gear_id.clone(), bike.id);
+                    bike.id
+                }
+            };
+
+            let existing = rides
+                .try_get_by_strava_ride_including_deleted(bike_id, ride.id)
+                .await?;
+            if existing.is_some() {
+                continue;
+            }
+
+            let ride = RidePartial {
+                date: ride.start_date_local.date_naive(),
+                distance: ride.distance_meters / 1000.0,
+                description: Some(ride.name),
+                strava_ride: Some(ride.id),
+            };
+
+            rides.create(bike_id, &ride).await?;
+        }
+
+        filter.page += 1;
+        strava_rides = api.get_activities(&filter).await?;
+    }
+
+    let link = StravaModel {
+        last_sync: Utc::now().naive_utc(),
+        ..link
+    };
+    repo.update(link).await?;
+
+    Ok(StatusCode::CREATED)
 }

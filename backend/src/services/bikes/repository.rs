@@ -58,6 +58,25 @@ impl BikeRepository {
         Ok(model)
     }
 
+    pub async fn try_get_by_strava_gear(
+        &self,
+        owner_id: i64,
+        strava_gear: &str,
+    ) -> AppResult<Option<BikeModel>> {
+        let model = sqlx::query_as!(
+            BikeRaw,
+            "SELECT * FROM bikes WHERE owner_id = ? AND strava_gear = ? AND deleted_at IS NULL",
+            owner_id,
+            strava_gear
+        )
+        .fetch_optional(&self.0)
+        .await?
+        .map(|raw| raw.try_into())
+        .transpose()?;
+
+        Ok(model)
+    }
+
     pub async fn create(&self, owner_id: i64, new: &BikePartial) -> AppResult<BikeModel> {
         let id = sqlx::query!(
             "INSERT INTO bikes (name, description, color, strava_gear, owner_id) VALUES (?, ?, ?, ?, ?)",
