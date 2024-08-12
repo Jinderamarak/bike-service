@@ -65,6 +65,7 @@ impl From<StravaModel> for StravaRaw {
 }
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct StravaLink {
     pub user_id: i64,
     pub strava_id: i64,

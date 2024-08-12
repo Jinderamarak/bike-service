@@ -1,0 +1,56 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT * FROM rides WHERE bike_id = ? AND strava_ride = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Int64"
+      },
+      {
+        "name": "date",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "distance",
+        "ordinal": 2,
+        "type_info": "Float"
+      },
+      {
+        "name": "description",
+        "ordinal": 3,
+        "type_info": "Text"
+      },
+      {
+        "name": "deleted_at",
+        "ordinal": 4,
+        "type_info": "Text"
+      },
+      {
+        "name": "bike_id",
+        "ordinal": 5,
+        "type_info": "Int64"
+      },
+      {
+        "name": "strava_ride",
+        "ordinal": 6,
+        "type_info": "Int64"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true
+    ]
+  },
+  "hash": "3cbc96308de4b9f1010c97174c803f026a1a28e27578e3dbd825ad1a6fc7ee26"
+}
