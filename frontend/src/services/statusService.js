@@ -1,9 +1,15 @@
 import { useApiClient } from "../components/AuthContext.jsx";
 
 /**
+ * @typedef Integration
+ * @type {"strava"}
+ */
+
+/**
  * @typedef StatusModel
  * @type {object}
  * @property {number} version
+ * @property {Integration[]} integrations
  * @property {string[]} hostnames
  */
 
