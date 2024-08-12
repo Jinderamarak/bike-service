@@ -81,3 +81,8 @@ impl From<StravaModel> for StravaLink {
         }
     }
 }
+
+#[derive(Serialize)]
+pub struct OAuthUrl {
+    pub url: String,
+}

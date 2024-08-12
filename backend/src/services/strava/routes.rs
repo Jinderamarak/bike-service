@@ -7,7 +7,7 @@ use axum::{
     routing::{delete, get, post},
     Extension, Json, Router,
 };
-use chrono::{NaiveDateTime, Utc};
+use chrono::{Duration, NaiveDateTime, Utc};
 use reqwest::StatusCode;
 use serde::Deserialize;
 use tokio::sync::Mutex;
@@ -26,7 +26,8 @@ use crate::{
         state::AppState,
     },
 };
-
+use crate::services::strava::api::no_auth::StravaApiNoAuth;
+use crate::services::strava::models::OAuthUrl;
 use super::{
     api::models::{ActivityFilter, SummaryGear},
     extractor::Strava,
@@ -61,6 +62,17 @@ async fn clear_states() {
     }
 }
 
+async fn keep_fresh_token(model: StravaModel, repo: &StravaRepository, api: &StravaApiNoAuth) -> AppResult<StravaModel> {
+    let now = Utc::now().naive_utc() - Duration::minutes(1);
+    if model.expires_at > now {
+        return Ok(model);
+    }
+
+    let model = api.refresh_token(model).await?;
+    repo.update(model.clone()).await?;
+    Ok(model)
+}
+
 #[derive(Deserialize)]
 struct OAuthQuery {
     state: Uuid,
@@ -85,7 +97,7 @@ pub fn router_with_auth() -> Router<AppState> {
 async fn oauth(
     Strava(config, _): Strava,
     Extension(session): Extension<SessionModel>,
-) -> AppResult<(StatusCode, HeaderMap)> {
+) -> AppResult<(StatusCode, Json<OAuthUrl>)> {
     let state = Uuid::new_v4();
     let scope = SCOPES.join(",");
     let oauth = config.oauth_url("/api/strava/redirect", scope, state.to_string());
@@ -98,10 +110,7 @@ async fn oauth(
     let mut states = states.lock().await;
     states.insert(state, (user_id, now));
 
-    let mut headers = HeaderMap::new();
-    headers.insert("Location", oauth.parse().unwrap());
-
-    Ok((StatusCode::TEMPORARY_REDIRECT, headers))
+    Ok((StatusCode::OK, Json(OAuthUrl { url: oauth })))
 }
 
 async fn redirect(
@@ -132,7 +141,7 @@ async fn redirect(
     repo.create(model).await?;
 
     let mut headers = HeaderMap::new();
-    headers.insert("Location", "/integrate/strava".parse().unwrap());
+    headers.insert("Location", "/settings".parse().unwrap());
 
     Ok((StatusCode::TEMPORARY_REDIRECT, headers))
 }
@@ -166,6 +175,7 @@ async fn bikes(
         .await?
         .ok_or_else(|| AppError::NotFound("Strava account not linked".to_string()))?;
 
+    let link = keep_fresh_token(link, &repo, &api).await?;
     let api = api.with_auth(&link)?;
     let athlete = api.get_athlete().await?;
 
@@ -178,12 +188,13 @@ async fn sync(
     State(rides): State<RideRepository>,
     State(bikes): State<BikeRepository>,
     Strava(_, api): Strava,
-) -> AppResult<StatusCode> {
+) -> AppResult<(StatusCode, String)> {
     let link = repo
         .try_get(session.user_id)
         .await?
         .ok_or_else(|| AppError::NotFound("Strava account not linked".to_string()))?;
 
+    let link = keep_fresh_token(link, &repo, &api).await?;
     let api = api.with_auth(&link)?;
 
     let mut bike_cache = HashMap::new();
@@ -237,5 +248,5 @@ async fn sync(
     };
     repo.update(link).await?;
 
-    Ok(StatusCode::CREATED)
+    Ok((StatusCode::CREATED, "{}".to_string()))
 }

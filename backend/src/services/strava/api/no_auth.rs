@@ -1,4 +1,4 @@
-use chrono::{NaiveDateTime, Utc};
+use chrono::NaiveDateTime;
 use reqwest::Client;
 
 use crate::{config::StravaConfig, services::strava::models::StravaModel};
@@ -22,7 +22,7 @@ impl StravaApiNoAuth {
     }
 
     pub fn with_auth(self, link: &StravaModel) -> anyhow::Result<StravaApiWithAuth> {
-        StravaApiWithAuth::new(self.config, link)
+        StravaApiWithAuth::new(link)
     }
 
     pub async fn issue_token(
@@ -53,7 +53,7 @@ impl StravaApiNoAuth {
                 "{} {}",
                 response.athlete.firstname, response.athlete.lastname
             ),
-            last_sync: Utc::now().naive_utc(),
+            last_sync: NaiveDateTime::from_timestamp_opt(0, 0).unwrap(),
             access_token: response.access_token,
             refresh_token: response.refresh_token,
             expires_at,
@@ -65,10 +65,12 @@ impl StravaApiNoAuth {
         let response = self
             .client
             .post(&path)
-            .query(&("client_id", &self.config.client_id))
-            .query(&("client_secret", &self.config.client_secret))
-            .query(&("refresh_token", model.refresh_token))
-            .query(&("grant_type", "refresh_token"))
+            .query(&[
+                ("client_id", &self.config.client_id),
+                ("client_secret", &self.config.client_secret),
+                ("refresh_token", &model.refresh_token),
+                ("grant_type", &"refresh_token".to_string()),
+            ])
             .send()
             .await?
             .json::<RefreshTokenResponse>()

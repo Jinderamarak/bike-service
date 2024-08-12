@@ -1,6 +1,6 @@
 use reqwest::{header, Client};
 
-use crate::{config::StravaConfig, services::strava::models::StravaModel};
+use crate::services::strava::models::StravaModel;
 
 use super::{
     models::{ActivityFilter, DetailedAthlete, SummaryActivity},
@@ -8,19 +8,17 @@ use super::{
 };
 
 pub struct StravaApiWithAuth {
-    config: StravaConfig,
     client: Client,
 }
 
 impl StravaApiWithAuth {
-    pub fn new(config: StravaConfig, link: &StravaModel) -> anyhow::Result<StravaApiWithAuth> {
+    pub fn new(link: &StravaModel) -> anyhow::Result<StravaApiWithAuth> {
         let mut headers = header::HeaderMap::new();
         let mut auth = header::HeaderValue::try_from(format!("Bearer {}", link.access_token))?;
         auth.set_sensitive(true);
         headers.insert(header::AUTHORIZATION, auth);
 
         Ok(Self {
-            config,
             client: Client::builder().default_headers(headers).build()?,
         })
     }
