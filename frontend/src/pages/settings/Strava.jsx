@@ -15,15 +15,15 @@ export default function Strava() {
 
     function createLink() {
         setLoading(true);
-        stravaService.getOAuthRedirect()
-            .then((response) => {
-                window.location.href = response.url;
-            })
+        stravaService.getOAuthRedirect().then((response) => {
+            window.location.href = response.url;
+        });
     }
 
     function deleteLink() {
         setLoading(true);
-        stravaService.unlink()
+        stravaService
+            .unlink()
             .then(() => {
                 setLink(null);
             })
@@ -33,16 +33,17 @@ export default function Strava() {
     useEffect(() => {
         statusService.get().then((status) => {
             setHasStravaIntegration(status.integrations.includes("strava"));
-        })
+        });
     }, [isOnline]);
 
     useEffect(() => {
         if (hasStravaIntegration) {
-            stravaService.getLink()
+            stravaService
+                .getLink()
                 .then(setLink)
                 .catch(() => setLink(null));
         }
-    }, [isOnline, hasStravaIntegration])
+    }, [isOnline, hasStravaIntegration]);
 
     if (!hasStravaIntegration) {
         return null;
@@ -51,12 +52,8 @@ export default function Strava() {
     if (link) {
         return (
             <Stack>
-                <Text>
-                    Strava Account Linked
-                </Text>
-                <Text>
-                    {link.stravaName}
-                </Text>
+                <Text>Strava Account Linked</Text>
+                <Text>{link.stravaName}</Text>
                 <Button
                     variant="light"
                     color="orange"

@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import {
     Checkbox,
     ColorInput,
@@ -11,23 +11,30 @@ import {
     Input,
 } from "@mantine/core";
 
-export default function BikeFormFields({ form, disabled, availableStravaGear }) {
-    const combobox = useCombobox(({
+export default function BikeFormFields({
+    form,
+    disabled,
+    availableStravaGear,
+}) {
+    const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
-    }));
+    });
 
     useEffect(() => {
         if (availableStravaGear) {
-            combobox.selectOption(1 + availableStravaGear.findIndex((gear) => {
-                console.log(gear.id, form.values.stravaGear);
-                return gear.id === form.values.stravaGear;
-            }));
+            combobox.selectOption(
+                1 +
+                    availableStravaGear.findIndex((gear) => {
+                        console.log(gear.id, form.values.stravaGear);
+                        return gear.id === form.values.stravaGear;
+                    })
+            );
         } else {
             combobox.selectOption(0);
         }
 
         // console.log(combobox.selectedOptionIndex);
-    }, [form, availableStravaGear])
+    }, [form, availableStravaGear]);
 
     return (
         <>
@@ -62,10 +69,13 @@ export default function BikeFormFields({ form, disabled, availableStravaGear }) 
             {availableStravaGear && (
                 <>
                     <Text size="sm">Link with Strava gear</Text>
-                    <Combobox store={combobox} onOptionSubmit={(val) => {
-                        form.setFieldValue("stravaGear", val);
-                        combobox.closeDropdown();
-                    }}>
+                    <Combobox
+                        store={combobox}
+                        onOptionSubmit={(val) => {
+                            form.setFieldValue("stravaGear", val);
+                            combobox.closeDropdown();
+                        }}
+                    >
                         <Combobox.Target>
                             <InputBase
                                 component="button"
@@ -75,8 +85,11 @@ export default function BikeFormFields({ form, disabled, availableStravaGear }) 
                                 rightSectionPointerEvents="none"
                                 onClick={() => combobox.toggleDropdown()}
                             >
-                                {availableStravaGear.find((gear) => gear.id === form.values.stravaGear)?.name
-                                    || <Input.Placeholder>None</Input.Placeholder>}
+                                {availableStravaGear.find(
+                                    (gear) => gear.id === form.values.stravaGear
+                                )?.name || (
+                                    <Input.Placeholder>None</Input.Placeholder>
+                                )}
                             </InputBase>
                         </Combobox.Target>
                         <Combobox.Dropdown>
@@ -85,7 +98,10 @@ export default function BikeFormFields({ form, disabled, availableStravaGear }) 
                                     None
                                 </Combobox.Option>
                                 {availableStravaGear.map((gear) => (
-                                    <Combobox.Option key={gear.id} value={gear.id}>
+                                    <Combobox.Option
+                                        key={gear.id}
+                                        value={gear.id}
+                                    >
                                         {gear.name}
                                     </Combobox.Option>
                                 ))}

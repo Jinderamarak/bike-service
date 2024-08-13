@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Flex, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import BikeCreateForm from "./BikeCreateForm.jsx";
 import BikeEntry from "./BikeEntry.jsx";
@@ -41,7 +41,10 @@ export default function BikesPage() {
     return (
         <Container size="lg" p={0} style={{ width: "100%" }}>
             <Flex direction={{ base: "column", xs: "row" }} gap="md">
-                <BikeCreateForm onBikeCreated={handleOnBikeCreated} availableStravaGear={stravaGear} />
+                <BikeCreateForm
+                    onBikeCreated={handleOnBikeCreated}
+                    availableStravaGear={stravaGear}
+                />
                 <Skeleton
                     visible={bikes === null}
                     style={{ flexGrow: 1, overflow: "hidden" }}

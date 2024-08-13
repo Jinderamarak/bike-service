@@ -5,7 +5,7 @@ import {
     IconLogout,
     IconManualGearbox,
     IconSettings,
-    IconBrandStrava
+    IconBrandStrava,
 } from "@tabler/icons-react";
 import useAuthService from "../../services/authService.js";
 import { useAuth } from "../AuthContext.jsx";
@@ -41,32 +41,37 @@ export default function UserProfile() {
             autoClose: false,
             withCloseButton: false,
             withBorder: true,
-            color: "orange"
+            color: "orange",
         });
 
-        stravaService.sync()
-            .then(() => notifications.update({
-                id,
-                loading: false,
-                title: "Syncing with Strava",
-                message: "Sync complete",
-                autoClose: 3000,
-                withCloseButton: true,
-                withBorder: true,
-                color: "orange",
-                icon: <IconBrandStrava style={iconStyles} />
-            }))
-            .catch(() => notifications.update({
-                id,
-                loading: false,
-                title: "Syncing with Strava",
-                message: "Sync failed",
-                autoClose: 3000,
-                withCloseButton: true,
-                withBorder: true,
-                color: "red",
-                icon: <IconBrandStrava style={iconStyles} />
-            }))
+        stravaService
+            .sync()
+            .then(() =>
+                notifications.update({
+                    id,
+                    loading: false,
+                    title: "Syncing with Strava",
+                    message: "Sync complete",
+                    autoClose: 3000,
+                    withCloseButton: true,
+                    withBorder: true,
+                    color: "orange",
+                    icon: <IconBrandStrava style={iconStyles} />,
+                })
+            )
+            .catch(() =>
+                notifications.update({
+                    id,
+                    loading: false,
+                    title: "Syncing with Strava",
+                    message: "Sync failed",
+                    autoClose: 3000,
+                    withCloseButton: true,
+                    withBorder: true,
+                    color: "red",
+                    icon: <IconBrandStrava style={iconStyles} />,
+                })
+            )
             .finally(() => setSyncing(false));
     }
 
@@ -85,7 +90,8 @@ export default function UserProfile() {
     useEffect(() => {
         if (isOnline) {
             userService.current().then(setUser);
-            stravaService.getLink()
+            stravaService
+                .getLink()
                 .then(() => setHasStrava(true))
                 .catch(() => setHasStrava(false));
         }
@@ -108,17 +114,15 @@ export default function UserProfile() {
                 </Menu.Target>
                 <Menu.Dropdown>
                     <BikeSelect />
-                    {
-                        hasStrava && (
-                            <Menu.Item
-                                onClick={sync}
-                                disabled={syncing}
-                                leftSection={<IconBrandStrava style={iconStyles} />}
-                            >
-                                Sync with Strava
-                            </Menu.Item>
-                        )
-                    }
+                    {hasStrava && (
+                        <Menu.Item
+                            onClick={sync}
+                            disabled={syncing}
+                            leftSection={<IconBrandStrava style={iconStyles} />}
+                        >
+                            Sync with Strava
+                        </Menu.Item>
+                    )}
                     <Menu.Item
                         onClick={manageBikes}
                         leftSection={<IconManualGearbox style={iconStyles} />}

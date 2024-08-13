@@ -22,7 +22,7 @@ export default function RideEntry({
             style={{ cursor: "pointer", overflow: "hidden" }}
         >
             <Text>{date}</Text>
-            { stravaRide && <IconBrandStrava size={24} /> }
+            {stravaRide && <IconBrandStrava size={24} />}
             <Text truncate="end" style={{ flexGrow: 1 }}>
                 {description}
             </Text>

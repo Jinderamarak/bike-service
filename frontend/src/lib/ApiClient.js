@@ -128,7 +128,12 @@ export default class ApiClient {
     }
 
     async delete(resource, expectFail = false, timeout = DEFAULT_TIMEOUT) {
-        return this.#request(resource, { method: "DELETE" }, expectFail, timeout);
+        return this.#request(
+            resource,
+            { method: "DELETE" },
+            expectFail,
+            timeout
+        );
     }
 
     async head(resource, expectFail = false, timeout = DEFAULT_TIMEOUT) {

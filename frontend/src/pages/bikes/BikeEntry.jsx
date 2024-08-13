@@ -29,7 +29,7 @@ export default function BikeEntry({
                     <Text fw="bold" size="lg" truncate="end" flex="1 1 auto">
                         {name}
                     </Text>
-                    { stravaGear && <IconBrandStrava size={24} /> }
+                    {stravaGear && <IconBrandStrava size={24} />}
                     <ColorSwatch color={color} />
                     <WhenOnline>
                         <ActionIcon

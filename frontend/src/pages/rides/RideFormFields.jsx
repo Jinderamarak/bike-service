@@ -1,7 +1,7 @@
 import React from "react";
-import {Group, NumberInput, Text, Textarea} from "@mantine/core";
+import { Group, NumberInput, Text, Textarea } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import {IconBrandStrava} from "@tabler/icons-react";
+import { IconBrandStrava } from "@tabler/icons-react";
 
 export default function RideFormFields({ form, disabled }) {
     return (
