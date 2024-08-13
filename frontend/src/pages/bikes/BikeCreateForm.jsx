@@ -8,7 +8,7 @@ import { useRecoilState } from "recoil";
 import { networkStatusAtom } from "../../data/useNetworkStatus.jsx";
 import useBikeService from "../../services/bikeService.js";
 
-export default function BikeCreateForm({ onBikeCreated }) {
+export default function BikeCreateForm({ onBikeCreated, availableStravaGear }) {
     const bikeService = useBikeService();
     const [online, _] = useRecoilState(networkStatusAtom);
     const [loading, setLoading] = useState(false);
@@ -34,6 +34,7 @@ export default function BikeCreateForm({ onBikeCreated }) {
                         <BikeFormFields
                             form={newForm}
                             disabled={loading || !online}
+                            availableStravaGear={availableStravaGear}
                         />
                         <Button
                             disabled={!online}

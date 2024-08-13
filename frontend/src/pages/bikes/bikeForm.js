@@ -13,6 +13,7 @@ export const bikeForm = {
         description: "",
         hasColor: false,
         color: "",
+        stravaGear: null,
     },
     validate: {
         name: nameValidator,
@@ -24,5 +25,6 @@ export function bikeFormToBody(values) {
         name: values.name,
         description: values.description || null,
         color: values.hasColor ? values.color : null,
+        stravaGear: values.stravaGear || null,
     };
 }
