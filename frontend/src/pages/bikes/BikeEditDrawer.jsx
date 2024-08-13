@@ -14,9 +14,11 @@ export default function BikeEditDrawer({
     name,
     description,
     color,
+    stravaGear,
     onCancel,
     onBikeEdited,
     onBikeDeleted,
+    availableStravaGear,
 }) {
     const bikeService = useBikeService();
     const [online, _] = useRecoilState(networkStatusAtom);
@@ -68,6 +70,7 @@ export default function BikeEditDrawer({
             description,
             hasColor: Boolean(color),
             color: color || "",
+            stravaGear: stravaGear,
         });
     }, [name, description, color]);
 
@@ -83,6 +86,7 @@ export default function BikeEditDrawer({
                     <BikeFormFields
                         form={editForm}
                         disabled={loadingUpdate || loadingDelete || !online}
+                        availableStravaGear={availableStravaGear}
                     />
                     <Group justify="space-between">
                         <Button

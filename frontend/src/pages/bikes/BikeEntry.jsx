@@ -7,7 +7,7 @@ import {
     Stack,
     Text,
 } from "@mantine/core";
-import { IconPencil } from "@tabler/icons-react";
+import { IconPencil, IconBrandStrava } from "@tabler/icons-react";
 import { WhenOnline } from "../../components/WhenNetwork.jsx";
 
 export default function BikeEntry({
@@ -16,9 +16,10 @@ export default function BikeEntry({
     description,
     color,
     onEditBike,
+    stravaGear,
 }) {
     function handleOnEditClick() {
-        onEditBike({ id, name, description, color });
+        onEditBike({ id, name, description, color, stravaGear });
     }
 
     return (
@@ -28,6 +29,7 @@ export default function BikeEntry({
                     <Text fw="bold" size="lg" truncate="end" flex="1 1 auto">
                         {name}
                     </Text>
+                    {stravaGear && <IconBrandStrava size={24} />}
                     <ColorSwatch color={color} />
                     <WhenOnline>
                         <ActionIcon

@@ -13,6 +13,7 @@ export default function RideEditDrawer({
     date,
     distance,
     description,
+    stravaRide,
     onCancel,
     onRideEdited,
     onRideDeleted,
@@ -65,6 +66,7 @@ export default function RideEditDrawer({
             date: date ? new Date(date) : new Date(),
             distance,
             description,
+            stravaRide,
         });
     }, [date, distance, description]);
 

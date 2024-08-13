@@ -74,14 +74,34 @@ impl RideRepository {
         Ok(model)
     }
 
+    pub async fn try_get_by_strava_ride_including_deleted(
+        &self,
+        bike_id: i64,
+        strava_ride: i64,
+    ) -> AppResult<Option<RideModel>> {
+        let model = sqlx::query_as!(
+            RideRaw,
+            "SELECT * FROM rides WHERE bike_id = ? AND strava_ride = ?",
+            bike_id,
+            strava_ride
+        )
+        .fetch_optional(&self.0)
+        .await?
+        .map(|r| r.try_into())
+        .transpose()?;
+
+        Ok(model)
+    }
+
     pub async fn create(&self, bike_id: i64, new: &RidePartial) -> AppResult<RideModel> {
         let date = format_date(&new.date);
         let id = sqlx::query!(
-            "INSERT INTO rides (date, distance, description, bike_id) VALUES (?, ?, ?, ?)",
+            "INSERT INTO rides (date, distance, description, bike_id, strava_ride) VALUES (?, ?, ?, ?, ?)",
             date,
             new.distance,
             new.description,
-            bike_id
+            bike_id,
+            new.strava_ride
         )
         .execute(&self.0)
         .await?
@@ -94,6 +114,7 @@ impl RideRepository {
             description: new.description.clone(),
             deleted_at: None,
             bike_id,
+            strava_ride: None,
         };
 
         Ok(model)
@@ -102,10 +123,11 @@ impl RideRepository {
     pub async fn update(&self, ride_id: i64, update: &RidePartial) -> AppResult<RideModel> {
         let date = format_date(&update.date);
         let affected = sqlx::query!(
-            "UPDATE rides SET date = ?, distance = ?, description = ? WHERE id = ? AND deleted_at IS NULL",
+            "UPDATE rides SET date = ?, distance = ?, description = ?, strava_ride = ? WHERE id = ? AND deleted_at IS NULL",
             date,
             update.distance,
             update.description,
+            update.strava_ride,
             ride_id
         )
         .execute(&self.0)

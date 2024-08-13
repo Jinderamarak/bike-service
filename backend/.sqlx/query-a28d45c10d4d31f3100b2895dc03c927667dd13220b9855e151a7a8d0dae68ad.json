@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO strava (user_id, strava_id, strava_name, last_sync, access_token, refresh_token, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 7
+    },
+    "nullable": []
+  },
+  "hash": "a28d45c10d4d31f3100b2895dc03c927667dd13220b9855e151a7a8d0dae68ad"
+}

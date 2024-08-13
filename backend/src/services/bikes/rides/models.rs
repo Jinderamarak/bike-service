@@ -14,6 +14,7 @@ pub struct RideRaw {
     pub description: Option<String>,
     pub deleted_at: Option<String>,
     pub bike_id: i64,
+    pub strava_ride: Option<i64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -25,6 +26,7 @@ pub struct RideModel {
     pub description: Option<String>,
     pub deleted_at: Option<NaiveDateTime>,
     pub bike_id: i64,
+    pub strava_ride: Option<i64>,
 }
 
 impl Model<RideRaw> for RideModel {}
@@ -41,6 +43,7 @@ impl TryFrom<RideRaw> for RideModel {
             description: raw.description,
             deleted_at,
             bike_id: raw.bike_id,
+            strava_ride: raw.strava_ride,
         })
     }
 }
@@ -56,6 +59,7 @@ impl From<RideModel> for RideRaw {
             description: model.description,
             deleted_at,
             bike_id: model.bike_id,
+            strava_ride: model.strava_ride,
         }
     }
 }
@@ -66,6 +70,7 @@ pub struct RidePartial {
     pub date: NaiveDate,
     pub distance: f64,
     pub description: Option<String>,
+    pub strava_ride: Option<i64>,
 }
 
 #[derive(Debug, Serialize, Default)]

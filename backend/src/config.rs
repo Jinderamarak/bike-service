@@ -56,11 +56,28 @@ pub struct Configuration {
         help = "Maximum time in seconds for a session to be inactive before it is expired"
     )]
     pub session_max_inactivity: i64,
+    #[arg(
+        long,
+        env = "BIKE_STRAVA_CLIENT_ID",
+        help = "Strava client ID for OAuth"
+    )]
+    pub strava_client_id: Option<String>,
+    #[arg(
+        long,
+        env = "BIKE_STRAVA_CLIENT_SECRET",
+        help = "Strava client secret for OAuth"
+    )]
+    pub strava_client_secret: Option<String>,
+    #[arg(
+        long,
+        env = "BIKE_STRAVA_REDIRECT_ORIGIN",
+        help = "Strava redirect origin for OAuth"
+    )]
+    pub strava_redirect_origin: Option<String>,
 }
 
 impl Configuration {
-    #[inline]
-    pub fn socket_address(&self) -> SocketAddr {
+    pub const fn socket_address(&self) -> SocketAddr {
         SocketAddr::new(self.address, self.port)
     }
 
@@ -76,5 +93,37 @@ impl Configuration {
             .map(|o| o.parse::<HeaderValue>())
             .collect::<Result<Vec<_>, _>>()?;
         Ok(CorsLayer::new().allow_methods(Any).allow_origin(origins))
+    }
+
+    pub fn strava_config(&self) -> Option<StravaConfig> {
+        Some(StravaConfig {
+            client_id: self.strava_client_id.clone()?,
+            client_secret: self.strava_client_secret.clone()?,
+            redirect_origin: self.strava_redirect_origin.clone()?,
+        })
+    }
+}
+
+#[derive(Clone)]
+pub struct StravaConfig {
+    pub client_id: String,
+    pub client_secret: String,
+    pub redirect_origin: String,
+}
+
+impl StravaConfig {
+    pub fn oauth_url(
+        &self,
+        redirect_path: impl AsRef<str>,
+        scope: impl AsRef<str>,
+        state: impl AsRef<str>,
+    ) -> String {
+        format!("https://www.strava.com/oauth/authorize?client_id={}&redirect_uri={}{}&response_type=code&scope={}&state={}",
+            self.client_id,
+            self.redirect_origin,
+            redirect_path.as_ref(),
+            scope.as_ref(),
+            state.as_ref(),
+        )
     }
 }

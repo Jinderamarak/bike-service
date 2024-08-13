@@ -109,6 +109,7 @@ export default function RidesPage() {
                     date={editedRide?.date}
                     distance={editedRide?.distance}
                     description={editedRide?.description}
+                    stravaRide={editedRide?.stravaRide}
                     onCancel={handleOnCancel}
                     onRideEdited={handleOnRideEdited}
                     onRideDeleted={handleOnRideDeleted}

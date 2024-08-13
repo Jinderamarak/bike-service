@@ -14,6 +14,7 @@ pub struct BikeRaw {
     pub deleted_at: Option<String>,
     pub color: Option<String>,
     pub owner_id: i64,
+    pub strava_gear: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -25,6 +26,7 @@ pub struct BikeModel {
     pub deleted_at: Option<NaiveDateTime>,
     pub color: Option<String>,
     pub owner_id: i64,
+    pub strava_gear: Option<String>,
 }
 
 impl Model<BikeRaw> for BikeModel {}
@@ -40,6 +42,7 @@ impl TryFrom<BikeRaw> for BikeModel {
             deleted_at,
             color: raw.color,
             owner_id: raw.owner_id,
+            strava_gear: raw.strava_gear,
         })
     }
 }
@@ -54,6 +57,7 @@ impl From<BikeModel> for BikeRaw {
             deleted_at,
             color: model.color,
             owner_id: model.owner_id,
+            strava_gear: model.strava_gear,
         }
     }
 }
@@ -64,4 +68,5 @@ pub struct BikePartial {
     pub name: String,
     pub description: Option<String>,
     pub color: Option<String>,
+    pub strava_gear: Option<String>,
 }

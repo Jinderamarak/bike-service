@@ -63,6 +63,7 @@ async fn import_data(
                         date: ride.date,
                         distance: ride.distance,
                         description: ride.description,
+                        strava_ride: ride.strava_ride,
                     },
                 )
                 .await?;

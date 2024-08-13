@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO rides (date, distance, description, bike_id, strava_ride) VALUES (?, ?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": []
+  },
+  "hash": "0456b1a8515e52ae28ea01bb9a589075b0959689ed5853dcf47c4b64b4c229b7"
+}

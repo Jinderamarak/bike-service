@@ -1,8 +1,9 @@
 import React from "react";
-import { NumberInput, Textarea } from "@mantine/core";
+import { Group, NumberInput, Text, Textarea } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
+import { IconBrandStrava } from "@tabler/icons-react";
 
-export default function RideFormFieds({ form, disabled }) {
+export default function RideFormFields({ form, disabled }) {
     return (
         <>
             <DateInput
@@ -27,6 +28,12 @@ export default function RideFormFieds({ form, disabled }) {
                 {...form.getInputProps("description")}
                 disabled={disabled}
             />
+            {form.values.stravaRide && (
+                <Group>
+                    <IconBrandStrava size={24} />
+                    <Text>Ride synced from Strava</Text>
+                </Group>
+            )}
         </>
     );
 }

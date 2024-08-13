@@ -9,6 +9,7 @@ import { useApiClient } from "../components/AuthContext.jsx";
  * @property {number} distance
  * @property {?string} description
  * @property {?string} deletedAt
+ * @property {?number} stravaRide
  */
 
 /**
@@ -17,6 +18,7 @@ import { useApiClient } from "../components/AuthContext.jsx";
  * @property {string} date
  * @property {number} distance
  * @property {?string} description
+ * @property {?number} stravaRide
  */
 
 /**

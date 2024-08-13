@@ -9,6 +9,7 @@ import { useApiClient } from "../components/AuthContext.jsx";
  * @property {?string} description
  * @property {?string} color
  * @property {?string} deletedAt
+ * @property {?string} stravaGear
  */
 
 /**
@@ -17,6 +18,7 @@ import { useApiClient } from "../components/AuthContext.jsx";
  * @property {string} name
  * @property {?string} description
  * @property {?string} color
+ * @property {?string} stravaGear
  */
 
 export default function useBikeService() {
