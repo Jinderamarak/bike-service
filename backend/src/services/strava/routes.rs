@@ -205,37 +205,38 @@ async fn sync(
     let mut strava_rides = api.get_activities(&filter).await?;
     while strava_rides.len() > 0 {
         for ride in strava_rides {
-            let bike_id = match bike_cache.get(&ride.gear_id) {
-                Some(id) => *id,
+            let bike_ids = match bike_cache.get(&ride.gear_id) {
+                Some(ids) => ids,
                 None => {
-                    let bike = bikes
-                        .try_get_by_strava_gear(session.user_id, &ride.gear_id)
-                        .await?;
-                    let bike = match bike {
-                        Some(bike) => bike,
-                        None => continue,
-                    };
-
-                    bike_cache.insert(ride.gear_id.clone(), bike.id);
-                    bike.id
+                    let bikes = bikes
+                        .get_by_strava_gear(session.user_id, &ride.gear_id)
+                        .await?
+                        .into_iter()
+                        .map(|bike| bike.id)
+                        .collect::<Vec<_>>();
+                    
+                    bike_cache.insert(ride.gear_id.clone(), bikes.clone());
+                    bike_cache.get(&ride.gear_id).unwrap()
                 }
             };
 
-            let existing = rides
-                .try_get_by_strava_ride_including_deleted(bike_id, ride.id)
-                .await?;
-            if existing.is_some() {
-                continue;
-            }
-
-            let ride = RidePartial {
+            let new = RidePartial {
                 date: ride.start_date_local.date_naive(),
                 distance: ride.distance_meters / 1000.0,
                 description: Some(ride.name),
                 strava_ride: Some(ride.id),
             };
+            
+            for bike_id in bike_ids {
+                let existing = rides
+                    .try_get_by_strava_ride_including_deleted(*bike_id, ride.id)
+                    .await?;
+                if existing.is_some() {
+                    continue;
+                }
 
-            rides.create(bike_id, &ride).await?;
+                rides.create(*bike_id, &new).await?;
+            }
         }
 
         filter.page += 1;
