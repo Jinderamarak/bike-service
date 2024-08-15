@@ -77,7 +77,7 @@ export default class ApiClient {
             const text = await response.text();
             if (!expectFail) {
                 notifications.show({
-                    title: "API Request Failed",
+                    title: `API Request Failed: Code ${response.status}`,
                     message: text,
                     color: "red",
                     withBorder: true,
