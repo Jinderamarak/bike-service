@@ -37,6 +37,7 @@ export default function StatsPage() {
         queryKey: ["rides", selectedBike, "stats", selectedYear],
         queryFn: () =>
             rideService.getMonthlyRides(selectedYear).then(mapStatsData),
+        enabled: selectedBike !== null,
     });
 
     return (

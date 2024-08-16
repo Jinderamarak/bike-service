@@ -29,6 +29,7 @@ export default function RidesPage() {
     const totalQuery = useQuery({
         queryKey: ["rides", selectedBike, "total", selectedYear],
         queryFn: () => rideService.totalDistance(selectedYear),
+        enabled: selectedBike !== null,
     });
 
     return (
