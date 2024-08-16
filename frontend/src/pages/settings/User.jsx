@@ -5,11 +5,10 @@ import { Form, useForm } from "@mantine/form";
 import { useAuth } from "../../components/AuthContext.jsx";
 import { useRecoilState } from "recoil";
 import { networkStatusAtom } from "../../data/useNetworkStatus.jsx";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function User() {
     const [isOnline, _] = useRecoilState(networkStatusAtom);
-    const [loadingUpdate, setLoadingUpdate] = useState(false);
-    const [loadingDelete, setLoadingDelete] = useState(false);
     const auth = useAuth();
     const userService = useUserService();
     const updateForm = useForm({
@@ -17,6 +16,26 @@ export default function User() {
             username: "",
             hasMonthlyGoal: false,
             monthlyGoal: 0,
+        },
+    });
+
+    const queryClient = useQueryClient();
+    const updateMutation = useMutation({
+        /** @param {*} values */
+        mutationFn: (values) =>
+            userService.update({
+                username: values.username,
+                monthlyGoal: values.hasMonthlyGoal ? values.monthlyGoal : null,
+            }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["user"] });
+        },
+    });
+    const deleteMutation = useMutation({
+        mutationFn: userService.delete,
+        onSuccess: () => {
+            auth.setSession(null);
+            queryClient.invalidateQueries();
         },
     });
 
@@ -30,34 +49,18 @@ export default function User() {
         });
     }, []);
 
-    function update(values) {
-        setLoadingUpdate(true);
-        const body = {
-            username: values.username,
-            monthlyGoal: values.hasMonthlyGoal ? values.monthlyGoal : null,
-        };
-
-        userService.update(body).finally(() => setLoadingUpdate(false));
-    }
-
-    function deleteUser() {
-        setLoadingDelete(true);
-        userService
-            .delete()
-            .then(() => auth.setSession(null))
-            .finally(() => setLoadingDelete(false));
-    }
-
     return (
         <Stack>
-            <Form form={updateForm} onSubmit={update}>
+            <Form form={updateForm} onSubmit={updateMutation.mutate}>
                 <Stack>
                     <TextInput
                         withAsterisk
                         label="Username"
                         key={updateForm.key("username")}
                         {...updateForm.getInputProps("username")}
-                        disabled={loadingUpdate || loadingDelete}
+                        disabled={
+                            updateMutation.isPending || deleteMutation.isPending
+                        }
                     />
                     <Checkbox
                         label="Monthly goal"
@@ -65,7 +68,9 @@ export default function User() {
                         {...updateForm.getInputProps("hasMonthlyGoal", {
                             type: "checkbox",
                         })}
-                        disabled={loadingUpdate || loadingDelete}
+                        disabled={
+                            updateMutation.isPending || deleteMutation.isPending
+                        }
                     />
                     {updateForm.values.hasMonthlyGoal && (
                         <NumberInput
@@ -73,14 +78,17 @@ export default function User() {
                             placeholder="(km)"
                             key={updateForm.key("monthlyGoal")}
                             {...updateForm.getInputProps("monthlyGoal")}
-                            disabled={loadingUpdate || loadingDelete}
+                            disabled={
+                                updateMutation.isPending ||
+                                deleteMutation.isPending
+                            }
                         />
                     )}
                     <Button
                         type="submit"
                         variant="filled"
-                        loading={loadingUpdate}
-                        disabled={loadingDelete || !isOnline}
+                        loading={updateMutation.isPending}
+                        disabled={deleteMutation.isPending || !isOnline}
                     >
                         Update User
                     </Button>
@@ -88,9 +96,9 @@ export default function User() {
             </Form>
             <Button
                 variant="light"
-                loading={loadingDelete}
-                disabled={loadingUpdate || !isOnline}
-                onClick={deleteUser}
+                loading={deleteMutation.isPending}
+                disabled={updateMutation.isPending || !isOnline}
+                onClick={() => deleteMutation.mutate()}
             >
                 Delete User
             </Button>

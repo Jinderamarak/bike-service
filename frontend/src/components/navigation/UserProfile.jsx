@@ -30,8 +30,8 @@ export default function UserProfile() {
     const navigate = useNavigate();
     const [isOnline, _] = useRecoilState(networkStatusAtom);
 
-    const queryClient = useQueryClient();
     const syncNotification = useRef(null);
+    const queryClient = useQueryClient();
     const syncMutation = useMutation({
         mutationFn: stravaService.sync,
         onMutate: () => {
@@ -80,11 +80,7 @@ export default function UserProfile() {
     });
     const stravaQuery = useQuery({
         queryKey: ["stravaLink"],
-        queryFn: () =>
-            stravaService
-                .getLink()
-                .then(() => true)
-                .catch(() => false),
+        queryFn: () => stravaService.getLink().catch(() => null),
         enabled: isOnline,
     });
 

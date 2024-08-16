@@ -4,62 +4,57 @@ import { useRecoilState } from "recoil";
 import { networkStatusAtom } from "../../data/useNetworkStatus.jsx";
 import useStravaService from "../../services/stravaService.js";
 import useStatusService from "../../services/statusService.js";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function Strava() {
     const [isOnline, _] = useRecoilState(networkStatusAtom);
-    const [hasStravaIntegration, setHasStravaIntegration] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [link, setLink] = useState(null);
+    const [loadingRedirect, setLoadingRedirect] = useState(false);
+    const queryClient = useQueryClient();
     const stravaService = useStravaService();
     const statusService = useStatusService();
 
+    const statusQuery = useQuery({
+        queryKey: ["status"],
+        queryFn: statusService.get,
+    });
+
+    const linkQuery = useQuery({
+        queryKey: ["stravaLink"],
+        queryFn: () => stravaService.getLink().catch(() => null),
+    });
+
+    const unlinkMutation = useMutation({
+        mutationFn: stravaService.unlink,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["stravaLink"] });
+        },
+    });
+
     function createLink() {
-        setLoading(true);
+        setLoadingRedirect(true);
         stravaService.getOAuthRedirect().then((response) => {
             window.location.href = response.url;
         });
     }
 
-    function deleteLink() {
-        setLoading(true);
-        stravaService
-            .unlink()
-            .then(() => {
-                setLink(null);
-            })
-            .finally(() => setLoading(false));
-    }
-
-    useEffect(() => {
-        statusService.get().then((status) => {
-            setHasStravaIntegration(status.integrations.includes("strava"));
-        });
-    }, [isOnline]);
-
-    useEffect(() => {
-        if (hasStravaIntegration) {
-            stravaService
-                .getLink()
-                .then(setLink)
-                .catch(() => setLink(null));
-        }
-    }, [isOnline, hasStravaIntegration]);
-
-    if (!hasStravaIntegration) {
+    if (
+        statusQuery.isLoading ||
+        !statusQuery.data.integrations.includes("strava")
+    ) {
         return null;
     }
 
-    if (link) {
+    if (linkQuery.data) {
         return (
             <Stack>
                 <Text>Strava Account Linked</Text>
-                <Text>{link.stravaName}</Text>
+                <Text>{linkQuery.data.stravaName}</Text>
                 <Button
                     variant="light"
                     color="orange"
-                    loading={loading}
-                    disabled={loading || !isOnline}
-                    onClick={deleteLink}
+                    loading={loadingRedirect}
+                    disabled={loadingRedirect || !isOnline}
+                    onClick={() => unlinkMutation.mutate()}
                 >
                     Unlink Accounts
                 </Button>
@@ -71,8 +66,8 @@ export default function Strava() {
         <Stack>
             <Button
                 color="orange"
-                loading={loading}
-                disabled={loading || !isOnline}
+                loading={loadingRedirect}
+                disabled={loadingRedirect || !isOnline}
                 onClick={createLink}
             >
                 Link Strava Account
