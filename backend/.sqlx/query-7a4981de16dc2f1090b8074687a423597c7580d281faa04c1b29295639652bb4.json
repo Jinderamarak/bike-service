@@ -1,0 +1,20 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT SUM(distance) as total FROM rides WHERE bike_id = ? AND date LIKE ? AND deleted_at IS NULL",
+  "describe": {
+    "columns": [
+      {
+        "name": "total",
+        "ordinal": 0,
+        "type_info": "Float"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "7a4981de16dc2f1090b8074687a423597c7580d281faa04c1b29295639652bb4"
+}

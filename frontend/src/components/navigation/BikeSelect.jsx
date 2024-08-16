@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
     selectedBikeIdAtom,
     selectedBikeColorAtom,
@@ -12,35 +12,30 @@ import {
     useCombobox,
     Text,
 } from "@mantine/core";
-import useBikes from "../../data/useBikes.js";
+import useBikeService from "../../services/bikeService.js";
+import { useQuery } from "@tanstack/react-query";
 
 export default function BikeSelect() {
-    const { bikes } = useBikes();
     const [_, setSelectedColor] = useRecoilState(selectedBikeColorAtom);
     const [selectedBike, setSelectedBike] = useRecoilState(selectedBikeIdAtom);
     const bikeCombobox = useCombobox();
+    const bikeService = useBikeService();
+    const bikesQuery = useQuery({
+        queryKey: ["bikes"],
+        queryFn: () => bikeService.getAll(),
+    });
 
     function selectBike(bikeId) {
         bikeCombobox.closeDropdown();
+        let bike = bikesQuery.data.find((b) => b.id == bikeId);
+        setSelectedColor(bike.color);
         setSelectedBike(bikeId);
     }
 
-    useEffect(() => {
-        if (bikes === null) return;
-        if (selectedBike !== null && selectedBike >= 0) {
-            let bike = bikes.find((b) => b.id === selectedBike);
-            if (bike === undefined) {
-                setSelectedBike(null);
-            }
-        }
-
-        let bike = bikes.find((b) => b.id === selectedBike);
-        setSelectedColor(bike?.color ?? null);
-    }, [bikes, selectedBike, setSelectedBike]);
-
+    const bike = bikesQuery.data?.find((b) => b.id == selectedBike);
     return (
         <Skeleton
-            visible={bikes === null}
+            visible={bikesQuery.isLoading}
             maw={{ base: "100%", xs: "15rem" }}
             style={{ overflow: "hidden" }}
         >
@@ -66,8 +61,7 @@ export default function BikeSelect() {
                                 whiteSpace: "nowrap",
                             }}
                         >
-                            {(bikes ?? []).find((b) => b.id === selectedBike)
-                                ?.name || (
+                            {bike?.name || (
                                 <Input.Placeholder>
                                     Select Bike
                                 </Input.Placeholder>
@@ -77,8 +71,8 @@ export default function BikeSelect() {
                 </Combobox.Target>
                 <Combobox.Dropdown>
                     <Combobox.Options>
-                        {(bikes ?? []).map((bike) => (
-                            <Combobox.Option key={bike.id} value={bike.id}>
+                        {(bikesQuery.data ?? []).map((bike) => (
+                            <Combobox.Option key={bike.id} value={`${bike.id}`}>
                                 {bike.name}
                             </Combobox.Option>
                         ))}

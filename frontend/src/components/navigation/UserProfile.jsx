@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef } from "react";
 import useUserService from "../../services/userService.js";
 import { Avatar, Menu, Skeleton, rem } from "@mantine/core";
 import {
@@ -15,6 +15,7 @@ import { useRecoilState } from "recoil";
 import { networkStatusAtom } from "../../data/useNetworkStatus.jsx";
 import useStravaService from "../../services/stravaService.js";
 import { notifications } from "@mantine/notifications";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const iconStyles = {
     width: rem(14),
@@ -28,52 +29,60 @@ export default function UserProfile() {
     const stravaService = useStravaService();
     const navigate = useNavigate();
     const [isOnline, _] = useRecoilState(networkStatusAtom);
-    const [user, setUser] = useState(null);
-    const [hasStrava, setHasStrava] = useState(false);
-    const [syncing, setSyncing] = useState(false);
 
-    function sync() {
-        setSyncing(true);
-        const id = notifications.show({
-            loading: true,
-            title: "Syncing with Strava",
-            message: "This may take a few seconds",
-            autoClose: false,
-            withCloseButton: false,
-            withBorder: true,
-            color: "orange",
-        });
-
-        stravaService
-            .sync()
-            .then(() =>
-                notifications.update({
-                    id,
-                    loading: false,
-                    title: "Syncing with Strava",
-                    message: "Sync complete",
-                    autoClose: 3000,
-                    withCloseButton: true,
-                    withBorder: true,
-                    color: "orange",
-                    icon: <IconBrandStrava style={iconStyles} />,
-                })
-            )
-            .catch(() =>
-                notifications.update({
-                    id,
-                    loading: false,
-                    title: "Syncing with Strava",
-                    message: "Sync failed",
-                    autoClose: 3000,
-                    withCloseButton: true,
-                    withBorder: true,
-                    color: "red",
-                    icon: <IconBrandStrava style={iconStyles} />,
-                })
-            )
-            .finally(() => setSyncing(false));
-    }
+    const syncNotification = useRef(null);
+    const queryClient = useQueryClient();
+    const syncMutation = useMutation({
+        mutationFn: stravaService.sync,
+        onMutate: () => {
+            syncNotification.current = notifications.show({
+                loading: true,
+                title: "Syncing with Strava",
+                message: "This may take a few seconds",
+                autoClose: false,
+                withCloseButton: false,
+                withBorder: true,
+                color: "orange",
+            });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["rides"] });
+            notifications.update({
+                id: syncNotification.current,
+                loading: false,
+                title: "Syncing with Strava",
+                message: "Sync complete",
+                autoClose: 3000,
+                withCloseButton: true,
+                withBorder: true,
+                color: "orange",
+                icon: <IconBrandStrava style={iconStyles} />,
+            });
+        },
+        onError: () => {
+            notifications.update({
+                id: syncNotification.current,
+                loading: false,
+                title: "Syncing with Strava",
+                message: "Sync failed",
+                autoClose: 3000,
+                withCloseButton: true,
+                withBorder: true,
+                color: "red",
+                icon: <IconBrandStrava style={iconStyles} />,
+            });
+        },
+    });
+    const userQuery = useQuery({
+        queryKey: ["user"],
+        queryFn: userService.current,
+        enabled: isOnline,
+    });
+    const stravaQuery = useQuery({
+        queryKey: ["stravaLink"],
+        queryFn: () => stravaService.getLink().catch(() => null),
+        enabled: isOnline,
+    });
 
     function manageBikes() {
         navigate("/bikes");
@@ -84,29 +93,22 @@ export default function UserProfile() {
     }
 
     function logout() {
-        authService.logout().finally(() => auth.setSession(null));
+        authService.logout().finally(() => {
+            auth.setSession(null);
+            queryClient.invalidateQueries();
+        });
     }
-
-    useEffect(() => {
-        if (isOnline) {
-            userService.current().then(setUser);
-            stravaService
-                .getLink()
-                .then(() => setHasStrava(true))
-                .catch(() => setHasStrava(false));
-        }
-    }, [isOnline]);
 
     return (
         <>
             <Menu position="bottom-end">
                 <Menu.Target>
                     <Skeleton
-                        visible={user === null}
+                        visible={userQuery.isLoading}
                         style={{ width: "fit-content" }}
                     >
                         <Avatar
-                            name={user?.username ?? ""}
+                            name={userQuery.data?.username ?? ""}
                             color="initials"
                             style={{ cursor: "pointer" }}
                         />
@@ -114,10 +116,10 @@ export default function UserProfile() {
                 </Menu.Target>
                 <Menu.Dropdown>
                     <BikeSelect />
-                    {hasStrava && (
+                    {stravaQuery.data && (
                         <Menu.Item
-                            onClick={sync}
-                            disabled={syncing}
+                            onClick={() => syncMutation.mutate()}
+                            disabled={syncMutation.isPending}
                             leftSection={<IconBrandStrava style={iconStyles} />}
                         >
                             Sync with Strava

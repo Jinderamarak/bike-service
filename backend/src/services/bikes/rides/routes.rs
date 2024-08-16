@@ -22,6 +22,7 @@ pub fn router_with_auth() -> Router<AppState> {
         .route("/:id", get(get_ride))
         .route("/:id", put(update_ride))
         .route("/:id", delete(delete_ride))
+        .route("/total/:year", get(total_distance))
 }
 
 async fn get_all_rides(
@@ -150,4 +151,16 @@ async fn get_month(
         total_distance,
         rides: models,
     }))
+}
+
+async fn total_distance(
+    State(bike_repo): State<BikeRepository>,
+    State(ride_repo): State<RideRepository>,
+    Path((bike_id, year)): Path<(i64, u32)>,
+    Extension(session): Extension<SessionModel>,
+) -> AppResult<Json<f64>> {
+    bike_repo.assert_owner(bike_id, session.user_id).await?;
+
+    let total = ride_repo.total_distance(bike_id, year).await?;
+    Ok(Json(total))
 }

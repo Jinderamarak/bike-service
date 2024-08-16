@@ -43,7 +43,7 @@ export default function useStravaService() {
      * @returns {Promise<SummaryGear[]>}
      */
     function getBikes() {
-        return client.get("/api/strava/bikes");
+        return client.get("/api/strava/bikes", true);
     }
 
     /**

@@ -55,7 +55,10 @@ export default function useRideService(bikeId) {
      * @returns Promise<number[]>
      */
     function getActiveYears() {
-        return client.get(`/api/bikes/${bikeId}/rides/years`);
+        return client.get(`/api/bikes/${bikeId}/rides/years`).then((data) => {
+            data.sort((a, b) => b - a);
+            return data;
+        });
     }
 
     /**
@@ -69,7 +72,7 @@ export default function useRideService(bikeId) {
     /**
      * @param {number} year
      * @param {number} month
-     * @returns {Promise<RideModel[]>}
+     * @returns {Promise<RideMonth>}
      */
     function getMonth(year, month) {
         return client.get(`/api/bikes/${bikeId}/rides/${year}/${month}`);
@@ -100,6 +103,14 @@ export default function useRideService(bikeId) {
         return client.delete(`/api/bikes/${bikeId}/rides/${rideId}`);
     }
 
+    /**
+     * @param {number} year
+     * @returns {Promise<number>}
+     */
+    function totalDistance(year) {
+        return client.get(`/api/bikes/${bikeId}/rides/total/${year}`);
+    }
+
     return {
         getAll,
         create,
@@ -109,5 +120,6 @@ export default function useRideService(bikeId) {
         getMonthlyRides,
         getMonth,
         update,
+        totalDistance,
     };
 }
