@@ -25,6 +25,9 @@ export default function RideCreateForm() {
                     rideDate.getMonth() + 1,
                 ],
             });
+            queryClient.invalidateQueries({
+                queryKey: ["rides", "total", rideDate.getFullYear()],
+            });
             queryClient.invalidateQueries({ queryKey: ["activeYears"] });
             newForm.reset();
         },

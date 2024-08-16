@@ -47,7 +47,7 @@ impl RideRepository {
         bike_id: i64,
         date: &str,
     ) -> AppResult<Vec<RideModel>> {
-        let starts_with = format!("{}%", date);
+        let starts_with = format!("{date}%");
         let models = sqlx::query_as!(
             RideRaw,
             "SELECT * FROM rides WHERE deleted_at IS NULL AND bike_id = ? AND date LIKE ? ORDER BY date DESC, id DESC",
@@ -177,5 +177,19 @@ impl RideRepository {
             .map(|y| y.parse::<i32>())
             .collect();
         Ok(years.map_err(anyhow::Error::from)?)
+    }
+
+    pub async fn total_distance(&self, bike_id: i64, year: u32) -> AppResult<f64> {
+        let starts_with = format!("{year}%");
+        let total = sqlx::query!(
+            "SELECT SUM(distance) as total FROM rides WHERE bike_id = ? AND date LIKE ? AND deleted_at IS NULL",
+            bike_id,
+            starts_with
+        )
+        .fetch_one(&self.0)
+        .await?
+        .total;
+
+        Ok(total.unwrap_or(0.0))
     }
 }

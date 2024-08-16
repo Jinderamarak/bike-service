@@ -103,6 +103,14 @@ export default function useRideService(bikeId) {
         return client.delete(`/api/bikes/${bikeId}/rides/${rideId}`);
     }
 
+    /**
+     * @param {number} year
+     * @returns {Promise<number>}
+     */
+    function totalDistance(year) {
+        return client.get(`/api/bikes/${bikeId}/rides/total/${year}`);
+    }
+
     return {
         getAll,
         create,
@@ -112,5 +120,6 @@ export default function useRideService(bikeId) {
         getMonthlyRides,
         getMonth,
         update,
+        totalDistance,
     };
 }

@@ -7,7 +7,7 @@ import {
     Container,
     Skeleton,
 } from "@mantine/core";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import RideCreateForm from "./RideCreateForm.jsx";
 import React from "react";
 import RideMonth from "./RideMonth.jsx";
@@ -15,12 +15,22 @@ import RideEditDrawer from "./RideEditDrawer.jsx";
 import RideYearGroup from "../../components/RideYearGroup.jsx";
 import WithSelectedBike from "../../components/WithSelectedBike.jsx";
 import { WhenOffline } from "../../components/WhenNetwork.jsx";
+import { useQuery } from "@tanstack/react-query";
+import { useRecoilState } from "recoil";
+import { selectedBikeIdAtom } from "../../data/persistentAtoms.js";
+import useRideService from "../../services/rideService.js";
 
 export default function RidesPage() {
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [editedRide, setEditedRide] = useState(null);
+    const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
+    const rideService = useRideService(selectedBike);
 
-    const totalDistance = 1337;
+    const totalQuery = useQuery({
+        queryKey: ["rides", "total", selectedYear],
+        queryFn: () => rideService.totalDistance(selectedYear),
+    });
+
     return (
         <Container size="lg" p={0} style={{ width: "100%" }}>
             <WithSelectedBike>
@@ -38,14 +48,14 @@ export default function RidesPage() {
                                 Some rides can be unavailable while offline!
                             </Text>
                         </WhenOffline>
-                        <Skeleton visible={totalDistance === null}>
+                        <Skeleton visible={totalQuery.isLoading}>
                             <Paper withBorder p="md">
                                 <Group justify="space-between">
                                     <Text fw="bold" size="xl">
                                         Total Distance
                                     </Text>
                                     <Text fw="bold" size="lg">
-                                        {(totalDistance ?? 0).toFixed(2)} km
+                                        {(totalQuery.data ?? 0).toFixed(2)} km
                                     </Text>
                                 </Group>
                             </Paper>

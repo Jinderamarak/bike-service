@@ -33,6 +33,10 @@ export default function RideEditDrawer({
                     newDate.getMonth() + 1,
                 ],
             });
+            queryClient.invalidateQueries({
+                queryKey: ["rides", "total", newDate.getFullYear()],
+            });
+
             const oldDate = new Date(date);
             queryClient.invalidateQueries({
                 queryKey: [
@@ -41,6 +45,10 @@ export default function RideEditDrawer({
                     oldDate.getMonth() + 1,
                 ],
             });
+            queryClient.invalidateQueries({
+                queryKey: ["rides", "total", oldDate.getFullYear()],
+            });
+
             queryClient.invalidateQueries({ queryKey: ["activeYears"] });
             onClose();
         },
@@ -56,6 +64,7 @@ export default function RideEditDrawer({
                     oldDate.getMonth() + 1,
                 ],
             });
+            queryClient.invalidateQueries({ queryKey: ["rides", "total"] });
             queryClient.invalidateQueries({ queryKey: ["activeYears"] });
             onClose();
         },
