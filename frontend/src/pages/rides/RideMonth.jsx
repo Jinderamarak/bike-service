@@ -12,6 +12,7 @@ export default function RideMonth({ year, month, onEditRide }) {
     const ridesQuery = useQuery({
         queryKey: ["rides", selectedBike, year, month],
         queryFn: () => rideService.getMonth(year, month),
+        enabled: selectedBike !== null,
     });
 
     const isRelevant = useMemo(() => {
