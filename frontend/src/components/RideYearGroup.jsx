@@ -10,7 +10,7 @@ export default function RideYearGroup({ year, onYearSelected }) {
     const rideService = useRideService(selectedBike);
     const query = useQuery({
         queryFn: () => rideService.getActiveYears(),
-        queryKey: ["activeYears"],
+        queryKey: ["activeYears", selectedBike],
     });
 
     return (

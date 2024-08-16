@@ -13,14 +13,13 @@ import {
     Text,
 } from "@mantine/core";
 import useBikeService from "../../services/bikeService.js";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export default function BikeSelect() {
     const [_, setSelectedColor] = useRecoilState(selectedBikeColorAtom);
     const [selectedBike, setSelectedBike] = useRecoilState(selectedBikeIdAtom);
     const bikeCombobox = useCombobox();
     const bikeService = useBikeService();
-    const queryClient = useQueryClient();
     const bikesQuery = useQuery({
         queryKey: ["bikes"],
         queryFn: () => bikeService.getAll(),
@@ -31,9 +30,6 @@ export default function BikeSelect() {
         let bike = bikesQuery.data.find((b) => b.id == bikeId);
         setSelectedColor(bike.color);
         setSelectedBike(bikeId);
-
-        queryClient.invalidateQueries({ queryKey: ["rides"] });
-        queryClient.invalidateQueries({ queryKey: ["activeYears"] });
     }
 
     const bike = bikesQuery.data?.find((b) => b.id == selectedBike);

@@ -10,7 +10,7 @@ export default function RideMonth({ year, month, onEditRide }) {
     const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
     const rideService = useRideService(selectedBike);
     const ridesQuery = useQuery({
-        queryKey: ["rides", year, month],
+        queryKey: ["rides", selectedBike, year, month],
         queryFn: () => rideService.getMonth(year, month),
     });
 

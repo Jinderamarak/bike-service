@@ -29,27 +29,41 @@ export default function RideEditDrawer({
             queryClient.invalidateQueries({
                 queryKey: [
                     "rides",
+                    selectedBike,
                     newDate.getFullYear(),
                     newDate.getMonth() + 1,
                 ],
             });
             queryClient.invalidateQueries({
-                queryKey: ["rides", "total", newDate.getFullYear()],
+                queryKey: [
+                    "rides",
+                    selectedBike,
+                    "total",
+                    newDate.getFullYear(),
+                ],
             });
 
             const oldDate = new Date(date);
             queryClient.invalidateQueries({
                 queryKey: [
                     "rides",
+                    selectedBike,
                     oldDate.getFullYear(),
                     oldDate.getMonth() + 1,
                 ],
             });
             queryClient.invalidateQueries({
-                queryKey: ["rides", "total", oldDate.getFullYear()],
+                queryKey: [
+                    "rides",
+                    selectedBike,
+                    "total",
+                    oldDate.getFullYear(),
+                ],
             });
 
-            queryClient.invalidateQueries({ queryKey: ["activeYears"] });
+            queryClient.invalidateQueries({
+                queryKey: ["activeYears", selectedBike],
+            });
             onClose();
         },
     });
@@ -60,12 +74,17 @@ export default function RideEditDrawer({
             queryClient.invalidateQueries({
                 queryKey: [
                     "rides",
+                    selectedBike,
                     oldDate.getFullYear(),
                     oldDate.getMonth() + 1,
                 ],
             });
-            queryClient.invalidateQueries({ queryKey: ["rides", "total"] });
-            queryClient.invalidateQueries({ queryKey: ["activeYears"] });
+            queryClient.invalidateQueries({
+                queryKey: ["rides", selectedBike, "total"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["activeYears", selectedBike],
+            });
             onClose();
         },
     });
