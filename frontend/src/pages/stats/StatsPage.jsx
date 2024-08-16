@@ -9,6 +9,7 @@ import { mapStatsData } from "./data.js";
 import WithNetwork from "../../components/WithNetwork.jsx";
 import useRideService from "../../services/rideService.js";
 import useUserService from "../../services/userService.js";
+import { useQuery } from "@tanstack/react-query";
 
 function goalLine(goal) {
     if (goal === null) return [];
@@ -24,33 +25,29 @@ function goalLine(goal) {
 export default function StatsPage() {
     const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-    const [stats, setStats] = useState(null);
-    const [monthlyGoal, setMonthlyGoal] = useState(null);
     const rideService = useRideService(selectedBike);
     const userService = useUserService();
 
-    useEffect(() => {
-        if (selectedBike === null) return;
-        setStats(null);
+    const goalQuery = useQuery({
+        queryKey: ["user", "monthlyGoal"],
+        queryFn: () => userService.current().then((user) => user.monthlyGoal),
+    });
 
-        rideService.getMonthlyRides(selectedYear).then((data) => {
-            setStats(mapStatsData(data));
-        });
-    }, [selectedBike, selectedYear]);
-
-    useEffect(() => {
-        userService.current().then((user) => setMonthlyGoal(user.monthlyGoal));
-    }, []);
+    const statsQuery = useQuery({
+        queryKey: ["rides", selectedBike, "stats", selectedYear],
+        queryFn: () =>
+            rideService.getMonthlyRides(selectedYear).then(mapStatsData),
+    });
 
     return (
         <Container size="lg" p={0} style={{ width: "100%" }}>
             <WithSelectedBike>
                 <WithNetwork>
                     <Stack gap="md">
-                        <Skeleton visible={stats === null}>
+                        <Skeleton visible={statsQuery.isLoading}>
                             <AreaChart
                                 h={200}
-                                data={stats ?? []}
+                                data={statsQuery.data ?? []}
                                 dataKey="month"
                                 series={[
                                     {
@@ -63,16 +60,16 @@ export default function StatsPage() {
                                 tickLine="xy"
                                 withLegend
                                 unit=" km"
-                                referenceLines={goalLine(monthlyGoal)}
+                                referenceLines={goalLine(goalQuery.data)}
                                 withXAxis={false}
                                 valueFormatter={(v) => v.toFixed(2)}
                                 connectNulls={false}
                             />
                         </Skeleton>
-                        <Skeleton visible={stats === null}>
+                        <Skeleton visible={statsQuery.isLoading}>
                             <AreaChart
                                 h={200}
-                                data={stats ?? []}
+                                data={statsQuery.data ?? []}
                                 dataKey="month"
                                 series={[
                                     {
