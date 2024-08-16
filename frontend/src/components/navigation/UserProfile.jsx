@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import useUserService from "../../services/userService.js";
 import { Avatar, Menu, Skeleton, rem } from "@mantine/core";
 import {
@@ -93,7 +93,10 @@ export default function UserProfile() {
     }
 
     function logout() {
-        authService.logout().finally(() => auth.setSession(null));
+        authService.logout().finally(() => {
+            auth.setSession(null);
+            queryClient.invalidateQueries();
+        });
     }
 
     return (

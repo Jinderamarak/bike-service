@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, useForm } from "@mantine/form";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { bikeForm, bikeFormToBody } from "./bikeForm.js";
 import { Button, Drawer, Group, Stack, Text } from "@mantine/core";
 import BikeFormFields from "./BikeFormFields.jsx";
@@ -8,6 +8,7 @@ import { modals } from "@mantine/modals";
 import { useRecoilState } from "recoil";
 import { networkStatusAtom } from "../../data/useNetworkStatus.jsx";
 import useBikeService from "../../services/bikeService.js";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function BikeEditDrawer({
     id,
@@ -15,29 +16,29 @@ export default function BikeEditDrawer({
     description,
     color,
     stravaGear,
-    onCancel,
-    onBikeEdited,
-    onBikeDeleted,
-    availableStravaGear,
+    onClose,
 }) {
     const bikeService = useBikeService();
     const [online, _] = useRecoilState(networkStatusAtom);
-    const [loadingUpdate, setLoadingUpdate] = useState(false);
-    const [loadingDelete, setLoadingDelete] = useState(false);
     const editForm = useForm(bikeForm);
 
-    async function updateBike(values) {
-        setLoadingUpdate(true);
-        const body = bikeFormToBody(values);
-
-        bikeService
-            .update(id, body)
-            .then(onBikeEdited)
-            .finally(() => setLoadingUpdate(false));
-    }
+    const queryClient = useQueryClient();
+    const updateMutation = useMutation({
+        mutationFn: (values) => bikeService.update(id, bikeFormToBody(values)),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["bikes"] });
+            onClose();
+        },
+    });
+    const deleteMutation = useMutation({
+        mutationFn: () => bikeService.delete(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["bikes"] });
+            onClose();
+        },
+    });
 
     function askDeleteBike() {
-        setLoadingDelete(true);
         modals.openConfirmModal({
             title: "Confirm bike deletion",
             children: (
@@ -49,19 +50,8 @@ export default function BikeEditDrawer({
             centered: true,
             labels: { confirm: "Delete bike", cancel: "Cancel" },
             confirmProps: { color: "red" },
-            onConfirm: deleteBike,
-            onCancel: () => setLoadingDelete(false),
-            onClose: () => setLoadingDelete(false),
+            onConfirm: () => deleteMutation.mutate(),
         });
-    }
-
-    async function deleteBike() {
-        setLoadingDelete(true);
-
-        bikeService
-            .delete(id)
-            .then(() => onBikeDeleted(id))
-            .finally(() => setLoadingDelete(false));
     }
 
     useEffect(() => {
@@ -72,37 +62,40 @@ export default function BikeEditDrawer({
             color: color || "",
             stravaGear: stravaGear,
         });
-    }, [name, description, color]);
+    }, [name, description, color, stravaGear]);
 
     return (
         <Drawer
             opened={id !== undefined}
-            onClose={onCancel}
+            onClose={onClose}
             title={`Editing ${name}`}
             position="right"
         >
-            <Form form={editForm} onSubmit={updateBike}>
+            <Form form={editForm} onSubmit={updateMutation.mutate}>
                 <Stack>
                     <BikeFormFields
                         form={editForm}
-                        disabled={loadingUpdate || loadingDelete || !online}
-                        availableStravaGear={availableStravaGear}
+                        disabled={
+                            updateMutation.isPending ||
+                            deleteMutation.isPending ||
+                            !online
+                        }
                     />
                     <Group justify="space-between">
                         <Button
                             variant="light"
                             color="red"
                             onClick={askDeleteBike}
-                            loading={loadingDelete}
-                            disabled={loadingUpdate || !online}
+                            loading={deleteMutation.isPending}
+                            disabled={updateMutation.isPending || !online}
                         >
                             Delete
                         </Button>
                         <Button
                             variant="filled"
                             type="submit"
-                            loading={loadingUpdate}
-                            disabled={loadingDelete || !online}
+                            loading={updateMutation.isPending}
+                            disabled={deleteMutation.isPending || !online}
                         >
                             Save
                         </Button>

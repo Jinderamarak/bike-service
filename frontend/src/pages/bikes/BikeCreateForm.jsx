@@ -1,44 +1,39 @@
 import React from "react";
 import { Form, useForm } from "@mantine/form";
 import { bikeForm, bikeFormToBody } from "./bikeForm.js";
-import { useState } from "react";
 import { Button, Paper, Stack } from "@mantine/core";
 import BikeFormFields from "./BikeFormFields.jsx";
 import { useRecoilState } from "recoil";
 import { networkStatusAtom } from "../../data/useNetworkStatus.jsx";
 import useBikeService from "../../services/bikeService.js";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export default function BikeCreateForm({ onBikeCreated, availableStravaGear }) {
+export default function BikeCreateForm() {
     const bikeService = useBikeService();
     const [online, _] = useRecoilState(networkStatusAtom);
-    const [loading, setLoading] = useState(false);
     const newForm = useForm(bikeForm);
 
-    async function createBike(values) {
-        setLoading(true);
-        const body = bikeFormToBody(values);
-        bikeService
-            .create(body)
-            .then((bike) => {
-                newForm.reset();
-                onBikeCreated(bike);
-            })
-            .finally(() => setLoading(false));
-    }
+    const queryClient = useQueryClient();
+    const createMutation = useMutation({
+        mutationFn: (values) => bikeService.create(bikeFormToBody(values)),
+        onSuccess: () => {
+            newForm.reset();
+            queryClient.invalidateQueries({ queryKey: ["bikes"] });
+        },
+    });
 
     return (
         <Stack style={{ flexShrink: 0 }}>
             <Paper withBorder p="md">
-                <Form form={newForm} onSubmit={createBike}>
+                <Form form={newForm} onSubmit={createMutation.mutate}>
                     <Stack>
                         <BikeFormFields
                             form={newForm}
-                            disabled={loading || !online}
-                            availableStravaGear={availableStravaGear}
+                            disabled={createMutation.isPending || !online}
                         />
                         <Button
                             disabled={!online}
-                            loading={loading}
+                            loading={createMutation.isPending}
                             variant="filled"
                             type="submit"
                         >

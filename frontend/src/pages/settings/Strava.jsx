@@ -27,6 +27,7 @@ export default function Strava() {
         mutationFn: stravaService.unlink,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["stravaLink"] });
+            queryClient.invalidateQueries({ queryKey: ["stravaBikes"] });
         },
     });
 

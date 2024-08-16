@@ -10,31 +10,31 @@ import {
     useCombobox,
     Input,
 } from "@mantine/core";
+import useStravaService from "../../services/stravaService.js";
+import { useQuery } from "@tanstack/react-query";
 
-export default function BikeFormFields({
-    form,
-    disabled,
-    availableStravaGear,
-}) {
+export default function BikeFormFields({ form, disabled }) {
+    const stravaService = useStravaService();
+    const stravaBikesQuery = useQuery({
+        queryKey: ["stravaBikes"],
+        queryFn: () => stravaService.getBikes().catch(() => null),
+    });
     const combobox = useCombobox({
         onDropdownClose: () => combobox.resetSelectedOption(),
     });
 
     useEffect(() => {
-        if (availableStravaGear) {
+        if (stravaBikesQuery.data) {
             combobox.selectOption(
                 1 +
-                    availableStravaGear.findIndex((gear) => {
-                        console.log(gear.id, form.values.stravaGear);
-                        return gear.id === form.values.stravaGear;
+                    stravaBikesQuery.data.findIndex((bike) => {
+                        return bike.id === form.values.stravaGear;
                     })
             );
         } else {
             combobox.selectOption(0);
         }
-
-        // console.log(combobox.selectedOptionIndex);
-    }, [form, availableStravaGear]);
+    }, [form, stravaBikesQuery]);
 
     return (
         <>
@@ -66,7 +66,7 @@ export default function BikeFormFields({
                     disabled={disabled || !form.values.hasColor}
                 />
             )}
-            {availableStravaGear && (
+            {(stravaBikesQuery.data || form.values.stravaGear) && (
                 <>
                     <Text size="sm">Link with Strava gear</Text>
                     <Combobox
@@ -85,10 +85,9 @@ export default function BikeFormFields({
                                 rightSectionPointerEvents="none"
                                 onClick={() => combobox.toggleDropdown()}
                             >
-                                {availableStravaGear.find(
-                                    (gear) => gear.id === form.values.stravaGear
-                                )?.name || (
-                                    <Input.Placeholder>None</Input.Placeholder>
+                                {stravaBikeName(
+                                    stravaBikesQuery.data,
+                                    form.values.stravaGear
                                 )}
                             </InputBase>
                         </Combobox.Target>
@@ -97,7 +96,7 @@ export default function BikeFormFields({
                                 <Combobox.Option value={null}>
                                     None
                                 </Combobox.Option>
-                                {availableStravaGear.map((gear) => (
+                                {stravaBikesQuery.data?.map((gear) => (
                                     <Combobox.Option
                                         key={gear.id}
                                         value={gear.id}
@@ -112,4 +111,13 @@ export default function BikeFormFields({
             )}
         </>
     );
+}
+
+function stravaBikeName(bikes, bikeId) {
+    if (!bikeId) {
+        return <Input.Placeholder>None</Input.Placeholder>;
+    }
+
+    const bike = bikes?.find((bike) => bike.id === bikeId);
+    return bike ? bike.name : `<${bikeId}>`;
 }
