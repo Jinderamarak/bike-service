@@ -72,7 +72,7 @@ export default function useRideService(bikeId) {
     /**
      * @param {number} year
      * @param {number} month
-     * @returns {Promise<RideModel[]>}
+     * @returns {Promise<RideMonth>}
      */
     function getMonth(year, month) {
         return client.get(`/api/bikes/${bikeId}/rides/${year}/${month}`);

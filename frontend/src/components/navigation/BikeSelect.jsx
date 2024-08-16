@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
     selectedBikeIdAtom,
     selectedBikeColorAtom,
@@ -13,13 +13,14 @@ import {
     Text,
 } from "@mantine/core";
 import useBikeService from "../../services/bikeService.js";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function BikeSelect() {
     const [_, setSelectedColor] = useRecoilState(selectedBikeColorAtom);
     const [selectedBike, setSelectedBike] = useRecoilState(selectedBikeIdAtom);
     const bikeCombobox = useCombobox();
     const bikeService = useBikeService();
+    const queryClient = useQueryClient();
     const bikesQuery = useQuery({
         queryKey: ["bikes"],
         queryFn: () => bikeService.getAll(),
@@ -27,22 +28,15 @@ export default function BikeSelect() {
 
     function selectBike(bikeId) {
         bikeCombobox.closeDropdown();
+        let bike = bikesQuery.data.find((b) => b.id == bikeId);
+        setSelectedColor(bike.color);
         setSelectedBike(bikeId);
+
+        queryClient.invalidateQueries({ queryKey: ["rides"] });
+        queryClient.invalidateQueries({ queryKey: ["activeYears"] });
     }
 
-    useEffect(() => {
-        if (bikesQuery.isLoading) return;
-        if (selectedBike !== null && selectedBike >= 0) {
-            let bike = bikesQuery.data.find((b) => b.id === selectedBike);
-            if (bike === undefined) {
-                setSelectedBike(null);
-            }
-        }
-
-        let bike = bikesQuery.data.find((b) => b.id === selectedBike);
-        setSelectedColor(bike?.color ?? null);
-    }, [bikesQuery, selectedBike, setSelectedBike]);
-
+    const bike = bikesQuery.data?.find((b) => b.id == selectedBike);
     return (
         <Skeleton
             visible={bikesQuery.isLoading}
@@ -71,9 +65,7 @@ export default function BikeSelect() {
                                 whiteSpace: "nowrap",
                             }}
                         >
-                            {(bikesQuery.data ?? []).find(
-                                (b) => b.id === selectedBike
-                            )?.name || (
+                            {bike?.name || (
                                 <Input.Placeholder>
                                     Select Bike
                                 </Input.Placeholder>

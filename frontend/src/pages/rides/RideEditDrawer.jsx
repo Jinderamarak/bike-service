@@ -1,5 +1,5 @@
 import { Form, useForm } from "@mantine/form";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { rideForm, rideFormToBody } from "./rideForm.js";
 import { Button, Drawer, Group, Stack, Text } from "@mantine/core";
 import RideFormFields from "./RideFormFields.jsx";
@@ -7,6 +7,7 @@ import { modals } from "@mantine/modals";
 import { useRecoilState } from "recoil";
 import { selectedBikeIdAtom } from "../../data/persistentAtoms.js";
 import useRideService from "../../services/rideService.js";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function RideEditDrawer({
     id,
@@ -14,27 +15,53 @@ export default function RideEditDrawer({
     distance,
     description,
     stravaRide,
-    onCancel,
-    onRideEdited,
-    onRideDeleted,
+    onClose,
 }) {
     const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
-    const [loadingUpdate, setLoadingUpdate] = useState(false);
-    const [loadingDelete, setLoadingDelete] = useState(false);
     const rideService = useRideService(selectedBike);
     const editForm = useForm(rideForm);
 
-    async function updateRide(values) {
-        setLoadingUpdate(true);
-        const body = rideFormToBody(values);
-        rideService
-            .update(id, body)
-            .then(onRideEdited)
-            .finally(() => setLoadingUpdate(false));
-    }
+    const queryClient = useQueryClient();
+    const updateMutation = useMutation({
+        mutationFn: (values) => rideService.update(id, rideFormToBody(values)),
+        onSuccess: (data) => {
+            const newDate = new Date(data.date);
+            queryClient.invalidateQueries({
+                queryKey: [
+                    "rides",
+                    newDate.getFullYear(),
+                    newDate.getMonth() + 1,
+                ],
+            });
+            const oldDate = new Date(date);
+            queryClient.invalidateQueries({
+                queryKey: [
+                    "rides",
+                    oldDate.getFullYear(),
+                    oldDate.getMonth() + 1,
+                ],
+            });
+            queryClient.invalidateQueries({ queryKey: ["activeYears"] });
+            onClose();
+        },
+    });
+    const deleteMutation = useMutation({
+        mutationFn: () => rideService.delete(id),
+        onSuccess: () => {
+            const oldDate = new Date(date);
+            queryClient.invalidateQueries({
+                queryKey: [
+                    "rides",
+                    oldDate.getFullYear(),
+                    oldDate.getMonth() + 1,
+                ],
+            });
+            queryClient.invalidateQueries({ queryKey: ["activeYears"] });
+            onClose();
+        },
+    });
 
     function askDeleteRide() {
-        setLoadingDelete(true);
         modals.openConfirmModal({
             title: "Confirm ride deletion",
             children: (
@@ -46,19 +73,8 @@ export default function RideEditDrawer({
             centered: true,
             labels: { confirm: "Delete ride", cancel: "Cancel" },
             confirmProps: { color: "red" },
-            onConfirm: deleteRide,
-            onCancel: () => setLoadingDelete(false),
-            onClose: () => setLoadingDelete(false),
+            onConfirm: deleteMutation.mutate,
         });
-    }
-
-    async function deleteRide() {
-        setLoadingDelete(true);
-
-        rideService
-            .delete(id)
-            .then(() => onRideDeleted(id))
-            .finally(() => setLoadingDelete(false));
     }
 
     useEffect(() => {
@@ -68,36 +84,38 @@ export default function RideEditDrawer({
             description,
             stravaRide,
         });
-    }, [date, distance, description]);
+    }, [date, distance, description, stravaRide]);
 
     return (
         <Drawer
             opened={id !== undefined}
-            onClose={onCancel}
+            onClose={onClose}
             title={`Editing ride from ${date}`}
             position="right"
         >
-            <Form form={editForm} onSubmit={updateRide}>
+            <Form form={editForm} onSubmit={updateMutation.mutate}>
                 <Stack>
                     <RideFormFields
                         form={editForm}
-                        disabled={loadingUpdate || loadingDelete}
+                        disabled={
+                            updateMutation.isPending || deleteMutation.isPending
+                        }
                     />
                     <Group justify="space-between">
                         <Button
                             variant="light"
                             color="red"
                             onClick={askDeleteRide}
-                            loading={loadingDelete}
-                            disabled={loadingUpdate}
+                            loading={deleteMutation.isPending}
+                            disabled={updateMutation.isPending}
                         >
                             Delete
                         </Button>
                         <Button
                             variant="filled"
                             type="submit"
-                            loading={loadingUpdate}
-                            disabled={loadingDelete}
+                            loading={updateMutation.isPending}
+                            disabled={deleteMutation.isPending}
                         >
                             Save
                         </Button>

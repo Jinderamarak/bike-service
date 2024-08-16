@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useRecoilState } from "recoil";
 import { selectedBikeIdAtom } from "../data/persistentAtoms.js";
 import { Button } from "@mantine/core";
@@ -10,7 +10,7 @@ export default function RideYearGroup({ year, onYearSelected }) {
     const rideService = useRideService(selectedBike);
     const query = useQuery({
         queryFn: () => rideService.getActiveYears(),
-        queryKey: ["activeYears", selectedBike],
+        queryKey: ["activeYears"],
     });
 
     return (

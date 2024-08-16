@@ -50,7 +50,7 @@ export default function BikeEditDrawer({
             centered: true,
             labels: { confirm: "Delete bike", cancel: "Cancel" },
             confirmProps: { color: "red" },
-            onConfirm: () => deleteMutation.mutate(),
+            onConfirm: deleteMutation.mutate,
         });
     }
 
