@@ -3,24 +3,19 @@ import { useRecoilState } from "recoil";
 import { selectedBikeIdAtom } from "../data/persistentAtoms.js";
 import { Button } from "@mantine/core";
 import useRideService from "../services/rideService.js";
+import { useQuery } from "@tanstack/react-query";
 
 export default function RideYearGroup({ year, onYearSelected }) {
     const [selectedBike, _] = useRecoilState(selectedBikeIdAtom);
-    const [years, setYears] = useState([year]);
     const rideService = useRideService(selectedBike);
-
-    useEffect(() => {
-        if (selectedBike === null) return;
-
-        rideService.getActiveYears().then((data) => {
-            data.sort((a, b) => b - a);
-            setYears(data);
-        });
-    }, [selectedBike]);
+    const query = useQuery({
+        queryFn: () => rideService.getActiveYears(),
+        queryKey: ["activeYears", selectedBike],
+    });
 
     return (
         <Button.Group>
-            {years.map((y) => (
+            {query.data?.map((y) => (
                 <Button
                     key={y}
                     variant={y === year ? "filled" : "light"}

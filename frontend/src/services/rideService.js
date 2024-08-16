@@ -55,7 +55,10 @@ export default function useRideService(bikeId) {
      * @returns Promise<number[]>
      */
     function getActiveYears() {
-        return client.get(`/api/bikes/${bikeId}/rides/years`);
+        return client.get(`/api/bikes/${bikeId}/rides/years`).then((data) => {
+            data.sort((a, b) => b - a);
+            return data;
+        });
     }
 
     /**
