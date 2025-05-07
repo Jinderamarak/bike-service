@@ -50,7 +50,7 @@ export default function useStravaService() {
      * @returns {Promise<void>}
      */
     function sync() {
-        return client.post("/api/strava", {});
+        return client.post("/api/strava", {}, false, 120000);
     }
 
     return { getOAuthRedirect, unlink, getLink, getBikes, sync };
