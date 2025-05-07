@@ -6,6 +6,13 @@ import { useApiClient } from "../components/AuthContext.jsx";
  * @property {number} userId
  * @property {number} stravaId
  * @property {string} stravaName
+ * @property {string} lastSync
+ */
+
+/**
+ * @typedef StravaLinkPartial
+ * @type {object}
+ * @property {string} lastSync
  */
 
 /**
@@ -53,5 +60,13 @@ export default function useStravaService() {
         return client.post("/api/strava", {}, false, 120000);
     }
 
-    return { getOAuthRedirect, unlink, getLink, getBikes, sync };
+    /**
+     * @param {StravaLinkPartial} data
+     * @returns {Promise<StravaLink>}
+     */
+    function updateLink(data) {
+        return client.put("/api/strava", data);
+    }
+
+    return { getOAuthRedirect, unlink, getLink, getBikes, sync, updateLink };
 }
