@@ -1,5 +1,5 @@
 use chrono::NaiveDateTime;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::utility::{
     db_extensions::Model,
@@ -70,6 +70,7 @@ pub struct StravaLink {
     pub user_id: i64,
     pub strava_id: i64,
     pub strava_name: String,
+    pub last_sync: NaiveDateTime,
 }
 
 impl From<StravaModel> for StravaLink {
@@ -78,6 +79,7 @@ impl From<StravaModel> for StravaLink {
             user_id: model.user_id,
             strava_id: model.strava_id,
             strava_name: model.strava_name,
+            last_sync: model.last_sync,
         }
     }
 }
@@ -85,4 +87,10 @@ impl From<StravaModel> for StravaLink {
 #[derive(Serialize)]
 pub struct OAuthUrl {
     pub url: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StravaLinkPartial {
+    pub last_sync: NaiveDateTime,
 }

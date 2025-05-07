@@ -5,6 +5,8 @@ import { networkStatusAtom } from "../../data/useNetworkStatus.jsx";
 import useStravaService from "../../services/stravaService.js";
 import useStatusService from "../../services/statusService.js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Form, useForm } from "@mantine/form";
+import { DateTimePicker } from "@mantine/dates";
 
 export default function Strava() {
     const [isOnline, _] = useRecoilState(networkStatusAtom);
@@ -12,6 +14,13 @@ export default function Strava() {
     const queryClient = useQueryClient();
     const stravaService = useStravaService();
     const statusService = useStatusService();
+
+    const linkForm = useForm({
+        mode: "controlled",
+        initialValues: {
+            lastSync: new Date()
+        },
+    });
 
     const statusQuery = useQuery({
         queryKey: ["status"],
@@ -31,12 +40,25 @@ export default function Strava() {
         },
     });
 
+    const updateMutation = useMutation({
+        mutationFn: (values) => stravaService.updateLink({ lastSync: values.lastSync.toISOString().slice(0, -1) }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["stravaLink"] });
+        },
+    });
+
     function createLink() {
         setLoadingRedirect(true);
         stravaService.getOAuthRedirect().then((response) => {
             window.location.href = response.url;
         });
     }
+
+    useEffect(() => {
+        linkForm.setValues({
+            lastSync: linkQuery.data?.lastSync ? new Date(linkQuery.data.lastSync + "Z") : new Date(),
+        });
+    }, [linkQuery.data])
 
     if (
         statusQuery.isLoading ||
@@ -59,6 +81,22 @@ export default function Strava() {
                 >
                     Unlink Accounts
                 </Button>
+                <Form form={linkForm} onSubmit={updateMutation.mutate}>
+                    <DateTimePicker
+                        withAsterisk
+                        label="Last Sync"
+                        key={linkForm.key("lastSync")}
+                        {...linkForm.getInputProps("lastSync")}
+                        disabled={updateMutation.isPending}
+                    />
+                    <Button
+                        variant="filled"
+                        type="submit"
+                        loading={updateMutation.isPending}
+                    >
+                        Update
+                    </Button>
+                </Form>
             </Stack>
         );
     }
