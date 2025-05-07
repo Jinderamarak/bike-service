@@ -7,6 +7,7 @@ use axum::{
     routing::{delete, get, post},
     Extension, Json, Router,
 };
+use axum::routing::put;
 use chrono::{Duration, NaiveDateTime, Utc};
 use reqwest::StatusCode;
 use serde::Deserialize;
@@ -27,7 +28,7 @@ use crate::{
     },
 };
 use crate::services::strava::api::no_auth::StravaApiNoAuth;
-use crate::services::strava::models::OAuthUrl;
+use crate::services::strava::models::{OAuthUrl, StravaLinkPartial};
 use super::{
     api::models::{ActivityFilter, SummaryGear},
     extractor::Strava,
@@ -92,6 +93,7 @@ pub fn router_with_auth() -> Router<AppState> {
         .route("/", get(get_link))
         .route("/bikes", get(bikes))
         .route("/", post(sync))
+        .route("/", put(update_link))
 }
 
 async fn oauth(
@@ -250,4 +252,23 @@ async fn sync(
     repo.update(link).await?;
 
     Ok((StatusCode::CREATED, "{}".to_string()))
+}
+
+async fn update_link(
+    Extension(session): Extension<SessionModel>,
+    State(repo): State<StravaRepository>,
+    Json(payload): Json<StravaLinkPartial>,
+) -> AppResult<Json<StravaLink>> {
+    let link = repo
+        .try_get(session.user_id)
+        .await?
+        .ok_or_else(|| AppError::NotFound("Strava account not linked".to_string()))?;
+
+    let link = StravaModel {
+        last_sync: payload.last_sync,
+        ..link
+    };
+    repo.update(link.clone()).await?;
+
+    Ok(Json(StravaLink::from(link)))
 }
