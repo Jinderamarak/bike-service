@@ -138,9 +138,9 @@ impl Debug for SecretString {
     }
 }
 
-impl Into<String> for SecretString {
-    fn into(self) -> String {
-        self.0
+impl From<SecretString> for String {
+    fn from(val: SecretString) -> Self {
+        val.0
     }
 }
 
