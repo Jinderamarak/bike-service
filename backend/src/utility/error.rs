@@ -3,6 +3,7 @@ use std::string;
 use axum::extract::multipart::MultipartError;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
+use chrono::SecondsFormat;
 use csv::Writer;
 
 pub type AppResult<T> = Result<T, AppError>;
@@ -55,10 +56,28 @@ impl AppError {
             _ => "Internal Server Error".to_string(),
         }
     }
+
+    fn detailed(&self) -> String {
+        match self {
+            AppError::NotFound(t) => format!("Not Found: {t}"),
+            AppError::BadRequest(t) => format!("Bad Request: {t}"),
+            AppError::Unauthorized => "Unauthorized".to_string(),
+            AppError::Forbidden => "Forbidden".to_string(),
+            AppError::Conflict(t) => format!("Conflict: {t}"),
+            AppError::Database(e) => format!("Database Error: {e}"),
+            AppError::Other(e) => format!("Other Error: {e}"),
+        }
+    }
 }
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
+        let now = chrono::Utc::now();
+        println!(
+            "[{}] Error response created: {:?}",
+            now.to_rfc3339_opts(SecondsFormat::Secs, false),
+            self.detailed(),
+        );
         (self.status_code(), self.message()).into_response()
     }
 }
