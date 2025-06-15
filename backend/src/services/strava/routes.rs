@@ -211,7 +211,7 @@ async fn sync(
                 Some(ids) => ids,
                 None => {
                     let bikes = bikes
-                        .get_by_strava_gear(session.user_id, &ride.gear_id)
+                        .get_by_strava_gear(session.user_id, ride.gear_id.as_deref())
                         .await?
                         .into_iter()
                         .map(|bike| bike.id)
