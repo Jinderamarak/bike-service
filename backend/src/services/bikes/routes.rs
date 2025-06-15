@@ -13,12 +13,12 @@ use super::rides;
 
 pub fn router_with_auth() -> Router<AppState> {
     Router::new()
-        .nest("/:id/rides", rides::routes::router_with_auth())
+        .nest("/{id}/rides", rides::routes::router_with_auth())
         .route("/", get(get_all_bikes))
         .route("/", post(create_bike))
-        .route("/:id", get(get_bike))
-        .route("/:id", put(update_bike))
-        .route("/:id", delete(delete_bike))
+        .route("/{id}", get(get_bike))
+        .route("/{id}", put(update_bike))
+        .route("/{id}", delete(delete_bike))
 }
 
 async fn get_all_bikes(

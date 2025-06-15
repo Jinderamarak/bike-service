@@ -17,12 +17,12 @@ pub fn router_with_auth() -> Router<AppState> {
         .route("/", get(get_all_rides))
         .route("/", post(create_ride))
         .route("/years", get(get_active_years))
-        .route("/monthly/:year", get(get_monthly_rides))
-        .route("/:year/:month", get(get_month))
-        .route("/:id", get(get_ride))
-        .route("/:id", put(update_ride))
-        .route("/:id", delete(delete_ride))
-        .route("/total/:year", get(total_distance))
+        .route("/monthly/{year}", get(get_monthly_rides))
+        .route("/{year}/{month}", get(get_month))
+        .route("/{id}", get(get_ride))
+        .route("/{id}", put(update_ride))
+        .route("/{id}", delete(delete_ride))
+        .route("/total/{year}", get(total_distance))
 }
 
 async fn get_all_rides(

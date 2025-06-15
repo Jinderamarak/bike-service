@@ -1,3 +1,4 @@
+use std::fmt::{Debug, Formatter};
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
 use anyhow::Result;
@@ -67,7 +68,7 @@ pub struct Configuration {
         env = "BIKE_STRAVA_CLIENT_SECRET",
         help = "Strava client secret for OAuth"
     )]
-    pub strava_client_secret: Option<String>,
+    pub strava_client_secret: Option<SecretString>,
     #[arg(
         long,
         env = "BIKE_STRAVA_REDIRECT_ORIGIN",
@@ -98,7 +99,7 @@ impl Configuration {
     pub fn strava_config(&self) -> Option<StravaConfig> {
         Some(StravaConfig {
             client_id: self.strava_client_id.clone()?,
-            client_secret: self.strava_client_secret.clone()?,
+            client_secret: self.strava_client_secret.clone()?.into(),
             redirect_origin: self.strava_redirect_origin.clone()?,
         })
     }
@@ -125,5 +126,26 @@ impl StravaConfig {
             scope.as_ref(),
             state.as_ref(),
         )
+    }
+}
+
+#[derive(Clone)]
+pub struct SecretString(String);
+
+impl Debug for SecretString {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "#SECRET#")
+    }
+}
+
+impl Into<String> for SecretString {
+    fn into(self) -> String {
+        self.0
+    }
+}
+
+impl From<String> for SecretString {
+    fn from(value: String) -> Self {
+        SecretString(value)
     }
 }
