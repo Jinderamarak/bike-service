@@ -1,12 +1,12 @@
 #   Server Building Part
-FROM rust:latest as builder-backend
+FROM rust:latest AS builder-backend
 WORKDIR /build
 
 COPY ./backend/ ./
 RUN cargo build --locked --release
 
 #   Frontend Building Part
-FROM node:latest as builder-frontend
+FROM node:latest AS builder-frontend
 WORKDIR /build
 
 COPY ./frontend/package.json ./package.json
@@ -17,7 +17,7 @@ COPY ./frontend/ ./
 RUN npm run build
 
 #   Runtime Part
-FROM rust:slim as runtime
+FROM rust:slim AS runtime
 WORKDIR /app
 
 COPY --from=builder-backend /build/target/release/bike-service .
