@@ -81,5 +81,5 @@ pub struct SummaryActivity {
     pub distance_meters: f64,
     pub sport_type: SportType,
     pub start_date_local: DateTime<Utc>,
-    pub gear_id: String,
+    pub gear_id: Option<String>,
 }

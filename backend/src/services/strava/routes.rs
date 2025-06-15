@@ -207,11 +207,17 @@ async fn sync(
     let mut strava_rides = api.get_activities(&filter).await?;
     while !strava_rides.is_empty() {
         for ride in strava_rides {
+            if ride.gear_id.is_none() {
+                // Ride has no associated gear
+                //   -> cannot be associated with a bike
+                continue;
+            }
+
             let bike_ids = match bike_cache.get(&ride.gear_id) {
                 Some(ids) => ids,
                 None => {
                     let bikes = bikes
-                        .get_by_strava_gear(session.user_id, &ride.gear_id)
+                        .get_by_strava_gear(session.user_id, ride.gear_id.as_deref())
                         .await?
                         .into_iter()
                         .map(|bike| bike.id)

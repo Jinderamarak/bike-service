@@ -61,7 +61,7 @@ impl BikeRepository {
     pub async fn get_by_strava_gear(
         &self,
         owner_id: i64,
-        strava_gear: &str,
+        strava_gear: Option<&str>,
     ) -> AppResult<Vec<BikeModel>> {
         let model = sqlx::query_as!(
             BikeRaw,
