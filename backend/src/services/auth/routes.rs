@@ -21,7 +21,7 @@ pub fn router_with_auth() -> Router<AppState> {
     Router::new()
         .route("/", get(whoami))
         .route("/", delete(logout))
-        .route("/:id", delete(revoke))
+        .route("/{id}", delete(revoke))
 }
 
 async fn whoami(

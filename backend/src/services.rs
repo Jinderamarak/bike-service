@@ -23,7 +23,7 @@ pub fn api_router(state: AppState) -> Router<AppState> {
         .nest("/users", users::routes::router())
         .nest("/auth", auth::routes::router())
         .nest("/strava", strava::routes::router())
-        .nest("/", router_with_auth(state))
+        .merge(router_with_auth(state))
         .layer(from_fn(without_caching))
 }
 
