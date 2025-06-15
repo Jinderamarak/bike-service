@@ -1,5 +1,4 @@
 use axum::{
-    async_trait,
     extract::{FromRequestParts, State},
     http::request::Parts,
     response::{IntoResponse, Response},
@@ -15,7 +14,6 @@ use super::api::no_auth::StravaApiNoAuth;
 
 pub struct Strava(pub StravaConfig, pub StravaApiNoAuth);
 
-#[async_trait]
 impl FromRequestParts<AppState> for Strava {
     type Rejection = Response;
 

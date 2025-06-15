@@ -201,11 +201,11 @@ async fn sync(
 
     let mut bike_cache = HashMap::new();
     let mut filter = ActivityFilter {
-        after: Some(link.last_sync.clone()),
+        after: Some(link.last_sync),
         ..Default::default()
     };
     let mut strava_rides = api.get_activities(&filter).await?;
-    while strava_rides.len() > 0 {
+    while !strava_rides.is_empty() {
         for ride in strava_rides {
             let bike_ids = match bike_cache.get(&ride.gear_id) {
                 Some(ids) => ids,

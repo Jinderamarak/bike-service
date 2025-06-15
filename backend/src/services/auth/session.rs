@@ -24,7 +24,7 @@ pub fn create_session(user_id: i64, headers: &HeaderMap) -> SessionModel {
 
 fn create_token() -> String {
     let mut token = [0u8; 64].to_vec();
-    rand::thread_rng().fill_bytes(&mut token);
+    rand::rng().fill_bytes(&mut token);
     hex::encode(token)
 }
 
