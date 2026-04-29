@@ -2,7 +2,7 @@ use std::path::Path;
 
 use axum::Router;
 use clap::Parser;
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use sqlx::SqlitePool;
 use tokio::net;
 use tower_http::services::{ServeDir, ServeFile};
